@@ -28,7 +28,6 @@ class _SearchScreenState extends State<SearchScreen> {
   List<PokemonItem> results = [];
   bool loading = false;
   bool searched = false;
-  String? selectedHeroName;
 
   @override
   void initState() {
@@ -61,20 +60,15 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _openDetail(PokemonItem pokemon) {
-    setState(() => selectedHeroName = pokemon.name);
-    Future<void>.delayed(const Duration(milliseconds: 40), () async {
-      if (!mounted) return;
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => PokemonDetailScreen(
-            api: widget.api,
-            favorites: widget.favorites,
-            initialPokemon: pokemon,
-          ),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => PokemonDetailScreen(
+          api: widget.api,
+          favorites: widget.favorites,
+          initialPokemon: pokemon,
         ),
-      );
-      if (mounted) setState(() => selectedHeroName = null);
-    });
+      ),
+    );
   }
 
   @override
@@ -117,7 +111,6 @@ class _SearchScreenState extends State<SearchScreen> {
                             widget.favorites.isFavorite(results[index].id);
                       return PokemonCard(
                         pokemon: pokemon,
-                        enableHero: selectedHeroName == pokemon.name,
                         onTap: () => _openDetail(pokemon),
                       );
                     },

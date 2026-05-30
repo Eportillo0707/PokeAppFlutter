@@ -5,7 +5,7 @@ import '../services/pokeapi_client.dart';
 import '../widgets/pokemon_widgets.dart';
 import 'pokemon_detail_screen.dart';
 
-class FavoritesScreen extends StatefulWidget {
+class FavoritesScreen extends StatelessWidget {
   const FavoritesScreen({
     super.key,
     required this.api,
@@ -14,13 +14,6 @@ class FavoritesScreen extends StatefulWidget {
 
   final PokeApiClient api;
   final FavoritesStore favorites;
-
-  @override
-  State<FavoritesScreen> createState() => _FavoritesScreenState();
-}
-
-class _FavoritesScreenState extends State<FavoritesScreen> {
-  String? selectedHeroName;
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +49,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             ),
             Expanded(
               child: AnimatedBuilder(
-                animation: widget.favorites,
+                animation: favorites,
                 builder: (context, _) {
-                  final items = widget.favorites.items;
+                  final items = favorites.items;
                   if (items.isEmpty) {
                     return const Center(child: Text('Aun no hay favoritos'));
                   }
@@ -76,29 +69,15 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                       final pokemon = items[index]..isFavorite = true;
                       return PokemonCard(
                         pokemon: pokemon,
-                        enableHero: selectedHeroName == pokemon.name,
-                        onTap: () {
-                          setState(() => selectedHeroName = pokemon.name);
-                          final navigator = Navigator.of(context);
-                          Future<void>.delayed(
-                            const Duration(milliseconds: 40),
-                            () async {
-                              if (!mounted) return;
-                              await navigator.push(
-                                MaterialPageRoute(
-                                  builder: (_) => PokemonDetailScreen(
-                                    api: widget.api,
-                                    favorites: widget.favorites,
-                                    initialPokemon: pokemon,
-                                  ),
-                                ),
-                              );
-                              if (mounted) {
-                                setState(() => selectedHeroName = null);
-                              }
-                            },
-                          );
-                        },
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => PokemonDetailScreen(
+                              api: api,
+                              favorites: favorites,
+                              initialPokemon: pokemon,
+                            ),
+                          ),
+                        ),
                       );
                     },
                   );

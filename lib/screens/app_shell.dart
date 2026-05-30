@@ -31,8 +31,14 @@ class _AppShellState extends State<AppShell> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      PokemonListScreen(api: widget.api, favorites: widget.favorites),
-      FavoritesScreen(api: widget.api, favorites: widget.favorites),
+      HeroMode(
+        enabled: index == 0,
+        child: PokemonListScreen(api: widget.api, favorites: widget.favorites),
+      ),
+      HeroMode(
+        enabled: index == 1,
+        child: FavoritesScreen(api: widget.api, favorites: widget.favorites),
+      ),
     ];
     return Scaffold(
       body: IndexedStack(index: index, children: pages),

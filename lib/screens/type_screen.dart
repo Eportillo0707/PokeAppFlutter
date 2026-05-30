@@ -24,7 +24,6 @@ class TypeScreen extends StatefulWidget {
 
 class _TypeScreenState extends State<TypeScreen> {
   late Future<List<PokemonItem>> future;
-  String? selectedHeroName;
 
   @override
   void initState() {
@@ -92,29 +91,15 @@ class _TypeScreenState extends State<TypeScreen> {
                                 widget.favorites.isFavorite(items[index].id);
                           return PokemonCard(
                             pokemon: pokemon,
-                            enableHero: selectedHeroName == pokemon.name,
-                            onTap: () {
-                              setState(() => selectedHeroName = pokemon.name);
-                              final navigator = Navigator.of(context);
-                              Future<void>.delayed(
-                                const Duration(milliseconds: 40),
-                                () async {
-                                  if (!mounted) return;
-                                  await navigator.push(
-                                    MaterialPageRoute(
-                                      builder: (_) => PokemonDetailScreen(
-                                        api: widget.api,
-                                        favorites: widget.favorites,
-                                        initialPokemon: pokemon,
-                                      ),
-                                    ),
-                                  );
-                                  if (mounted) {
-                                    setState(() => selectedHeroName = null);
-                                  }
-                                },
-                              );
-                            },
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => PokemonDetailScreen(
+                                  api: widget.api,
+                                  favorites: widget.favorites,
+                                  initialPokemon: pokemon,
+                                ),
+                              ),
+                            ),
                           );
                         },
                       );
