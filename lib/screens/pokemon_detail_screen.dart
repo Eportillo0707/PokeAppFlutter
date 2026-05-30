@@ -66,111 +66,118 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                 length: 2,
                 child: SafeArea(
                   bottom: false,
-                  child: CustomScrollView(
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: Stack(
-                          alignment: Alignment.topCenter,
-                          children: [
-                            _TopCircle(types: pokemon.types),
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: IconButton(
-                                onPressed: () => Navigator.pop(context),
-                                icon: const Icon(Icons.arrow_back),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.topRight,
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: IconButton(
-                                  onPressed: () => _toggle(pokemon),
-                                  icon: Icon(
-                                    pokemon.isFavorite
-                                        ? Icons.star
-                                        : Icons.star_border,
-                                    size: 34,
-                                    color: pokemon.isFavorite
-                                        ? const Color(0xFFFFD54F)
-                                        : Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 52),
-                              child: _PokemonHero(pokemon: pokemon),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: pokemon.types
-                                    .map(
-                                      (type) => Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                        ),
-                                        child: TypeBadgeImage(
-                                          type: type,
-                                          width: 150,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: NestedScrollView(
+                          headerSliverBuilder: (context, innerBoxIsScrolled) {
+                            return [
+                              SliverToBoxAdapter(
+                                child: Stack(
+                                  alignment: Alignment.topCenter,
+                                  children: [
+                                    _TopCircle(types: pokemon.types),
+                                    Align(
+                                      alignment: Alignment.topLeft,
+                                      child: IconButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        icon: const Icon(Icons.arrow_back),
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.topRight,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 8),
+                                        child: IconButton(
+                                          onPressed: () => _toggle(pokemon),
+                                          icon: Icon(
+                                            pokemon.isFavorite
+                                                ? Icons.star
+                                                : Icons.star_border,
+                                            size: 34,
+                                            color: pokemon.isFavorite
+                                                ? const Color(0xFFFFD54F)
+                                                : Colors.white,
+                                          ),
                                         ),
                                       ),
-                                    )
-                                    .toList(),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 52),
+                                      child: _PokemonHero(pokemon: pokemon),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 14),
-                            const _InfoTabs(),
-                          ],
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: SizedBox(
-                          height: 760,
-                          child: _InfoPageCard(
+                              SliverToBoxAdapter(
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 4),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: pokemon.types
+                                            .map(
+                                              (type) => Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 8,
+                                                ),
+                                                child: TypeBadgeImage(
+                                                  type: type,
+                                                  width: 150,
+                                                ),
+                                              ),
+                                            )
+                                            .toList(),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 14),
+                                    const _InfoTabs(),
+                                  ],
+                                ),
+                              ),
+                            ];
+                          },
+                          body: _InfoPageCard(
                             child: TabBarView(
                               children: [
-                                SingleChildScrollView(
-                                  child: Column(
-                                    children: [
-                                      _Description(pokemon: pokemon),
-                                      _Specs(pokemon: pokemon),
-                                      _Abilities(pokemon: pokemon),
-                                      _Evolutions(
-                                        pokemon: pokemon,
-                                        api: widget.api,
-                                        favorites: widget.favorites,
-                                      ),
-                                      const SizedBox(height: 24),
-                                    ],
-                                  ),
+                                ListView(
+                                  padding: EdgeInsets.zero,
+                                  primary: false,
+                                  children: [
+                                    _Description(pokemon: pokemon),
+                                    _Specs(pokemon: pokemon),
+                                    _Abilities(pokemon: pokemon),
+                                    _Evolutions(
+                                      pokemon: pokemon,
+                                      api: widget.api,
+                                      favorites: widget.favorites,
+                                    ),
+                                    const SizedBox(height: 24),
+                                  ],
                                 ),
-                                SingleChildScrollView(
-                                  child: Column(
-                                    children: [
-                                      _Stats(pokemon: pokemon),
-                                      _TypesDetails(
-                                        effectiveness:
-                                            getDefensiveEffectiveness(
-                                          pokemon.types,
-                                        ),
+                                ListView(
+                                  padding: EdgeInsets.zero,
+                                  primary: false,
+                                  children: [
+                                    _Stats(pokemon: pokemon),
+                                    _TypesDetails(
+                                      effectiveness: getDefensiveEffectiveness(
+                                        pokemon.types,
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                    const SizedBox(height: 24),
+                                  ],
                                 ),
                               ],
                             ),
                           ),
                         ),
                       ),
+                      const _DetailBottomBar(),
                     ],
                   ),
                 ),
@@ -178,6 +185,62 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
             },
           );
         },
+      ),
+    );
+  }
+}
+
+class _DetailBottomBar extends StatelessWidget {
+  const _DetailBottomBar();
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      top: false,
+      child: Container(
+        height: 60,
+        color: const Color(0xFF232B4C),
+        child: const Row(
+          children: [
+            _DetailBottomTab(title: 'Pokemon', selected: true),
+            _DetailBottomTab(title: 'Favorites', selected: false),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DetailBottomTab extends StatelessWidget {
+  const _DetailBottomTab({required this.title, required this.selected});
+
+  final String title;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: selected ? Colors.white : Colors.grey,
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            width: 35,
+            height: 7,
+            decoration: BoxDecoration(
+              color: selected ? const Color(0xFFE8D8FF) : Colors.transparent,
+              borderRadius: BorderRadius.circular(50),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -656,10 +719,14 @@ class _EvolutionItem extends StatelessWidget {
               Image.network(species.imageUrl, width: 115, height: 115),
             Text(
               formatPokemonName(species.name),
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+              style: const TextStyle(
+                fontSize: 18,
+                height: 1.05,
+                fontWeight: FontWeight.w800,
+              ),
             ),
             if (species.evolutionMethod != null)
               Container(
