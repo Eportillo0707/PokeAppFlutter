@@ -8,6 +8,7 @@ ThemeData buildPokeTheme() {
   return ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
+    fontFamily: 'Montserrat',
     scaffoldBackgroundColor: background,
     colorScheme: const ColorScheme.dark(
       primary: primary,
@@ -23,12 +24,12 @@ ThemeData buildPokeTheme() {
     ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: surface,
-      indicatorColor: primary.withOpacity(.18),
-      labelTextStyle: MaterialStateProperty.all(
+      indicatorColor: primary.withValues(alpha: .18),
+      labelTextStyle: WidgetStateProperty.all(
         const TextStyle(fontWeight: FontWeight.w600),
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: surface,
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

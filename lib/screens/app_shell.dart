@@ -4,7 +4,6 @@ import '../services/favorites_store.dart';
 import '../services/pokeapi_client.dart';
 import 'favorites_screen.dart';
 import 'pokemon_list_screen.dart';
-import 'search_screen.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({
@@ -33,30 +32,73 @@ class _AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     final pages = [
       PokemonListScreen(api: widget.api, favorites: widget.favorites),
-      SearchScreen(api: widget.api, favorites: widget.favorites),
       FavoritesScreen(api: widget.api, favorites: widget.favorites),
     ];
     return Scaffold(
       body: IndexedStack(index: index, children: pages),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: index,
-        onDestinationSelected: (value) => setState(() => index = value),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.catching_pokemon_outlined),
-            selectedIcon: Icon(Icons.catching_pokemon),
-            label: 'Pokemon',
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Container(
+          height: 60,
+          color: const Color(0xFF232B4C),
+          child: Row(
+            children: [
+              _BottomTab(
+                title: 'Pokemon',
+                selected: index == 0,
+                onTap: () => setState(() => index = 0),
+              ),
+              _BottomTab(
+                title: 'Favorites',
+                selected: index == 1,
+                onTap: () => setState(() => index = 1),
+              ),
+            ],
           ),
-          NavigationDestination(
-            icon: Icon(Icons.search),
-            label: 'Buscar',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.favorite_border),
-            selectedIcon: Icon(Icons.favorite),
-            label: 'Favoritos',
-          ),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BottomTab extends StatelessWidget {
+  const _BottomTab({
+    required this.title,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String title;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                color: selected ? Colors.white : Colors.grey,
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Container(
+              width: 35,
+              height: 7,
+              decoration: BoxDecoration(
+                color: selected ? const Color(0xFFE8D8FF) : Colors.transparent,
+                borderRadius: BorderRadius.circular(50),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

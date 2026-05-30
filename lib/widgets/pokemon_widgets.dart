@@ -15,70 +15,94 @@ class PokemonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = pokemonTypeColor(pokemon.types.firstOrNull);
     return InkWell(
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(16),
       onTap: onTap,
       child: Card(
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [accent.withOpacity(.95), const Color(0xFF232B4C)],
-            ),
-          ),
-          child: Stack(
+        color: const Color(0xFF202339),
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: Colors.white.withValues(alpha: .12)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Positioned(
-                right: -12,
-                bottom: -18,
-                child: Image.network(
-                  pokemon.imageUrl,
-                  width: 128,
-                  height: 128,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+              Image.network(
+                pokemon.imageUrl,
+                width: 100,
+                height: 100,
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) => const SizedBox(height: 100),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                formatPokemonName(pokemon.name),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '#${pokemon.id.toString().padLeft(3, '0')}',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(.72),
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      formatPokemonName(pokemon.name),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const Spacer(),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: pokemon.types
-                          .map((type) => TypeChip(type: type, compact: true))
-                          .toList(),
-                    ),
-                  ],
-                ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: pokemon.types
+                    .map((type) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2),
+                          child: TypeBadgeImage(type: type, width: 72),
+                        ))
+                    .toList(),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class TypeBadgeImage extends StatelessWidget {
+  const TypeBadgeImage({super.key, required this.type, this.width = 100});
+
+  final String type;
+  final double width;
+
+  static const _files = {
+    'grass': 'grasssv.png',
+    'poison': 'poisonsv.png',
+    'fire': 'firesv.png',
+    'water': 'watersv.png',
+    'bug': 'bugsv.png',
+    'normal': 'normalsv.png',
+    'electric': 'electricsv.png',
+    'ground': 'groundsv.png',
+    'fairy': 'fairysv.png',
+    'fighting': 'fightingsv.png',
+    'psychic': 'psychicsv.png',
+    'rock': 'rocksv.png',
+    'ghost': 'ghostsv.png',
+    'ice': 'iceicsv.png',
+    'dragon': 'dragonsv.png',
+    'dark': 'darksv.png',
+    'steel': 'steelsv.png',
+    'flying': 'flyingsv.png',
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final file = _files[type.toLowerCase()];
+    if (file == null) return TypeChip(type: type, compact: true);
+    return Image.asset(
+      'assets/icons/$file',
+      width: width,
+      height: width * .38,
+      fit: BoxFit.contain,
     );
   }
 }
