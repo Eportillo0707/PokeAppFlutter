@@ -32,6 +32,7 @@ class PokemonCard extends StatelessWidget {
             children: [
               Hero(
                 tag: 'pokemon-image-${pokemon.name}',
+                transitionOnUserGestures: true,
                 child: Image.network(
                   pokemon.imageUrl,
                   width: 100,

@@ -136,32 +136,67 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                               }),
                             ),
                             _InfoPageCard(
-                              child: selectedPage == 0
-                                  ? Column(
-                                      children: [
-                                        _Description(pokemon: pokemon),
-                                        _Specs(pokemon: pokemon),
-                                        _Abilities(pokemon: pokemon),
-                                        _Evolutions(
-                                          pokemon: pokemon,
-                                          api: widget.api,
-                                          favorites: widget.favorites,
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.translucent,
+                                onHorizontalDragEnd: (details) {
+                                  final velocity = details.primaryVelocity ?? 0;
+                                  if (velocity < -120 && selectedPage == 0) {
+                                    setState(() => selectedPage = 1);
+                                  } else if (velocity > 120 &&
+                                      selectedPage == 1) {
+                                    setState(() => selectedPage = 0);
+                                  }
+                                },
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 180),
+                                  switchInCurve: Curves.easeOut,
+                                  switchOutCurve: Curves.easeIn,
+                                  transitionBuilder: (child, animation) {
+                                    final offset = Tween<Offset>(
+                                      begin: Offset(
+                                        selectedPage == 0 ? -0.08 : 0.08,
+                                        0,
+                                      ),
+                                      end: Offset.zero,
+                                    ).animate(animation);
+                                    return FadeTransition(
+                                      opacity: animation,
+                                      child: SlideTransition(
+                                        position: offset,
+                                        child: child,
+                                      ),
+                                    );
+                                  },
+                                  child: selectedPage == 0
+                                      ? Column(
+                                          key: const ValueKey('info-page'),
+                                          children: [
+                                            _Description(pokemon: pokemon),
+                                            _Specs(pokemon: pokemon),
+                                            _Abilities(pokemon: pokemon),
+                                            _Evolutions(
+                                              pokemon: pokemon,
+                                              api: widget.api,
+                                              favorites: widget.favorites,
+                                            ),
+                                            const SizedBox(height: 24),
+                                          ],
+                                        )
+                                      : Column(
+                                          key: const ValueKey('stats-page'),
+                                          children: [
+                                            _Stats(pokemon: pokemon),
+                                            _TypesDetails(
+                                              effectiveness:
+                                                  getDefensiveEffectiveness(
+                                                pokemon.types,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 24),
+                                          ],
                                         ),
-                                        const SizedBox(height: 24),
-                                      ],
-                                    )
-                                  : Column(
-                                      children: [
-                                        _Stats(pokemon: pokemon),
-                                        _TypesDetails(
-                                          effectiveness:
-                                              getDefensiveEffectiveness(
-                                            pokemon.types,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 24),
-                                      ],
-                                    ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -332,6 +367,7 @@ class _PokemonHero extends StatelessWidget {
         Center(
           child: Hero(
             tag: 'pokemon-image-${pokemon.name}',
+            transitionOnUserGestures: true,
             child: Image.network(
               pokemon.toItem().imageUrl,
               height: 315,
@@ -648,7 +684,6 @@ class _Evolutions extends StatelessWidget {
             showArrows: true,
             api: api,
             favorites: favorites,
-            currentPokemonName: pokemon.name,
           ),
         if (mega.isNotEmpty)
           _EvolutionSection(
@@ -657,7 +692,6 @@ class _Evolutions extends StatelessWidget {
             showArrows: false,
             api: api,
             favorites: favorites,
-            currentPokemonName: pokemon.name,
           ),
       ],
     );
@@ -671,7 +705,6 @@ class _EvolutionSection extends StatelessWidget {
     required this.showArrows,
     required this.api,
     required this.favorites,
-    required this.currentPokemonName,
   });
 
   final String title;
@@ -679,7 +712,6 @@ class _EvolutionSection extends StatelessWidget {
   final bool showArrows;
   final PokeApiClient api;
   final FavoritesStore favorites;
-  final String currentPokemonName;
 
   @override
   Widget build(BuildContext context) {
@@ -713,7 +745,6 @@ class _EvolutionSection extends StatelessWidget {
             final item = species[index];
             return _EvolutionItem(
               species: item,
-              enableHero: item.name != currentPokemonName,
               onTap: () => Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
                   builder: (_) => PokemonDetailScreen(
@@ -739,12 +770,10 @@ class _EvolutionItem extends StatelessWidget {
   const _EvolutionItem({
     required this.species,
     required this.onTap,
-    required this.enableHero,
   });
 
   final PokemonSpecies species;
   final VoidCallback onTap;
-  final bool enableHero;
 
   @override
   Widget build(BuildContext context) {
@@ -754,13 +783,7 @@ class _EvolutionItem extends StatelessWidget {
         onTap: onTap,
         child: Column(
           children: [
-            if (enableHero)
-              Hero(
-                tag: 'pokemon-image-${species.name}',
-                child: Image.network(species.imageUrl, width: 115, height: 115),
-              )
-            else
-              Image.network(species.imageUrl, width: 115, height: 115),
+            Image.network(species.imageUrl, width: 115, height: 115),
             Text(
               formatPokemonName(species.name),
               maxLines: 2,
