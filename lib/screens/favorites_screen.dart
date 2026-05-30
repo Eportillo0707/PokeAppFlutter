@@ -48,31 +48,18 @@ class FavoritesScreen extends StatelessWidget {
                   if (items.isEmpty) {
                     return const Center(child: Text('Aun no hay favoritos'));
                   }
-                  return GridView.builder(
-                    padding: const EdgeInsets.all(8),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: .82,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                    ),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      final pokemon = items[index]..isFavorite = true;
-                      return PokemonCard(
-                        pokemon: pokemon,
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => PokemonDetailScreen(
-                              api: api,
-                              favorites: favorites,
-                              initialPokemon: pokemon,
-                            ),
-                          ),
+                  return PokemonGrid(
+                    items: items,
+                    favorites: favorites,
+                    onPokemonTap: (pokemon) => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => PokemonDetailScreen(
+                          api: api,
+                          favorites: favorites,
+                          initialPokemon: pokemon,
                         ),
-                      );
-                    },
+                      ),
+                    ),
                   );
                 },
               ),

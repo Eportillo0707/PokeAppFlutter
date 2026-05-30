@@ -9,10 +9,14 @@ String formatPokemonName(String value) {
 }
 
 String cleanFlavorText(String value) {
-  return value.replaceAll('\n', ' ').replaceAll('\f', ' ').replaceAll(
+  return value
+      .replaceAll('\n', ' ')
+      .replaceAll('\f', ' ')
+      .replaceAll(
         RegExp(r'\s+'),
         ' ',
-      ).trim();
+      )
+      .trim();
 }
 
 int idFromUrl(String url) {

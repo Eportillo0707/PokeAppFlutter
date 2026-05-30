@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../models/pokemon_models.dart';
 import '../services/favorites_store.dart';
 import '../services/pokeapi_client.dart';
-import '../utils/pokemon_formatters.dart';
 import '../widgets/pokemon_widgets.dart';
 import 'pokemon_detail_screen.dart';
 import 'search_screen.dart';
@@ -138,27 +137,12 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                 Expanded(
                   child: RefreshIndicator(
                     onRefresh: _loadFirstPage,
-                    child: GridView.builder(
+                    child: PokemonGrid(
                       controller: controller,
-                      padding: const EdgeInsets.all(8),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: .82,
-                        mainAxisSpacing: 8,
-                        crossAxisSpacing: 8,
-                      ),
-                      itemCount: items.length + (loadingMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index >= items.length) return const LoadingState();
-                        final pokemon = items[index]
-                          ..isFavorite =
-                              widget.favorites.isFavorite(items[index].id);
-                        return PokemonCard(
-                          pokemon: pokemon,
-                          onTap: () => _openDetail(pokemon),
-                        );
-                      },
+                      items: items,
+                      favorites: widget.favorites,
+                      loadingMore: loadingMore,
+                      onPokemonTap: _openDetail,
                     ),
                   ),
                 ),
@@ -174,7 +158,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: const Color(0xFF232B4C),
-      builder: (_) => _TypePicker(
+      builder: (_) => TypePickerSheet(
         onSelected: (type) {
           Navigator.pop(context);
           Navigator.of(context).push(
@@ -241,34 +225,6 @@ class _HeaderButtons extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TypePicker extends StatelessWidget {
-  const _TypePicker({required this.onSelected});
-
-  final ValueChanged<String> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: pokemonTypes
-              .map(
-                (type) => ActionChip(
-                  backgroundColor: pokemonTypeColor(type),
-                  label: Text(formatPokemonName(type)),
-                  onPressed: () => onSelected(type),
-                ),
-              )
-              .toList(),
         ),
       ),
     );

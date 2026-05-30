@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../models/pokemon_models.dart';
 import '../services/favorites_store.dart';
 import '../services/pokeapi_client.dart';
-import '../utils/pokemon_formatters.dart';
 import '../widgets/pokemon_widgets.dart';
 import 'pokemon_detail_screen.dart';
 import 'type_screen.dart';
@@ -118,25 +117,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   if (searched && results.isEmpty) {
                     return const Center(child: Text('Sin resultados'));
                   }
-                  return GridView.builder(
-                    padding: const EdgeInsets.all(8),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: .82,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                    ),
-                    itemCount: results.length,
-                    itemBuilder: (context, index) {
-                      final pokemon = results[index]
-                        ..isFavorite =
-                            widget.favorites.isFavorite(results[index].id);
-                      return PokemonCard(
-                        pokemon: pokemon,
-                        onTap: () => _openDetail(pokemon),
-                      );
-                    },
+                  return PokemonGrid(
+                    items: results,
+                    favorites: widget.favorites,
+                    onPokemonTap: _openDetail,
                   );
                 },
               ),
@@ -203,54 +187,16 @@ class _SearchPokemonBar extends StatelessWidget {
             onPressed: () => showModalBottomSheet<void>(
               context: context,
               backgroundColor: const Color(0xFF232B4C),
-              builder: (_) => _FilterContent(onTypeSelected: onTypeSelected),
+              builder: (_) => TypePickerSheet(
+                useImages: true,
+                onSelected: (type) {
+                  Navigator.pop(context);
+                  onTypeSelected(type);
+                },
+              ),
             ),
             icon: const Icon(Icons.tune, color: Colors.white, size: 18),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _FilterContent extends StatelessWidget {
-  const _FilterContent({required this.onTypeSelected});
-
-  final ValueChanged<String> onTypeSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 50),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Select a Type',
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
-            ),
-            const SizedBox(height: 15),
-            GridView.builder(
-              shrinkWrap: true,
-              itemCount: pokemonTypes.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-              ),
-              itemBuilder: (context, index) {
-                final type = pokemonTypes[index];
-                return IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    onTypeSelected(type);
-                  },
-                  icon: TypeBadgeImage(type: type, width: 78),
-                );
-              },
-            ),
-          ],
         ),
       ),
     );

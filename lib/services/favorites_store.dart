@@ -11,7 +11,8 @@ class FavoritesStore extends ChangeNotifier {
   bool _loaded = false;
 
   List<PokemonItem> get items {
-    final list = _favorites.values.toList()..sort((a, b) => a.id.compareTo(b.id));
+    final list = _favorites.values.toList()
+      ..sort((a, b) => a.id.compareTo(b.id));
     return list;
   }
 

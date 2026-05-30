@@ -75,33 +75,18 @@ class _TypeScreenState extends State<TypeScreen> {
                         );
                       }
                       final items = snapshot.data ?? [];
-                      return GridView.builder(
-                        padding: const EdgeInsets.all(8),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: .82,
-                          mainAxisSpacing: 8,
-                          crossAxisSpacing: 8,
-                        ),
-                        itemCount: items.length,
-                        itemBuilder: (context, index) {
-                          final pokemon = items[index]
-                            ..isFavorite =
-                                widget.favorites.isFavorite(items[index].id);
-                          return PokemonCard(
-                            pokemon: pokemon,
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => PokemonDetailScreen(
-                                  api: widget.api,
-                                  favorites: widget.favorites,
-                                  initialPokemon: pokemon,
-                                ),
-                              ),
+                      return PokemonGrid(
+                        items: items,
+                        favorites: widget.favorites,
+                        onPokemonTap: (pokemon) => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => PokemonDetailScreen(
+                              api: widget.api,
+                              favorites: widget.favorites,
+                              initialPokemon: pokemon,
                             ),
-                          );
-                        },
+                          ),
+                        ),
                       );
                     },
                   );

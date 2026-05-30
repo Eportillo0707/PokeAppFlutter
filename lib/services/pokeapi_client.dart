@@ -61,7 +61,8 @@ class PokeApiClient {
     Map<String, dynamic>? evolutionChain;
 
     try {
-      species = await _getJson('/pokemon-species/${pokemon['species']['name']}');
+      species =
+          await _getJson('/pokemon-species/${pokemon['species']['name']}');
     } catch (_) {
       species = null;
     }
@@ -127,9 +128,11 @@ class PokeApiClient {
       ..sort((a, b) => (a['slot'] as int).compareTo(b['slot'] as int));
     final description = _englishFlavor(species?['flavor_text_entries']);
     final mappedAbilities =
-        List<Map<String, dynamic>>.from(pokemon['abilities'] as List).map((slot) {
+        List<Map<String, dynamic>>.from(pokemon['abilities'] as List)
+            .map((slot) {
       final name = slot['ability']['name'] as String;
-      final ability = abilities.where((item) => item['name'] == name).firstOrNull;
+      final ability =
+          abilities.where((item) => item['name'] == name).firstOrNull;
       return PokemonAbility(
         name: name,
         flavorText: _englishFlavor(ability?['flavor_text_entries']),
@@ -181,7 +184,8 @@ class PokeApiClient {
           ? null
           : 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/$itemName.png',
     );
-    final children = List<Map<String, dynamic>>.from(link['evolves_to'] as List);
+    final children =
+        List<Map<String, dynamic>>.from(link['evolves_to'] as List);
     return [
       current,
       ...children.expand(
@@ -224,16 +228,21 @@ class PokeApiClient {
 
   String _englishFlavor(dynamic entries) {
     if (entries is! List) return '';
-    final match = entries.cast<Map<String, dynamic>>().where(
-      (entry) => entry['language']?['name'] == 'en',
-    ).firstOrNull;
+    final match = entries
+        .cast<Map<String, dynamic>>()
+        .where(
+          (entry) => entry['language']?['name'] == 'en',
+        )
+        .firstOrNull;
     return cleanFlavorText(match?['flavor_text'] as String? ?? '');
   }
 
   String? _formatEvolutionMethod(Map<String, dynamic>? detail) {
     if (detail == null) return null;
     if (detail['min_level'] != null) return 'Lvl ${detail['min_level']}';
-    if (detail['item'] != null) return formatPokemonName(detail['item']['name']);
+    if (detail['item'] != null) {
+      return formatPokemonName(detail['item']['name']);
+    }
     if (detail['min_happiness'] != null) return 'High friendship';
     if (detail['min_beauty'] != null) return 'Beauty ${detail['min_beauty']}';
     if (detail['min_affection'] != null) return 'High affection';
