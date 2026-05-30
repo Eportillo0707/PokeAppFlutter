@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../models/pokemon_models.dart';
-import '../services/favorites_store.dart';
-import '../services/pokeapi_client.dart';
-import '../widgets/pokemon_widgets.dart';
-import 'pokemon_detail_screen.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
+import 'package:pokeapp_flutter/data/local/favorites_store.dart';
+import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
+import 'package:pokeapp_flutter/ui/components/pokemon_widgets.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/pokemon_detail_screen.dart';
 
 class TypeScreen extends StatefulWidget {
   const TypeScreen({
@@ -14,7 +14,7 @@ class TypeScreen extends StatefulWidget {
     required this.type,
   });
 
-  final PokeApiClient api;
+  final PokemonRepository api;
   final FavoritesStore favorites;
   final String type;
 

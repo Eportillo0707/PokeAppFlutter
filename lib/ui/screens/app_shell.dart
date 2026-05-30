@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../services/favorites_store.dart';
-import '../services/pokeapi_client.dart';
-import 'favorites_screen.dart';
-import 'pokemon_list_screen.dart';
+import 'package:pokeapp_flutter/data/local/favorites_store.dart';
+import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
+import 'package:pokeapp_flutter/ui/screens/favorites_screen.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_list/pokemon_list_screen.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({
@@ -12,7 +12,7 @@ class AppShell extends StatefulWidget {
     required this.favorites,
   });
 
-  final PokeApiClient api;
+  final PokemonRepository api;
   final FavoritesStore favorites;
 
   @override

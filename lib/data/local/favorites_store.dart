@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/pokemon_models.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 
 class FavoritesStore extends ChangeNotifier {
   static const _storageKey = 'favorite_pokemon';

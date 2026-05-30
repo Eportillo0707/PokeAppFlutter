@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'screens/app_shell.dart';
-import 'services/favorites_store.dart';
-import 'services/pokeapi_client.dart';
-import 'theme.dart';
+import 'package:pokeapp_flutter/di/app_dependencies.dart';
+import 'package:pokeapp_flutter/ui/screens/app_shell.dart';
+import 'package:pokeapp_flutter/ui/theme/theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,15 +17,13 @@ class PokeApp extends StatefulWidget {
 }
 
 class _PokeAppState extends State<PokeApp> {
-  late final PokeApiClient api;
-  late final FavoritesStore favorites;
+  late final AppDependencies dependencies;
   bool showSplash = true;
 
   @override
   void initState() {
     super.initState();
-    api = PokeApiClient();
-    favorites = FavoritesStore();
+    dependencies = AppDependencies();
     Future<void>.delayed(const Duration(seconds: 1), () {
       if (mounted) setState(() => showSplash = false);
     });
@@ -40,7 +37,10 @@ class _PokeAppState extends State<PokeApp> {
       theme: buildPokeTheme(),
       home: showSplash
           ? const SplashScreen()
-          : AppShell(api: api, favorites: favorites),
+          : AppShell(
+              api: dependencies.pokemonRepository,
+              favorites: dependencies.favoritesStore,
+            ),
     );
   }
 }

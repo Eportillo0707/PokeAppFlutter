@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../models/pokemon_models.dart';
-import '../../utils/pokemon_formatters.dart';
-import '../pokemon_widgets.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
+import 'package:pokeapp_flutter/ui/components/pokemon_widgets.dart';
+import 'package:pokeapp_flutter/ui/utils/pokemon_formatters.dart';
 
 class DetailHeaderLoading extends StatelessWidget {
   const DetailHeaderLoading({

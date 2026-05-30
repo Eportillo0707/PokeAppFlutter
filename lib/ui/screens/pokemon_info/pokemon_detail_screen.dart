@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../models/pokemon_models.dart';
-import '../services/favorites_store.dart';
-import '../services/pokeapi_client.dart';
-import '../utils/type_effectiveness.dart';
-import '../widgets/detail/detail_about.dart';
-import '../widgets/detail/detail_card.dart';
-import '../widgets/detail/detail_evolutions.dart';
-import '../widgets/detail/detail_header.dart';
-import '../widgets/detail/detail_stats.dart';
-import '../widgets/detail/detail_tabs.dart';
-import '../widgets/pokemon_widgets.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
+import 'package:pokeapp_flutter/data/local/favorites_store.dart';
+import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
+import 'package:pokeapp_flutter/domain/usecases/type_effectiveness.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/composables/detail_about.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/composables/detail_card.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/composables/detail_evolutions.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/composables/detail_header.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/composables/detail_stats.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/composables/detail_tabs.dart';
+import 'package:pokeapp_flutter/ui/components/pokemon_widgets.dart';
 
 class PokemonDetailScreen extends StatefulWidget {
   const PokemonDetailScreen({
@@ -20,7 +20,7 @@ class PokemonDetailScreen extends StatefulWidget {
     required this.initialPokemon,
   });
 
-  final PokeApiClient api;
+  final PokemonRepository api;
   final FavoritesStore favorites;
   final PokemonItem initialPokemon;
 

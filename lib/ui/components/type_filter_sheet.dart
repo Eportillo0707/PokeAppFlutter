@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../utils/pokemon_formatters.dart';
+import 'package:pokeapp_flutter/ui/utils/pokemon_formatters.dart';
 import 'type_badge.dart';
 
 class TypePickerSheet extends StatelessWidget {

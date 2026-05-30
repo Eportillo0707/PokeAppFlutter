@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../utils/pokemon_formatters.dart';
+import 'package:pokeapp_flutter/ui/utils/pokemon_formatters.dart';
 
 class TypeBadgeImage extends StatelessWidget {
   const TypeBadgeImage({super.key, required this.type, this.width = 100});

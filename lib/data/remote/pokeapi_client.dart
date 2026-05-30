@@ -2,15 +2,17 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../models/pokemon_models.dart';
-import '../utils/pokemon_formatters.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
+import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
+import 'package:pokeapp_flutter/ui/utils/pokemon_formatters.dart';
 
-class PokeApiClient {
+class PokeApiClient implements PokemonRepository {
   PokeApiClient({http.Client? client}) : _client = client ?? http.Client();
 
   static const _baseUrl = 'https://pokeapi.co/api/v2';
   final http.Client _client;
 
+  @override
   Future<List<PokemonItem>> getPokemonList({
     int limit = 20,
     int offset = 0,
@@ -24,6 +26,7 @@ class PokeApiClient {
     return items;
   }
 
+  @override
   Future<List<PokemonItem>> searchPokemon(String query) async {
     final trimmed = query.trim().toLowerCase();
     if (trimmed.isEmpty) return [];
@@ -40,6 +43,7 @@ class PokeApiClient {
     }
   }
 
+  @override
   Future<List<PokemonItem>> getPokemonByType(String type) async {
     final data = await _getJson('/type/${type.toLowerCase()}');
     final pokemon = List<Map<String, dynamic>>.from(data['pokemon'] as List);
@@ -50,11 +54,13 @@ class PokeApiClient {
     return items;
   }
 
+  @override
   Future<PokemonItem> getPokemonItem(String name) async {
     final detail = await _getJson('/pokemon/${name.toLowerCase()}');
     return _mapPokemonItem(detail);
   }
 
+  @override
   Future<PokemonInfo> getPokemonInfo(String name) async {
     final pokemon = await _getJson('/pokemon/${name.toLowerCase()}');
     Map<String, dynamic>? species;

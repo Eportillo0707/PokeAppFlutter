@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../models/pokemon_models.dart';
-import '../../utils/pokemon_formatters.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
+import 'package:pokeapp_flutter/ui/utils/pokemon_formatters.dart';
 import 'detail_card.dart';
 
 class PokemonEvolutionsPanel extends StatelessWidget {

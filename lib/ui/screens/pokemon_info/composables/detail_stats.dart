@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../models/pokemon_models.dart';
-import '../../utils/type_effectiveness.dart';
-import '../pokemon_widgets.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
+import 'package:pokeapp_flutter/domain/usecases/type_effectiveness.dart';
+import 'package:pokeapp_flutter/ui/components/pokemon_widgets.dart';
 
 class PokemonStatsPanel extends StatelessWidget {
   const PokemonStatsPanel({super.key, required this.pokemon});

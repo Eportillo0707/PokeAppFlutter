@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../models/pokemon_models.dart';
-import '../../services/favorites_store.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
+import 'package:pokeapp_flutter/data/local/favorites_store.dart';
 import 'pokemon_card.dart';
 import 'state_widgets.dart';
 
