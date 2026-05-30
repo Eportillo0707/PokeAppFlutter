@@ -27,47 +27,74 @@ class PokemonCard extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.all(8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Stack(
             children: [
-              Hero(
-                tag: 'pokemon-image-${pokemon.name}',
-                transitionOnUserGestures: true,
-                child: Image.network(
-                  pokemon.imageUrl,
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => const SizedBox(height: 100),
-                ),
-              ),
-              const SizedBox(height: 6),
-              SizedBox(
-                width: double.infinity,
-                height: 24,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    formatPokemonName(pokemon.name),
-                    maxLines: 1,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                    ),
+              Positioned(
+                left: 2,
+                top: 0,
+                child: Text(
+                  '#${pokemon.id.toString().padLeft(3, '0')}',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: .62),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
-              Row(
+              if (pokemon.isFavorite)
+                const Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Icon(
+                    Icons.star,
+                    color: Color(0xFFFFD54F),
+                    size: 22,
+                  ),
+                ),
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: pokemon.types
-                    .map((type) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2),
-                          child: TypeBadgeImage(type: type, width: 72),
-                        ))
-                    .toList(),
+                children: [
+                  Hero(
+                    tag: 'pokemon-image-${pokemon.name}',
+                    transitionOnUserGestures: true,
+                    child: Image.network(
+                      pokemon.imageUrl,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => const SizedBox(height: 100),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 24,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        formatPokemonName(pokemon.name),
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: pokemon.types
+                        .map((type) => Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 2),
+                              child: TypeBadgeImage(type: type, width: 72),
+                            ))
+                        .toList(),
+                  ),
+                ],
               ),
             ],
           ),

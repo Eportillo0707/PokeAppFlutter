@@ -387,18 +387,30 @@ class _PokemonHero extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              formatPokemonName(pokemon.name),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 50,
-                fontWeight: FontWeight.w900,
+          child: Column(
+            children: [
+              Text(
+                '#${pokemon.id.toString().padLeft(3, '0')}',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: .68),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
-            ),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  formatPokemonName(pokemon.name),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 50,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -613,49 +625,53 @@ class _Abilities extends StatelessWidget {
   Widget build(BuildContext context) {
     return _Panel(
       title: 'Abilities',
-      child: Wrap(
-        spacing: 5,
-        runSpacing: 8,
-        children: pokemon.abilities
-            .map(
-              (ability) => TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: const Color(0xFF232B4C),
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: () => showModalBottomSheet<void>(
-                  context: context,
-                  backgroundColor: const Color(0xFF232B4C),
-                  builder: (_) => Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          formatPokemonName(ability.name),
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 35,
-                            fontWeight: FontWeight.w900,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Wrap(
+          alignment: WrapAlignment.start,
+          spacing: 5,
+          runSpacing: 8,
+          children: pokemon.abilities
+              .map(
+                (ability) => TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: const Color(0xFF232B4C),
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () => showModalBottomSheet<void>(
+                    context: context,
+                    backgroundColor: const Color(0xFF232B4C),
+                    builder: (_) => Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            formatPokemonName(ability.name),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 35,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          ability.flavorText,
-                          textAlign: TextAlign.justify,
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                      ],
+                          const SizedBox(height: 16),
+                          Text(
+                            ability.flavorText,
+                            textAlign: TextAlign.justify,
+                            style: const TextStyle(fontSize: 15),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
+                  child: Text(
+                    formatPokemonName(ability.name),
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
                 ),
-                child: Text(
-                  formatPokemonName(ability.name),
-                  style: const TextStyle(fontWeight: FontWeight.w800),
-                ),
-              ),
-            )
-            .toList(),
+              )
+              .toList(),
+        ),
       ),
     );
   }
@@ -923,26 +939,39 @@ class _TypeGroup extends StatelessWidget {
     if (types.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (title != null)
-            Text(
-              title!,
-              style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w900),
-            ),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: SizedBox(
+          width: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (title != null)
+                Text(
+                  title!,
+                  style: const TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              Wrap(
+                alignment: WrapAlignment.start,
+                spacing: 8,
+                runSpacing: 4,
+                children: types
+                    .map((type) => TypeBadgeImage(type: type, width: 100))
+                    .toList(),
+              ),
+            ],
           ),
-          Wrap(
-            spacing: 8,
-            runSpacing: 4,
-            children: types
-                .map((type) => TypeBadgeImage(type: type, width: 100))
-                .toList(),
-          ),
-        ],
+        ),
       ),
     );
   }
