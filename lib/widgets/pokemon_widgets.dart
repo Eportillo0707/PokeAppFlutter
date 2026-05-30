@@ -8,10 +8,12 @@ class PokemonCard extends StatelessWidget {
     super.key,
     required this.pokemon,
     required this.onTap,
+    this.enableHero = false,
   });
 
   final PokemonItem pokemon;
   final VoidCallback onTap;
+  final bool enableHero;
 
   @override
   Widget build(BuildContext context) {
@@ -30,17 +32,26 @@ class PokemonCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Hero(
-                tag: 'pokemon-image-${pokemon.name}',
-                transitionOnUserGestures: true,
-                child: Image.network(
+              if (enableHero)
+                Hero(
+                  tag: 'pokemon-image-${pokemon.name}',
+                  transitionOnUserGestures: true,
+                  child: Image.network(
+                    pokemon.imageUrl,
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => const SizedBox(height: 100),
+                  ),
+                )
+              else
+                Image.network(
                   pokemon.imageUrl,
                   width: 100,
                   height: 100,
                   fit: BoxFit.contain,
                   errorBuilder: (_, __, ___) => const SizedBox(height: 100),
                 ),
-              ),
               const SizedBox(height: 6),
               SizedBox(
                 width: double.infinity,

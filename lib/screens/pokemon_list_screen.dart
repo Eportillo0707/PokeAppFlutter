@@ -30,6 +30,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   bool loadingMore = false;
   bool hasError = false;
   int offset = 0;
+  String? selectedHeroName;
 
   @override
   void initState() {
@@ -80,21 +81,27 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
 
   void _onScroll() {
     if (mounted) setState(() {});
-    if (controller.position.pixels > controller.position.maxScrollExtent - 480) {
+    if (controller.position.pixels >
+        controller.position.maxScrollExtent - 480) {
       _loadMore();
     }
   }
 
   void _openDetail(PokemonItem pokemon) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => PokemonDetailScreen(
-          api: widget.api,
-          favorites: widget.favorites,
-          initialPokemon: pokemon,
+    setState(() => selectedHeroName = pokemon.name);
+    Future<void>.delayed(const Duration(milliseconds: 40), () async {
+      if (!mounted) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => PokemonDetailScreen(
+            api: widget.api,
+            favorites: widget.favorites,
+            initialPokemon: pokemon,
+          ),
         ),
-      ),
-    );
+      );
+      if (mounted) setState(() => selectedHeroName = null);
+    });
   }
 
   @override
@@ -155,6 +162,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                               widget.favorites.isFavorite(items[index].id);
                         return PokemonCard(
                           pokemon: pokemon,
+                          enableHero: selectedHeroName == pokemon.name,
                           onTap: () => _openDetail(pokemon),
                         );
                       },
