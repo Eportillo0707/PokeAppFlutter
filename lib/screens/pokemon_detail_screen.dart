@@ -25,6 +25,7 @@ class PokemonDetailScreen extends StatefulWidget {
 
 class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   late Future<PokemonInfo> future;
+  int selectedPage = 0;
 
   @override
   void initState() {
@@ -62,124 +63,112 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
             animation: widget.favorites,
             builder: (context, _) {
               pokemon.isFavorite = widget.favorites.isFavorite(pokemon.id);
-              return DefaultTabController(
-                length: 2,
-                child: SafeArea(
-                  bottom: false,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: NestedScrollView(
-                          headerSliverBuilder: (context, innerBoxIsScrolled) {
-                            return [
-                              SliverToBoxAdapter(
-                                child: Stack(
-                                  alignment: Alignment.topCenter,
-                                  children: [
-                                    _TopCircle(types: pokemon.types),
-                                    Align(
-                                      alignment: Alignment.topLeft,
-                                      child: IconButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        icon: const Icon(Icons.arrow_back),
-                                      ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.topRight,
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 8),
-                                        child: IconButton(
-                                          onPressed: () => _toggle(pokemon),
-                                          icon: Icon(
-                                            pokemon.isFavorite
-                                                ? Icons.star
-                                                : Icons.star_border,
-                                            size: 34,
-                                            color: pokemon.isFavorite
-                                                ? const Color(0xFFFFD54F)
-                                                : Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 52),
-                                      child: _PokemonHero(pokemon: pokemon),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SliverToBoxAdapter(
-                                child: Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 4),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: pokemon.types
-                                            .map(
-                                              (type) => Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                  horizontal: 8,
-                                                ),
-                                                child: TypeBadgeImage(
-                                                  type: type,
-                                                  width: 150,
-                                                ),
-                                              ),
-                                            )
-                                            .toList(),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 14),
-                                    const _InfoTabs(),
-                                  ],
-                                ),
-                              ),
-                            ];
-                          },
-                          body: _InfoPageCard(
-                            child: TabBarView(
+              return SafeArea(
+                bottom: false,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Stack(
+                              alignment: Alignment.topCenter,
                               children: [
-                                ListView(
-                                  padding: EdgeInsets.zero,
-                                  primary: false,
-                                  children: [
-                                    _Description(pokemon: pokemon),
-                                    _Specs(pokemon: pokemon),
-                                    _Abilities(pokemon: pokemon),
-                                    _Evolutions(
-                                      pokemon: pokemon,
-                                      api: widget.api,
-                                      favorites: widget.favorites,
-                                    ),
-                                    const SizedBox(height: 24),
-                                  ],
+                                _TopCircle(types: pokemon.types),
+                                Align(
+                                  alignment: Alignment.topLeft,
+                                  child: IconButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    icon: const Icon(Icons.arrow_back),
+                                  ),
                                 ),
-                                ListView(
-                                  padding: EdgeInsets.zero,
-                                  primary: false,
-                                  children: [
-                                    _Stats(pokemon: pokemon),
-                                    _TypesDetails(
-                                      effectiveness: getDefensiveEffectiveness(
-                                        pokemon.types,
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 8),
+                                    child: IconButton(
+                                      onPressed: () => _toggle(pokemon),
+                                      icon: Icon(
+                                        pokemon.isFavorite
+                                            ? Icons.star
+                                            : Icons.star_border,
+                                        size: 34,
+                                        color: pokemon.isFavorite
+                                            ? const Color(0xFFFFD54F)
+                                            : Colors.white,
                                       ),
                                     ),
-                                    const SizedBox(height: 24),
-                                  ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 52),
+                                  child: _PokemonHero(pokemon: pokemon),
                                 ),
                               ],
                             ),
-                          ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: pokemon.types
+                                    .map(
+                                      (type) => Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                        ),
+                                        child: TypeBadgeImage(
+                                          type: type,
+                                          width: 150,
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ),
+                            const SizedBox(height: 14),
+                            _InfoTabs(
+                              selectedPage: selectedPage,
+                              onInfoClick: () => setState(() {
+                                selectedPage = 0;
+                              }),
+                              onStatsClick: () => setState(() {
+                                selectedPage = 1;
+                              }),
+                            ),
+                            _InfoPageCard(
+                              child: selectedPage == 0
+                                  ? Column(
+                                      children: [
+                                        _Description(pokemon: pokemon),
+                                        _Specs(pokemon: pokemon),
+                                        _Abilities(pokemon: pokemon),
+                                        _Evolutions(
+                                          pokemon: pokemon,
+                                          api: widget.api,
+                                          favorites: widget.favorites,
+                                        ),
+                                        const SizedBox(height: 24),
+                                      ],
+                                    )
+                                  : Column(
+                                      children: [
+                                        _Stats(pokemon: pokemon),
+                                        _TypesDetails(
+                                          effectiveness:
+                                              getDefensiveEffectiveness(
+                                            pokemon.types,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 24),
+                                      ],
+                                    ),
+                            ),
+                          ],
                         ),
                       ),
-                      const _DetailBottomBar(),
-                    ],
-                  ),
+                    ),
+                    const _DetailBottomBar(),
+                  ],
                 ),
               );
             },
@@ -373,18 +362,73 @@ class _PokemonHero extends StatelessWidget {
 }
 
 class _InfoTabs extends StatelessWidget {
-  const _InfoTabs();
+  const _InfoTabs({
+    required this.selectedPage,
+    required this.onInfoClick,
+    required this.onStatsClick,
+  });
+
+  final int selectedPage;
+  final VoidCallback onInfoClick;
+  final VoidCallback onStatsClick;
 
   @override
   Widget build(BuildContext context) {
-    return const TabBar(
-      indicatorColor: Colors.white,
-      indicatorSize: TabBarIndicatorSize.label,
-      dividerColor: Colors.transparent,
-      tabs: [
-        Tab(icon: Icon(Icons.info, size: 40)),
-        Tab(icon: Icon(Icons.bar_chart, size: 40)),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 85),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _InfoTabButton(
+            icon: Icons.info,
+            selected: selectedPage == 0,
+            onTap: onInfoClick,
+          ),
+          _InfoTabButton(
+            icon: Icons.bar_chart,
+            selected: selectedPage == 1,
+            onTap: onStatsClick,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoTabButton extends StatelessWidget {
+  const _InfoTabButton({
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            size: 40,
+            color: selected ? Colors.white : Colors.grey,
+          ),
+          const SizedBox(height: 6),
+          Container(
+            width: 50,
+            height: 3,
+            decoration: BoxDecoration(
+              color: selected ? Colors.white : Colors.transparent,
+              borderRadius: BorderRadius.circular(50),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
