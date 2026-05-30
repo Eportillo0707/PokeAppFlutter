@@ -5,6 +5,8 @@ import 'package:pokeapp_flutter/data/local/favorites_store.dart';
 import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
 import 'package:pokeapp_flutter/ui/components/pokemon_widgets.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/pokemon_detail_screen.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_list/composables/header_buttons.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_list/composables/scroll_top_button.dart';
 import 'package:pokeapp_flutter/ui/screens/search_pokemon/search_screen.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_list/type_screen.dart';
 
@@ -102,15 +104,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF121422),
       floatingActionButton: controller.hasClients && controller.offset > 240
-          ? FloatingActionButton(
-              backgroundColor: const Color(0xFF232B4C),
-              onPressed: () => controller.animateTo(
-                0,
-                duration: const Duration(milliseconds: 280),
-                curve: Curves.easeOut,
-              ),
-              child: const Icon(Icons.arrow_upward),
-            )
+          ? ScrollTopButton(controller: controller)
           : null,
       body: SafeArea(
         bottom: false,
@@ -122,7 +116,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
             return Column(
               children: [
                 const SizedBox(height: 10),
-                _HeaderButtons(
+                HeaderButtons(
                   onSearch: () => Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => SearchScreen(
@@ -171,61 +165,6 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class _HeaderButtons extends StatelessWidget {
-  const _HeaderButtons({required this.onSearch, required this.onFilter});
-
-  final VoidCallback onSearch;
-  final VoidCallback onFilter;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: SizedBox(
-        width: 350,
-        height: 38,
-        child: Row(
-          children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: onSearch,
-                style: OutlinedButton.styleFrom(
-                  backgroundColor: const Color(0xFF232B4C),
-                  foregroundColor: Colors.white,
-                  side: const BorderSide(color: Colors.grey, width: .5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Text(
-                  'Search',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            SizedBox(
-              width: 44,
-              child: OutlinedButton(
-                onPressed: onFilter,
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  backgroundColor: const Color(0xFF232B4C),
-                  foregroundColor: Colors.white,
-                  side: const BorderSide(color: Colors.grey, width: .5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: const Icon(Icons.tune, size: 20),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
