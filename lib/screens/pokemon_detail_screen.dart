@@ -862,24 +862,62 @@ class _EvolutionItem extends StatelessWidget {
               ),
             ),
             if (species.evolutionMethod != null)
-              Container(
-                margin: const EdgeInsets.only(top: 4),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF232B4C),
-                  borderRadius: BorderRadius.circular(50),
+              _EvolutionMethodLabel(
+                method: species.evolutionMethod!,
+                itemImageUrl: species.evolutionItemImageUrl,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EvolutionMethodLabel extends StatelessWidget {
+  const _EvolutionMethodLabel({
+    required this.method,
+    required this.itemImageUrl,
+  });
+
+  final String method;
+  final String? itemImageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasItem = itemImageUrl != null && itemImageUrl!.isNotEmpty;
+    return SizedBox(
+      width: 155,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (hasItem)
+              Padding(
+                padding: const EdgeInsets.only(right: 2),
+                child: Image.network(
+                  itemImageUrl!,
+                  width: 30,
+                  height: 30,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                 ),
+              ),
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
                 child: Text(
-                  species.evolutionMethod!,
+                  method,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: .75),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
+            ),
           ],
         ),
       ),
