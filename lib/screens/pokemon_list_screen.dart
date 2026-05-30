@@ -112,56 +112,59 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
               child: const Icon(Icons.arrow_upward),
             )
           : null,
-      body: AnimatedBuilder(
-        animation: widget.favorites,
-        builder: (context, _) {
-          if (loading) return const LoadingState();
-          if (hasError) return ErrorState(onRetry: _loadFirstPage);
-          return Column(
-            children: [
-              const SizedBox(height: 10),
-              _HeaderButtons(
-                onSearch: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => SearchScreen(
-                      api: widget.api,
-                      favorites: widget.favorites,
+      body: SafeArea(
+        bottom: false,
+        child: AnimatedBuilder(
+          animation: widget.favorites,
+          builder: (context, _) {
+            if (loading) return const LoadingState();
+            if (hasError) return ErrorState(onRetry: _loadFirstPage);
+            return Column(
+              children: [
+                const SizedBox(height: 10),
+                _HeaderButtons(
+                  onSearch: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => SearchScreen(
+                        api: widget.api,
+                        favorites: widget.favorites,
+                      ),
+                    ),
+                  ),
+                  onFilter: _showTypePicker,
+                ),
+                const SizedBox(height: 10),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: _loadFirstPage,
+                    child: GridView.builder(
+                      controller: controller,
+                      padding: const EdgeInsets.all(8),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: .82,
+                        mainAxisSpacing: 8,
+                        crossAxisSpacing: 8,
+                      ),
+                      itemCount: items.length + (loadingMore ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index >= items.length) return const LoadingState();
+                        final pokemon = items[index]
+                          ..isFavorite =
+                              widget.favorites.isFavorite(items[index].id);
+                        return PokemonCard(
+                          pokemon: pokemon,
+                          onTap: () => _openDetail(pokemon),
+                        );
+                      },
                     ),
                   ),
                 ),
-                onFilter: _showTypePicker,
-              ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: _loadFirstPage,
-                  child: GridView.builder(
-                    controller: controller,
-                    padding: const EdgeInsets.all(8),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: .82,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                    ),
-                    itemCount: items.length + (loadingMore ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index >= items.length) return const LoadingState();
-                      final pokemon = items[index]
-                        ..isFavorite =
-                            widget.favorites.isFavorite(items[index].id);
-                      return PokemonCard(
-                        pokemon: pokemon,
-                        onTap: () => _openDetail(pokemon),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }

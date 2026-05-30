@@ -4,6 +4,7 @@ import '../models/pokemon_models.dart';
 import '../services/favorites_store.dart';
 import '../services/pokeapi_client.dart';
 import '../utils/pokemon_formatters.dart';
+import '../utils/type_effectiveness.dart';
 import '../widgets/pokemon_widgets.dart';
 
 class PokemonDetailScreen extends StatefulWidget {
@@ -33,7 +34,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   Future<void> _toggle(PokemonInfo pokemon) async {
     await widget.favorites.toggle(pokemon.toItem());
-    setState(() => pokemon.isFavorite = widget.favorites.isFavorite(pokemon.id));
+    setState(
+        () => pokemon.isFavorite = widget.favorites.isFavorite(pokemon.id));
   }
 
   @override
@@ -49,7 +51,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
           if (snapshot.hasError) {
             return ErrorState(
               onRetry: () => setState(
-                () => future = widget.api.getPokemonInfo(widget.initialPokemon.name),
+                () => future =
+                    widget.api.getPokemonInfo(widget.initialPokemon.name),
               ),
             );
           }
@@ -61,22 +64,23 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
               pokemon.isFavorite = widget.favorites.isFavorite(pokemon.id);
               return DefaultTabController(
                 length: 2,
-                child: CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Stack(
-                        children: [
-                          _TopCircle(types: pokemon.types),
-                          SafeArea(
-                            bottom: false,
-                            child: IconButton(
-                              onPressed: () => Navigator.pop(context),
-                              icon: const Icon(Icons.arrow_back),
+                child: SafeArea(
+                  bottom: false,
+                  child: CustomScrollView(
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: Stack(
+                          alignment: Alignment.topCenter,
+                          children: [
+                            _TopCircle(types: pokemon.types),
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: IconButton(
+                                onPressed: () => Navigator.pop(context),
+                                icon: const Icon(Icons.arrow_back),
+                              ),
                             ),
-                          ),
-                          SafeArea(
-                            bottom: false,
-                            child: Align(
+                            Align(
                               alignment: Alignment.topRight,
                               child: Padding(
                                 padding: const EdgeInsets.only(right: 8),
@@ -94,72 +98,107 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                                 ),
                               ),
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 52),
-                            child: _PokemonHero(pokemon: pokemon),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: pokemon.types
-                                  .map(
-                                    (type) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                      ),
-                                      child: TypeBadgeImage(
-                                        type: type,
-                                        width: 150,
-                                      ),
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          const _InfoTabs(),
-                        ],
-                      ),
-                    ),
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: SizedBox(
-                        height: 680,
-                        child: TabBarView(
-                          children: [
-                            SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  _Description(pokemon: pokemon),
-                                  _Specs(pokemon: pokemon),
-                                  _Abilities(pokemon: pokemon),
-                                  _Evolutions(pokemon: pokemon),
-                                  const SizedBox(height: 24),
-                                ],
-                              ),
-                            ),
-                            SingleChildScrollView(
-                              child: _Stats(pokemon: pokemon),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 52),
+                              child: _PokemonHero(pokemon: pokemon),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
+                      SliverToBoxAdapter(
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: pokemon.types
+                                    .map(
+                                      (type) => Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                        ),
+                                        child: TypeBadgeImage(
+                                          type: type,
+                                          width: 150,
+                                        ),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ),
+                            const SizedBox(height: 14),
+                            const _InfoTabs(),
+                          ],
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: SizedBox(
+                          height: 760,
+                          child: _InfoPageCard(
+                            child: TabBarView(
+                              children: [
+                                SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      _Description(pokemon: pokemon),
+                                      _Specs(pokemon: pokemon),
+                                      _Abilities(pokemon: pokemon),
+                                      _Evolutions(
+                                        pokemon: pokemon,
+                                        api: widget.api,
+                                        favorites: widget.favorites,
+                                      ),
+                                      const SizedBox(height: 24),
+                                    ],
+                                  ),
+                                ),
+                                SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      _Stats(pokemon: pokemon),
+                                      _TypesDetails(
+                                        effectiveness:
+                                            getDefensiveEffectiveness(
+                                          pokemon.types,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
           );
         },
       ),
+    );
+  }
+}
+
+class _InfoPageCard extends StatelessWidget {
+  const _InfoPageCard({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: Colors.white.withValues(alpha: .12)),
+      ),
+      color: const Color(0xFF202339),
+      elevation: 1,
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: child,
     );
   }
 }
@@ -238,11 +277,16 @@ class _PokemonHero extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.network(
-          pokemon.toItem().imageUrl,
-          height: 315,
-          width: 315,
-          fit: BoxFit.contain,
+        Center(
+          child: Hero(
+            tag: 'pokemon-image-${pokemon.name}',
+            child: Image.network(
+              pokemon.toItem().imageUrl,
+              height: 315,
+              width: 315,
+              fit: BoxFit.contain,
+            ),
+          ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -383,14 +427,21 @@ class _Stats extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 4),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: LinearProgressIndicator(
-                    value: value,
-                    minHeight: 10,
-                    backgroundColor: Colors.grey.withValues(alpha: .3),
-                    color: Colors.white,
-                  ),
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: value),
+                  duration: const Duration(milliseconds: 1000),
+                  curve: Curves.linear,
+                  builder: (context, animatedValue, _) {
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: LinearProgressIndicator(
+                        value: animatedValue,
+                        minHeight: 10,
+                        backgroundColor: Colors.grey.withValues(alpha: .3),
+                        color: Colors.white,
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -459,54 +510,251 @@ class _Abilities extends StatelessWidget {
 }
 
 class _Evolutions extends StatelessWidget {
-  const _Evolutions({required this.pokemon});
+  const _Evolutions({
+    required this.pokemon,
+    required this.api,
+    required this.favorites,
+  });
 
   final PokemonInfo pokemon;
+  final PokeApiClient api;
+  final FavoritesStore favorites;
 
   @override
   Widget build(BuildContext context) {
-    final species = pokemon.evolutionChain;
+    final normal = pokemon.evolutionChain
+        .where((item) => !item.name.toLowerCase().contains('-mega'))
+        .toList();
+    final mega = pokemon.megaEvolutions.isNotEmpty
+        ? pokemon.megaEvolutions
+        : pokemon.evolutionChain
+            .where((item) => item.name.toLowerCase().contains('-mega'))
+            .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (normal.isNotEmpty)
+          _EvolutionSection(
+            title: 'Evolution Chain',
+            species: normal,
+            showArrows: true,
+            api: api,
+            favorites: favorites,
+            currentPokemonName: pokemon.name,
+          ),
+        if (mega.isNotEmpty)
+          _EvolutionSection(
+            title: 'Mega Evolutions',
+            species: mega,
+            showArrows: false,
+            api: api,
+            favorites: favorites,
+            currentPokemonName: pokemon.name,
+          ),
+      ],
+    );
+  }
+}
+
+class _EvolutionSection extends StatelessWidget {
+  const _EvolutionSection({
+    required this.title,
+    required this.species,
+    required this.showArrows,
+    required this.api,
+    required this.favorites,
+    required this.currentPokemonName,
+  });
+
+  final String title;
+  final List<PokemonSpecies> species;
+  final bool showArrows;
+  final PokeApiClient api;
+  final FavoritesStore favorites;
+  final String currentPokemonName;
+
+  @override
+  Widget build(BuildContext context) {
     return _Panel(
-      title: 'Evolutions',
-      child: species.isEmpty
-          ? const Text('Sin evoluciones registradas.')
-          : SizedBox(
-              height: 168,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: species.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 10),
-                itemBuilder: (context, index) {
-                  final item = species[index];
-                  return SizedBox(
-                    width: 116,
-                    child: Column(
-                      children: [
-                        Image.network(item.imageUrl, height: 88),
-                        Text(
-                          formatPokemonName(item.name),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontWeight: FontWeight.w800),
-                        ),
-                        if (item.evolutionMethod != null)
-                          Text(
-                            item.evolutionMethod!,
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: Colors.white.withValues(alpha: .7),
-                              fontSize: 12,
-                            ),
-                          ),
-                      ],
-                    ),
-                  );
-                },
+      title: title,
+      child: SizedBox(
+        height: 190,
+        child: ListView.separated(
+          padding: const EdgeInsets.only(right: 32),
+          scrollDirection: Axis.horizontal,
+          itemCount: species.length,
+          separatorBuilder: (context, index) {
+            final current = species[index + 1];
+            final previous = species[index];
+            final shouldShowArrow =
+                showArrows && current.evolvesFromSpeciesId == previous.id;
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: Text(
+                  shouldShowArrow ? '➜' : '',
+                  style: const TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
               ),
+            );
+          },
+          itemBuilder: (context, index) {
+            final item = species[index];
+            return _EvolutionItem(
+              species: item,
+              enableHero: item.name != currentPokemonName,
+              onTap: () => Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (_) => PokemonDetailScreen(
+                    api: api,
+                    favorites: favorites,
+                    initialPokemon: PokemonItem(
+                      id: item.id,
+                      name: item.name,
+                      types: const [],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _EvolutionItem extends StatelessWidget {
+  const _EvolutionItem({
+    required this.species,
+    required this.onTap,
+    required this.enableHero,
+  });
+
+  final PokemonSpecies species;
+  final VoidCallback onTap;
+  final bool enableHero;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 155,
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          children: [
+            if (enableHero)
+              Hero(
+                tag: 'pokemon-image-${species.name}',
+                child: Image.network(species.imageUrl, width: 115, height: 115),
+              )
+            else
+              Image.network(species.imageUrl, width: 115, height: 115),
+            Text(
+              formatPokemonName(species.name),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
             ),
+            if (species.evolutionMethod != null)
+              Container(
+                margin: const EdgeInsets.only(top: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF232B4C),
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Text(
+                  species.evolutionMethod!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TypesDetails extends StatelessWidget {
+  const _TypesDetails({required this.effectiveness});
+
+  final TypeEffectiveness effectiveness;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _TypeGroup(
+            title: 'Resistances',
+            label: '1/2x From:',
+            types: effectiveness.resistantTo),
+        _TypeGroup(
+            title: null,
+            label: '1/4x From:',
+            types: effectiveness.veryResistantTo),
+        _TypeGroup(
+            title: null, label: 'Immunities:', types: effectiveness.immuneTo),
+        _TypeGroup(
+            title: 'Weaknesses',
+            label: '4x From:',
+            types: effectiveness.veryWeakTo),
+        _TypeGroup(title: null, label: '2x From:', types: effectiveness.weakTo),
+        const SizedBox(height: 10),
+      ],
+    );
+  }
+}
+
+class _TypeGroup extends StatelessWidget {
+  const _TypeGroup({
+    required this.title,
+    required this.label,
+    required this.types,
+  });
+
+  final String? title;
+  final String label;
+  final List<String> types;
+
+  @override
+  Widget build(BuildContext context) {
+    if (types.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (title != null)
+            Text(
+              title!,
+              style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w900),
+            ),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+          ),
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: types
+                .map((type) => TypeBadgeImage(type: type, width: 100))
+                .toList(),
+          ),
+        ],
+      ),
     );
   }
 }
