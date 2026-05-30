@@ -23,22 +23,15 @@ class FavoritesScreen extends StatelessWidget {
         bottom: false,
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 60,
               child: Stack(
                 children: [
                   Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    ),
-                  ),
-                  const Align(
                     child: Text(
                       'Favorites',
                       style: TextStyle(
-                        color: Colors.lightBlueAccent,
+                        color: Colors.white,
                         fontSize: 28,
                         fontWeight: FontWeight.w900,
                       ),

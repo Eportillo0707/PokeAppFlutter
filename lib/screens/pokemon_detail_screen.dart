@@ -236,7 +236,6 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                           ),
                         ),
                       ),
-                      const _DetailBottomBar(),
                     ],
                   ),
                 );
@@ -244,62 +243,6 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
             );
           },
         ),
-      ),
-    );
-  }
-}
-
-class _DetailBottomBar extends StatelessWidget {
-  const _DetailBottomBar();
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Container(
-        height: 60,
-        color: const Color(0xFF232B4C),
-        child: const Row(
-          children: [
-            _DetailBottomTab(title: 'Pokemon', selected: true),
-            _DetailBottomTab(title: 'Favorites', selected: false),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DetailBottomTab extends StatelessWidget {
-  const _DetailBottomTab({required this.title, required this.selected});
-
-  final String title;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              color: selected ? Colors.white : Colors.grey,
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Container(
-            width: 35,
-            height: 7,
-            decoration: BoxDecoration(
-              color: selected ? const Color(0xFFE8D8FF) : Colors.transparent,
-              borderRadius: BorderRadius.circular(50),
-            ),
-          ),
-        ],
       ),
     );
   }

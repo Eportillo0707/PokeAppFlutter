@@ -25,6 +25,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final controller = TextEditingController();
   final focusNode = FocusNode();
+  int searchGeneration = 0;
   List<PokemonItem> results = [];
   bool loading = false;
   bool searched = false;
@@ -32,6 +33,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
+    controller.addListener(_onQueryChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) focusNode.requestFocus();
     });
@@ -39,23 +41,45 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void dispose() {
+    controller.removeListener(_onQueryChanged);
     controller.dispose();
     focusNode.dispose();
     super.dispose();
   }
 
+  void _onQueryChanged() {
+    final query = controller.text.trim();
+    final generation = ++searchGeneration;
+    if (query.isEmpty) {
+      setState(() {
+        loading = false;
+        searched = false;
+        results = [];
+      });
+      return;
+    }
+    Future<void>.delayed(const Duration(milliseconds: 250), () {
+      if (!mounted || generation != searchGeneration) return;
+      _search();
+    });
+  }
+
   Future<void> _search() async {
     final query = controller.text.trim();
     if (query.isEmpty) return;
+    final generation = searchGeneration;
     setState(() {
       loading = true;
       searched = true;
     });
     try {
       final next = await widget.api.searchPokemon(query);
+      if (!mounted || generation != searchGeneration) return;
       setState(() => results = next);
     } finally {
-      if (mounted) setState(() => loading = false);
+      if (mounted && generation == searchGeneration) {
+        setState(() => loading = false);
+      }
     }
   }
 
@@ -83,7 +107,6 @@ class _SearchScreenState extends State<SearchScreen> {
             _SearchPokemonBar(
               controller: controller,
               focusNode: focusNode,
-              onSubmitted: _search,
               onTypeSelected: _openType,
             ),
             const SizedBox(height: 10),
@@ -141,13 +164,11 @@ class _SearchPokemonBar extends StatelessWidget {
   const _SearchPokemonBar({
     required this.controller,
     required this.focusNode,
-    required this.onSubmitted,
     required this.onTypeSelected,
   });
 
   final TextEditingController controller;
   final FocusNode focusNode;
-  final VoidCallback onSubmitted;
   final ValueChanged<String> onTypeSelected;
 
   @override
@@ -158,7 +179,7 @@ class _SearchPokemonBar extends StatelessWidget {
       child: TextField(
         controller: controller,
         focusNode: focusNode,
-        onSubmitted: (_) => onSubmitted(),
+        onSubmitted: (_) {},
         style: const TextStyle(color: Colors.white, fontSize: 14),
         cursorColor: Colors.white,
         textInputAction: TextInputAction.search,
@@ -176,7 +197,7 @@ class _SearchPokemonBar extends StatelessWidget {
             borderSide: const BorderSide(color: Colors.grey, width: .5),
           ),
           hintText: 'Search',
-          hintStyle: const TextStyle(color: Colors.lightBlueAccent),
+          hintStyle: const TextStyle(color: Colors.white),
           prefixIcon: const Icon(Icons.search, color: Colors.white, size: 18),
           suffixIcon: IconButton(
             onPressed: () => showModalBottomSheet<void>(
