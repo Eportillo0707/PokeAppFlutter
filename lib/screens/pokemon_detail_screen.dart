@@ -297,13 +297,40 @@ class _HeaderLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 24),
-        Image.network(initialPokemon.imageUrl, height: 220),
-        const SizedBox(height: 24),
-        const LoadingState(),
-      ],
+    return SafeArea(
+      bottom: false,
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          _TopCircle(types: initialPokemon.types),
+          Align(
+            alignment: Alignment.topLeft,
+            child: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 52),
+            child: Column(
+              children: [
+                Hero(
+                  tag: 'pokemon-image-${initialPokemon.name}',
+                  transitionOnUserGestures: true,
+                  child: Image.network(
+                    initialPokemon.imageUrl,
+                    height: 315,
+                    width: 315,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const LoadingState(),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
