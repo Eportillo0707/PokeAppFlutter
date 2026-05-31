@@ -40,7 +40,7 @@ class _ChipTypePicker extends StatelessWidget {
               .map(
                 (type) => ActionChip(
                   backgroundColor: pokemonTypeColor(type),
-                  label: Text(formatPokemonName(type)),
+                  label: Text(context.l10n.pokemonType(type)),
                   onPressed: () => onSelected(type),
                 ),
               )

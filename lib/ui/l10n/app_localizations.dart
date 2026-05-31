@@ -67,6 +67,54 @@ class AppLocalizations {
       _ => normalized.toUpperCase(),
     };
   }
+
+  String pokemonType(String type) {
+    final normalized = type.toLowerCase();
+    if (!isSpanish) return _englishTypeNames[normalized] ?? normalized;
+    return _spanishTypeNames[normalized] ?? normalized;
+  }
+
+  static const _englishTypeNames = {
+    'normal': 'Normal',
+    'fire': 'Fire',
+    'water': 'Water',
+    'electric': 'Electric',
+    'grass': 'Grass',
+    'ice': 'Ice',
+    'fighting': 'Fighting',
+    'poison': 'Poison',
+    'ground': 'Ground',
+    'flying': 'Flying',
+    'psychic': 'Psychic',
+    'bug': 'Bug',
+    'rock': 'Rock',
+    'ghost': 'Ghost',
+    'dragon': 'Dragon',
+    'dark': 'Dark',
+    'steel': 'Steel',
+    'fairy': 'Fairy',
+  };
+
+  static const _spanishTypeNames = {
+    'normal': 'Normal',
+    'fire': 'Fuego',
+    'water': 'Agua',
+    'electric': 'Electrico',
+    'grass': 'Planta',
+    'ice': 'Hielo',
+    'fighting': 'Lucha',
+    'poison': 'Veneno',
+    'ground': 'Tierra',
+    'flying': 'Volador',
+    'psychic': 'Psiquico',
+    'bug': 'Bicho',
+    'rock': 'Roca',
+    'ghost': 'Fantasma',
+    'dragon': 'Dragon',
+    'dark': 'Siniestro',
+    'steel': 'Acero',
+    'fairy': 'Hada',
+  };
 }
 
 extension AppLocalizationsX on BuildContext {
