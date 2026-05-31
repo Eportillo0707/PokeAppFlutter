@@ -9,8 +9,10 @@ abstract class PokemonRepository {
   Future<List<PokemonItem>> getPokemonByType(String type);
 
   Future<List<PokemonItem>> getPokemonByGeneration(
-    PokemonGeneration generation,
-  );
+    PokemonGeneration generation, {
+    int limit = 20,
+    int offset = 0,
+  });
 
   Future<PokemonItem> getPokemonItem(String name);
 

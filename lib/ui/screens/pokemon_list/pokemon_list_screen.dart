@@ -27,11 +27,15 @@ class PokemonListScreen extends StatefulWidget {
 }
 
 class _PokemonListScreenState extends State<PokemonListScreen> {
+  static const _pageSize = 20;
+
   final controller = ScrollController();
+  final showScrollTop = ValueNotifier(false);
   final items = <PokemonItem>[];
   bool loading = true;
   bool loadingMore = false;
   bool hasError = false;
+  bool hasMore = true;
   PokemonGeneration? selectedGeneration;
   int offset = 0;
 
@@ -45,6 +49,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   @override
   void dispose() {
     controller.dispose();
+    showScrollTop.dispose();
     super.dispose();
   }
 
@@ -52,16 +57,22 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
     setState(() {
       loading = true;
       hasError = false;
+      hasMore = true;
       offset = 0;
       items.clear();
     });
     try {
       final page = selectedGeneration == null
-          ? await widget.api.getPokemonList(offset: offset)
-          : await widget.api.getPokemonByGeneration(selectedGeneration!);
+          ? await widget.api.getPokemonList(limit: _pageSize, offset: offset)
+          : await widget.api.getPokemonByGeneration(
+              selectedGeneration!,
+              limit: _pageSize,
+              offset: offset,
+            );
       setState(() {
         items.addAll(page);
-        if (selectedGeneration == null) offset += page.length;
+        offset += page.length;
+        hasMore = page.length == _pageSize;
       });
     } catch (_) {
       setState(() => hasError = true);
@@ -71,13 +82,20 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   }
 
   Future<void> _loadMore() async {
-    if (loadingMore || loading || selectedGeneration != null) return;
+    if (loadingMore || loading || !hasMore) return;
     setState(() => loadingMore = true);
     try {
-      final page = await widget.api.getPokemonList(offset: offset);
+      final page = selectedGeneration == null
+          ? await widget.api.getPokemonList(limit: _pageSize, offset: offset)
+          : await widget.api.getPokemonByGeneration(
+              selectedGeneration!,
+              limit: _pageSize,
+              offset: offset,
+            );
       setState(() {
         items.addAll(page);
         offset += page.length;
+        hasMore = page.length == _pageSize;
       });
     } finally {
       if (mounted) setState(() => loadingMore = false);
@@ -85,8 +103,11 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   }
 
   void _onScroll() {
-    if (mounted) setState(() {});
-    if (selectedGeneration != null) return;
+    final shouldShowScrollTop =
+        controller.hasClients && controller.position.pixels > 240;
+    if (showScrollTop.value != shouldShowScrollTop) {
+      showScrollTop.value = shouldShowScrollTop;
+    }
     if (controller.position.pixels >
         controller.position.maxScrollExtent - 480) {
       _loadMore();
@@ -109,9 +130,12 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF121422),
-      floatingActionButton: controller.hasClients && controller.offset > 240
-          ? ScrollTopButton(controller: controller)
-          : null,
+      floatingActionButton: ValueListenableBuilder<bool>(
+        valueListenable: showScrollTop,
+        builder: (context, visible, child) =>
+            visible ? child! : const SizedBox(),
+        child: ScrollTopButton(controller: controller),
+      ),
       body: SafeArea(
         bottom: false,
         child: AnimatedBuilder(
@@ -189,7 +213,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
           onSelected: (generation) {
             Navigator.pop(context);
             setState(() => selectedGeneration = generation);
-            controller.jumpTo(0);
+            if (controller.hasClients) controller.jumpTo(0);
             _loadFirstPage();
           },
         ),

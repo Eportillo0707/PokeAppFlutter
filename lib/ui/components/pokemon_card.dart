@@ -28,21 +28,23 @@ class PokemonCard extends StatelessWidget {
         ),
         child: Padding(
           padding: const EdgeInsets.all(8),
-          child: Stack(
-            children: [
-              _PokedexNumber(id: pokemon.id),
-              if (pokemon.isFavorite) const _FavoriteMark(),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _PokemonImage(pokemon: pokemon),
-                  const SizedBox(height: 6),
-                  _PokemonName(name: pokemon.name),
-                  const SizedBox(height: 10),
-                  _PokemonTypeRow(types: pokemon.types),
-                ],
-              ),
-            ],
+          child: RepaintBoundary(
+            child: Stack(
+              children: [
+                _PokedexNumber(id: pokemon.id),
+                if (pokemon.isFavorite) const _FavoriteMark(),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _PokemonImage(pokemon: pokemon),
+                    const SizedBox(height: 6),
+                    _PokemonName(name: pokemon.name),
+                    const SizedBox(height: 10),
+                    _PokemonTypeRow(types: pokemon.types),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -104,6 +106,9 @@ class _PokemonImage extends StatelessWidget {
         width: 100,
         height: 100,
         fit: BoxFit.contain,
+        cacheWidth: 180,
+        cacheHeight: 180,
+        filterQuality: FilterQuality.medium,
         errorBuilder: (_, __, ___) => const SizedBox(height: 100),
       ),
     );

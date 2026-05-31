@@ -61,11 +61,16 @@ class PokemonRepositoryImpl implements PokemonRepository {
 
   @override
   Future<List<PokemonItem>> getPokemonByGeneration(
-    PokemonGeneration generation,
-  ) async {
+    PokemonGeneration generation, {
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    final total = generation.endId - generation.startId + 1;
+    if (offset >= total) return [];
+    final pageSize = limit.clamp(0, total - offset).toInt();
     final ids = List<int>.generate(
-      generation.endId - generation.startId + 1,
-      (index) => generation.startId + index,
+      pageSize,
+      (index) => generation.startId + offset + index,
     );
     final items = await Future.wait(
       ids.map((id) => getPokemonItem('$id')),
