@@ -25,25 +25,39 @@ class PokemonGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
+    return CustomScrollView(
       controller: controller,
-      padding: padding,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: .82,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-      ),
-      itemCount: items.length + (loadingMore ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index >= items.length) return const LoadingState();
-        final pokemon = items[index]
-          ..isFavorite = favorites.isFavorite(items[index].id);
-        return PokemonCard(
-          pokemon: pokemon,
-          onTap: () => onPokemonTap(pokemon),
-        );
-      },
+      slivers: [
+        SliverPadding(
+          padding: padding,
+          sliver: SliverGrid(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: .82,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final pokemon = items[index]
+                  ..isFavorite = favorites.isFavorite(items[index].id);
+                return PokemonCard(
+                  pokemon: pokemon,
+                  onTap: () => onPokemonTap(pokemon),
+                );
+              },
+              childCount: items.length,
+            ),
+          ),
+        ),
+        if (loadingMore)
+          const SliverToBoxAdapter(
+            child: SizedBox(
+              height: 110,
+              child: Center(child: LoadingState()),
+            ),
+          ),
+      ],
     );
   }
 }

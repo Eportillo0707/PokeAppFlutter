@@ -72,17 +72,15 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
     if (mounted) Navigator.pop(context);
   }
 
-  void _openEvolution(PokemonSpecies species) {
+  Future<void> _openEvolution(PokemonSpecies species) async {
+    final pokemon = await widget.api.getPokemonItem(species.name);
+    if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (_) => PokemonDetailScreen(
           api: widget.api,
           favorites: widget.favorites,
-          initialPokemon: PokemonItem(
-            id: species.id,
-            name: species.name,
-            types: const [],
-          ),
+          initialPokemon: pokemon,
         ),
       ),
     );
