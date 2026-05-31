@@ -180,7 +180,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   void _showGenerationPicker() {
     showModalBottomSheet<void>(
       context: context,
-      backgroundColor: const Color(0xFF2B0847),
+      backgroundColor: const Color(0xFF121422),
       isScrollControlled: true,
       builder: (_) => FractionallySizedBox(
         heightFactor: .72,

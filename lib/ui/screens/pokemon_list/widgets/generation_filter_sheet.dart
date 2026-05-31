@@ -13,62 +13,70 @@ class GenerationFilterSheet extends StatelessWidget {
   final PokemonGeneration? selectedGeneration;
   final ValueChanged<PokemonGeneration?> onSelected;
 
+  static const _background = Color(0xFF121422);
+  static const _surface = Color(0xFF232B4C);
+  static const _selectedSurface = Color(0xFF30385F);
+  static const _accent = Color(0xFFE8D8FF);
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 42,
-              height: 4,
-              decoration: BoxDecoration(
-                color: const Color(0xFFE8D8FF),
-                borderRadius: BorderRadius.circular(50),
-              ),
-            ),
-            const SizedBox(height: 18),
-            Text(
-              context.l10n.selectGeneration,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Flexible(
-              child: GridView.builder(
-                shrinkWrap: true,
-                itemCount: pokemonGenerations.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 1.85,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
+    return DecoratedBox(
+      decoration: const BoxDecoration(color: _background),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 42,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: _accent,
+                  borderRadius: BorderRadius.circular(50),
                 ),
-                itemBuilder: (context, index) {
-                  final generation = pokemonGenerations[index];
-                  return _GenerationCard(
-                    generation: generation,
-                    selected: selectedGeneration?.id == generation.id,
-                    onTap: () => onSelected(generation),
-                  );
-                },
               ),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: _AllGenerationsButton(
-                selected: selectedGeneration == null,
-                onTap: () => onSelected(null),
+              const SizedBox(height: 18),
+              Text(
+                context.l10n.selectGeneration,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Flexible(
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  itemCount: pokemonGenerations.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1.85,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                  ),
+                  itemBuilder: (context, index) {
+                    final generation = pokemonGenerations[index];
+                    return _GenerationCard(
+                      generation: generation,
+                      selected: selectedGeneration?.id == generation.id,
+                      onTap: () => onSelected(generation),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 54,
+                child: _AllGenerationsButton(
+                  selected: selectedGeneration == null,
+                  onTap: () => onSelected(null),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -95,10 +103,12 @@ class _GenerationCard extends StatelessWidget {
         duration: const Duration(milliseconds: 160),
         padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF30385F) : const Color(0xFF51336D),
+          color: selected
+              ? GenerationFilterSheet._selectedSurface
+              : GenerationFilterSheet._surface,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: selected ? const Color(0xFFE8D8FF) : Colors.white12,
+            color: selected ? GenerationFilterSheet._accent : Colors.white12,
             width: selected ? 1.5 : 1,
           ),
           boxShadow: [
@@ -155,10 +165,12 @@ class _AllGenerationsButton extends StatelessWidget {
       onTap: onTap,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF30385F) : const Color(0xFF51336D),
+          color: selected
+              ? GenerationFilterSheet._selectedSurface
+              : GenerationFilterSheet._surface,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: selected ? const Color(0xFFE8D8FF) : Colors.white12,
+            color: selected ? GenerationFilterSheet._accent : Colors.white12,
           ),
         ),
         child: Center(

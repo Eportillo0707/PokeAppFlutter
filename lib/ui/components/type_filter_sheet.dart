@@ -16,76 +16,65 @@ class TypePickerSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (useImages) {
-      return _ImageTypePicker(onSelected: onSelected);
-    }
-    return _ChipTypePicker(onSelected: onSelected);
+    return _TypeBadgePicker(onSelected: onSelected);
   }
 }
 
-class _ChipTypePicker extends StatelessWidget {
-  const _ChipTypePicker({required this.onSelected});
+class _TypeBadgePicker extends StatelessWidget {
+  const _TypeBadgePicker({required this.onSelected});
 
   final ValueChanged<String> onSelected;
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: pokemonTypes
-              .map(
-                (type) => ActionChip(
-                  backgroundColor: pokemonTypeColor(type),
-                  label: Text(context.l10n.pokemonType(type)),
-                  onPressed: () => onSelected(type),
+    return DecoratedBox(
+      decoration: const BoxDecoration(color: Color(0xFF232B4C)),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 42,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE8D8FF),
+                  borderRadius: BorderRadius.circular(50),
                 ),
-              )
-              .toList(),
-        ),
-      ),
-    );
-  }
-}
-
-class _ImageTypePicker extends StatelessWidget {
-  const _ImageTypePicker({required this.onSelected});
-
-  final ValueChanged<String> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 50),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              context.l10n.selectType,
-              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
-            ),
-            const SizedBox(height: 15),
-            GridView.builder(
-              shrinkWrap: true,
-              itemCount: pokemonTypes.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
               ),
-              itemBuilder: (context, index) {
-                final type = pokemonTypes[index];
-                return IconButton(
-                  onPressed: () => onSelected(type),
-                  icon: TypeBadgeImage(type: type, width: 78),
-                );
-              },
-            ),
-          ],
+              const SizedBox(height: 18),
+              Text(
+                context.l10n.selectType,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(height: 18),
+              GridView.builder(
+                shrinkWrap: true,
+                itemCount: pokemonTypes.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  childAspectRatio: 2.85,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 10,
+                ),
+                itemBuilder: (context, index) {
+                  final type = pokemonTypes[index];
+                  return InkWell(
+                    borderRadius: BorderRadius.circular(999),
+                    onTap: () => onSelected(type),
+                    child: Center(
+                      child: TypeBadgeImage(type: type, width: 108),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
