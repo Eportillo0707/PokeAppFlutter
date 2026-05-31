@@ -5,8 +5,8 @@ import 'package:pokeapp_flutter/data/local/favorites_store.dart';
 import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
 import 'package:pokeapp_flutter/ui/components/pokemon_widgets.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/pokemon_detail_screen.dart';
-import 'package:pokeapp_flutter/ui/screens/pokemon_list/composables/header_buttons.dart';
-import 'package:pokeapp_flutter/ui/screens/pokemon_list/composables/scroll_top_button.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_list/widgets/header_buttons.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_list/widgets/scroll_top_button.dart';
 import 'package:pokeapp_flutter/ui/screens/search_pokemon/search_screen.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_list/type_screen.dart';
 

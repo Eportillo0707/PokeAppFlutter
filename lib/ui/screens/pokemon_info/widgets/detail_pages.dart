@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/domain/usecases/type_effectiveness.dart';
-import 'package:pokeapp_flutter/ui/screens/pokemon_info/composables/detail_about.dart';
-import 'package:pokeapp_flutter/ui/screens/pokemon_info/composables/detail_evolutions.dart';
-import 'package:pokeapp_flutter/ui/screens/pokemon_info/composables/detail_stats.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_about.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_evolutions.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_stats.dart';
 
 class PokemonInfoPage extends StatelessWidget {
   const PokemonInfoPage({

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
-import 'package:pokeapp_flutter/ui/screens/pokemon_info/composables/detail_card.dart';
-import 'package:pokeapp_flutter/ui/screens/pokemon_info/composables/detail_header.dart';
-import 'package:pokeapp_flutter/ui/screens/pokemon_info/composables/detail_pages.dart';
-import 'package:pokeapp_flutter/ui/screens/pokemon_info/composables/detail_tabs.dart';
-import 'package:pokeapp_flutter/ui/screens/pokemon_info/composables/swipeable_detail_page.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_card.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_header.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_pages.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_tabs.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/swipeable_detail_page.dart';
 
 class PokemonDetailBody extends StatelessWidget {
   const PokemonDetailBody({
