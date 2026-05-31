@@ -58,9 +58,9 @@ class PokemonMapper {
   List<PokemonSpecies> distinctSpecies(List<PokemonSpecies> species) {
     final byName = <String, PokemonSpecies>{};
     for (final item in species) {
-      byName[item.name] = item;
+      byName.putIfAbsent(item.name, () => item);
     }
-    return byName.values.toList()..sort((a, b) => a.id.compareTo(b.id));
+    return byName.values.toList();
   }
 
   List<Map<String, dynamic>> _sortedTypes(Map<String, dynamic> pokemon) {
