@@ -90,9 +90,13 @@ class PokemonMapper {
       final ability =
           abilities.where((item) => item['name'] == name).firstOrNull;
       return PokemonAbility(
-        name: name,
-        flavorText: _localizedFlavor(
-          ability?['flavor_text_entries'],
+        name: _localizedName(
+          ability?['names'],
+          languageCode,
+          fallback: name,
+        ),
+        flavorText: _localizedAbilityText(
+          ability,
           languageCode,
         ),
       );
@@ -149,6 +153,55 @@ class PokemonMapper {
             .where((entry) => entry['language']?['name'] == 'en')
             .firstOrNull;
     return cleanFlavorText(match?['flavor_text'] as String? ?? '');
+  }
+
+  String _localizedAbilityText(
+    Map<String, dynamic>? ability,
+    String languageCode,
+  ) {
+    if (ability == null) return '';
+    final flavor = _localizedFlavor(
+      ability['flavor_text_entries'],
+      languageCode,
+    );
+    if (flavor.isNotEmpty) return flavor;
+    return _localizedEffect(ability['effect_entries'], languageCode);
+  }
+
+  String _localizedEffect(dynamic entries, String languageCode) {
+    if (entries is! List) return '';
+    final safeLanguage = languageCode == 'es' ? 'es' : 'en';
+    final match = entries
+            .cast<Map<String, dynamic>>()
+            .where((entry) => entry['language']?['name'] == safeLanguage)
+            .firstOrNull ??
+        entries
+            .cast<Map<String, dynamic>>()
+            .where((entry) => entry['language']?['name'] == 'en')
+            .firstOrNull;
+    return cleanFlavorText(
+      (match?['short_effect'] as String?) ??
+          (match?['effect'] as String?) ??
+          '',
+    );
+  }
+
+  String _localizedName(
+    dynamic names,
+    String languageCode, {
+    required String fallback,
+  }) {
+    if (names is! List) return formatPokemonName(fallback);
+    final safeLanguage = languageCode == 'es' ? 'es' : 'en';
+    final match = names
+            .cast<Map<String, dynamic>>()
+            .where((entry) => entry['language']?['name'] == safeLanguage)
+            .firstOrNull ??
+        names
+            .cast<Map<String, dynamic>>()
+            .where((entry) => entry['language']?['name'] == 'en')
+            .firstOrNull;
+    return match?['name'] as String? ?? formatPokemonName(fallback);
   }
 
   String? _formatEvolutionMethod(

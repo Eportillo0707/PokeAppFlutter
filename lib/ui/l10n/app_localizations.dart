@@ -47,7 +47,11 @@ class AppLocalizations {
   String get immunities => isSpanish ? 'Inmunidades:' : 'Immunities:';
 
   String multiplierFrom(String multiplier) {
-    return isSpanish ? 'De $multiplier:' : '$multiplier From:';
+    if (!isSpanish) return '$multiplier From:';
+    final value = multiplier.endsWith('x')
+        ? 'x${multiplier.substring(0, multiplier.length - 1)}'
+        : multiplier;
+    return '$value de:';
   }
 
   String statName(String value) {
