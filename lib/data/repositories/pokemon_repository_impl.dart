@@ -1,5 +1,6 @@
 import 'package:pokeapp_flutter/data/remote/mappers/pokemon_mapper.dart';
 import 'package:pokeapp_flutter/data/remote/pokemon_remote_data_source.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_generation.dart';
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
 
@@ -53,6 +54,21 @@ class PokemonRepositoryImpl implements PokemonRepository {
     final pokemon = List<Map<String, dynamic>>.from(data['pokemon'] as List);
     final items = await Future.wait(
       pokemon.map((slot) => getPokemonItem(slot['pokemon']['name'] as String)),
+    );
+    items.sort((a, b) => a.id.compareTo(b.id));
+    return items;
+  }
+
+  @override
+  Future<List<PokemonItem>> getPokemonByGeneration(
+    PokemonGeneration generation,
+  ) async {
+    final ids = List<int>.generate(
+      generation.endId - generation.startId + 1,
+      (index) => generation.startId + index,
+    );
+    final items = await Future.wait(
+      ids.map((id) => getPokemonItem('$id')),
     );
     items.sort((a, b) => a.id.compareTo(b.id));
     return items;

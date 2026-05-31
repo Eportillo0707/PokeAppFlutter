@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/data/local/favorites_store.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_generation.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
 import 'package:pokeapp_flutter/ui/components/pokemon_widgets.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/pokemon_detail_screen.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_list/widgets/generation_filter_sheet.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_list/widgets/header_buttons.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_list/widgets/scroll_top_button.dart';
 import 'package:pokeapp_flutter/ui/screens/search_pokemon/search_screen.dart';
@@ -30,6 +32,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   bool loading = true;
   bool loadingMore = false;
   bool hasError = false;
+  PokemonGeneration? selectedGeneration;
   int offset = 0;
 
   @override
@@ -53,10 +56,12 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
       items.clear();
     });
     try {
-      final page = await widget.api.getPokemonList(offset: offset);
+      final page = selectedGeneration == null
+          ? await widget.api.getPokemonList(offset: offset)
+          : await widget.api.getPokemonByGeneration(selectedGeneration!);
       setState(() {
         items.addAll(page);
-        offset += page.length;
+        if (selectedGeneration == null) offset += page.length;
       });
     } catch (_) {
       setState(() => hasError = true);
@@ -66,7 +71,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
   }
 
   Future<void> _loadMore() async {
-    if (loadingMore || loading) return;
+    if (loadingMore || loading || selectedGeneration != null) return;
     setState(() => loadingMore = true);
     try {
       final page = await widget.api.getPokemonList(offset: offset);
@@ -81,6 +86,7 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
 
   void _onScroll() {
     if (mounted) setState(() {});
+    if (selectedGeneration != null) return;
     if (controller.position.pixels >
         controller.position.maxScrollExtent - 480) {
       _loadMore();
@@ -126,6 +132,8 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
                     ),
                   ),
                   onFilter: _showTypePicker,
+                  onGenerationFilter: _showGenerationPicker,
+                  hasGenerationFilter: selectedGeneration != null,
                 ),
                 const SizedBox(height: 10),
                 Expanded(
@@ -165,6 +173,26 @@ class _PokemonListScreenState extends State<PokemonListScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  void _showGenerationPicker() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: const Color(0xFF2B0847),
+      isScrollControlled: true,
+      builder: (_) => FractionallySizedBox(
+        heightFactor: .72,
+        child: GenerationFilterSheet(
+          selectedGeneration: selectedGeneration,
+          onSelected: (generation) {
+            Navigator.pop(context);
+            setState(() => selectedGeneration = generation);
+            controller.jumpTo(0);
+            _loadFirstPage();
+          },
+        ),
       ),
     );
   }

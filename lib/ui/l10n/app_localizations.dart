@@ -27,6 +27,10 @@ class AppLocalizations {
       isSpanish ? 'Aun no hay favoritos' : 'No favorites yet';
   String get noResults => isSpanish ? 'Sin resultados' : 'No results';
   String get selectType => isSpanish ? 'Selecciona un tipo' : 'Select a Type';
+  String get selectGeneration =>
+      isSpanish ? 'Selecciona una generacion' : 'Select a Generation';
+  String get allGenerations =>
+      isSpanish ? 'Todas las generaciones' : 'All Generations';
   String get loadError => isSpanish
       ? 'No se pudo cargar la informacion.'
       : 'Information could not be loaded.';
@@ -66,6 +70,10 @@ class AppLocalizations {
       'speed' => 'VELOCIDAD',
       _ => normalized.toUpperCase(),
     };
+  }
+
+  String generationName(String romanNumeral) {
+    return isSpanish ? 'GENERACION $romanNumeral' : 'GENERATION $romanNumeral';
   }
 
   String pokemonType(String type) {
