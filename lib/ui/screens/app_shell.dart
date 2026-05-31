@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:pokeapp_flutter/data/local/favorites_store.dart';
 import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
+import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
 import 'package:pokeapp_flutter/ui/screens/favorites_screen.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_list/pokemon_list_screen.dart';
 
@@ -50,12 +51,12 @@ class _AppShellState extends State<AppShell> {
           child: Row(
             children: [
               _BottomTab(
-                title: 'Pokemon',
+                title: context.l10n.pokemon,
                 selected: index == 0,
                 onTap: () => setState(() => index = 0),
               ),
               _BottomTab(
-                title: 'Favorites',
+                title: context.l10n.favorites,
                 selected: index == 1,
                 onTap: () => setState(() => index = 1),
               ),

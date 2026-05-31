@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
+import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
 import 'package:pokeapp_flutter/ui/utils/pokemon_formatters.dart';
 import 'detail_card.dart';
 
@@ -30,14 +31,14 @@ class PokemonEvolutionsPanel extends StatelessWidget {
       children: [
         if (normal.isNotEmpty)
           _EvolutionSection(
-            title: 'Evolution Chain',
+            title: context.l10n.evolutionChain,
             species: normal,
             showArrows: true,
             onSpeciesTap: onSpeciesTap,
           ),
         if (mega.isNotEmpty)
           _EvolutionSection(
-            title: 'Mega Evolutions',
+            title: context.l10n.megaEvolutions,
             species: mega,
             showArrows: false,
             onSpeciesTap: onSpeciesTap,

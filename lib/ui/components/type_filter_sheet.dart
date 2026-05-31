@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
 import 'package:pokeapp_flutter/ui/utils/pokemon_formatters.dart';
 import 'type_badge.dart';
 
@@ -63,9 +64,9 @@ class _ImageTypePicker extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Select a Type',
-              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
+            Text(
+              context.l10n.selectType,
+              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 15),
             GridView.builder(

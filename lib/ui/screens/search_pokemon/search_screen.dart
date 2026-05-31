@@ -4,6 +4,7 @@ import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/data/local/favorites_store.dart';
 import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
 import 'package:pokeapp_flutter/ui/components/pokemon_widgets.dart';
+import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/pokemon_detail_screen.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_list/type_screen.dart';
 
@@ -115,7 +116,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 builder: (context, _) {
                   if (loading) return const LoadingState();
                   if (searched && results.isEmpty) {
-                    return const Center(child: Text('Sin resultados'));
+                    return Center(child: Text(context.l10n.noResults));
                   }
                   return PokemonGrid(
                     items: results,
@@ -180,7 +181,7 @@ class _SearchPokemonBar extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             borderSide: const BorderSide(color: Colors.grey, width: .5),
           ),
-          hintText: 'Search',
+          hintText: context.l10n.search,
           hintStyle: const TextStyle(color: Colors.white),
           prefixIcon: const Icon(Icons.search, color: Colors.white, size: 18),
           suffixIcon: IconButton(

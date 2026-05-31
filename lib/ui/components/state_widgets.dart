@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
+
 class LoadingState extends StatelessWidget {
   const LoadingState({super.key, this.size = 54});
 
@@ -117,15 +119,15 @@ class ErrorState extends StatelessWidget {
           children: [
             const Icon(Icons.error_outline, size: 48),
             const SizedBox(height: 12),
-            const Text(
-              'No se pudo cargar la informacion.',
+            Text(
+              context.l10n.loadError,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Reintentar'),
+              label: Text(context.l10n.retry),
             ),
           ],
         ),

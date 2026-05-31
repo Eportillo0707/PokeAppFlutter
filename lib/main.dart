@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:pokeapp_flutter/di/app_dependencies.dart';
+import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
 import 'package:pokeapp_flutter/ui/screens/app_shell.dart';
 import 'package:pokeapp_flutter/ui/theme/theme.dart';
 
@@ -35,6 +37,13 @@ class _PokeAppState extends State<PokeApp> {
       title: 'PokeAPP',
       debugShowCheckedModeBanner: false,
       theme: buildPokeTheme(),
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
       home: showSplash
           ? const SplashScreen()
           : AppShell(

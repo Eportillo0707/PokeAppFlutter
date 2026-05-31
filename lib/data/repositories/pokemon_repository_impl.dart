@@ -65,12 +65,21 @@ class PokemonRepositoryImpl implements PokemonRepository {
   }
 
   @override
-  Future<PokemonInfo> getPokemonInfo(String name) async {
+  Future<PokemonInfo> getPokemonInfo(
+    String name, {
+    String languageCode = 'en',
+  }) async {
     final pokemon = await _remoteDataSource.getPokemon(name);
     final species = await _getSpeciesOrNull(pokemon);
     final evolutionChain = await _getEvolutionChainOrNull(species);
-    final normalEvolutions = _mapper.mapEvolutionSpecies(evolutionChain);
-    final megaEvolutions = await _getMegaEvolutions(normalEvolutions);
+    final normalEvolutions = _mapper.mapEvolutionSpecies(
+      evolutionChain,
+      languageCode: languageCode,
+    );
+    final megaEvolutions = await _getMegaEvolutions(
+      normalEvolutions,
+      languageCode,
+    );
     final abilityDtos = await _getAbilities(pokemon);
 
     return _mapper.mapPokemonInfo(
@@ -79,6 +88,7 @@ class PokemonRepositoryImpl implements PokemonRepository {
       evolutionChain: evolutionChain,
       abilities: abilityDtos,
       megaEvolutions: megaEvolutions,
+      languageCode: languageCode,
     );
   }
 
@@ -127,6 +137,7 @@ class PokemonRepositoryImpl implements PokemonRepository {
 
   Future<List<PokemonSpecies>> _getMegaEvolutions(
     List<PokemonSpecies> baseSpecies,
+    String languageCode,
   ) async {
     final all = <PokemonSpecies>[];
     for (final base in baseSpecies) {
@@ -144,7 +155,8 @@ class PokemonRepositoryImpl implements PokemonRepository {
               id: detail['id'] as int,
               name: detail['name'] as String,
               evolvesFromSpeciesId: base.id,
-              evolutionMethod: 'Mega Evolution',
+              evolutionMethod:
+                  languageCode == 'es' ? 'Megaevolucion' : 'Mega Evolution',
             ),
           );
         }

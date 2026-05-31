@@ -17,9 +17,10 @@ class PokemonMapper {
     required Map<String, dynamic>? evolutionChain,
     required List<Map<String, dynamic>> abilities,
     required List<PokemonSpecies> megaEvolutions,
+    String languageCode = 'en',
   }) {
     final evolutions = [
-      ...mapEvolutionSpecies(evolutionChain),
+      ...mapEvolutionSpecies(evolutionChain, languageCode: languageCode),
       ...megaEvolutions,
     ];
 
@@ -35,14 +36,23 @@ class PokemonMapper {
           .toList(),
       evolutionChain: distinctSpecies(evolutions),
       megaEvolutions: megaEvolutions,
-      abilities: _mapAbilities(pokemon, abilities),
-      description: _englishFlavor(species?['flavor_text_entries']),
+      abilities: _mapAbilities(pokemon, abilities, languageCode),
+      description: _localizedFlavor(
+        species?['flavor_text_entries'],
+        languageCode,
+      ),
     );
   }
 
-  List<PokemonSpecies> mapEvolutionSpecies(Map<String, dynamic>? chain) {
+  List<PokemonSpecies> mapEvolutionSpecies(
+    Map<String, dynamic>? chain, {
+    String languageCode = 'en',
+  }) {
     if (chain == null) return [];
-    return _flattenEvolutionChain(chain['chain'] as Map<String, dynamic>);
+    return _flattenEvolutionChain(
+      chain['chain'] as Map<String, dynamic>,
+      languageCode: languageCode,
+    );
   }
 
   List<PokemonSpecies> distinctSpecies(List<PokemonSpecies> species) {
@@ -72,6 +82,7 @@ class PokemonMapper {
   List<PokemonAbility> _mapAbilities(
     Map<String, dynamic> pokemon,
     List<Map<String, dynamic>> abilities,
+    String languageCode,
   ) {
     return List<Map<String, dynamic>>.from(pokemon['abilities'] as List)
         .map((slot) {
@@ -80,7 +91,10 @@ class PokemonMapper {
           abilities.where((item) => item['name'] == name).firstOrNull;
       return PokemonAbility(
         name: name,
-        flavorText: _englishFlavor(ability?['flavor_text_entries']),
+        flavorText: _localizedFlavor(
+          ability?['flavor_text_entries'],
+          languageCode,
+        ),
       );
     }).toList();
   }
@@ -88,6 +102,7 @@ class PokemonMapper {
   List<PokemonSpecies> _flattenEvolutionChain(
     Map<String, dynamic> link, {
     int? evolvesFromSpeciesId,
+    String languageCode = 'en',
   }) {
     final species = link['species'] as Map<String, dynamic>;
     final currentId = idFromUrl(species['url'] as String);
@@ -100,7 +115,7 @@ class PokemonMapper {
       id: currentId,
       name: species['name'] as String,
       evolvesFromSpeciesId: evolvesFromSpeciesId,
-      evolutionMethod: _formatEvolutionMethod(detail),
+      evolutionMethod: _formatEvolutionMethod(detail, languageCode),
       evolutionItemName: itemName as String?,
       evolutionItemImageUrl: itemName == null
           ? null
@@ -114,50 +129,82 @@ class PokemonMapper {
         (child) => _flattenEvolutionChain(
           child,
           evolvesFromSpeciesId: currentId,
+          languageCode: languageCode,
         ),
       ),
     ];
   }
 
-  String _englishFlavor(dynamic entries) {
+  String _localizedFlavor(dynamic entries, String languageCode) {
     if (entries is! List) return '';
+    final safeLanguage = languageCode == 'es' ? 'es' : 'en';
     final match = entries
-        .cast<Map<String, dynamic>>()
-        .where(
-          (entry) => entry['language']?['name'] == 'en',
-        )
-        .firstOrNull;
+            .cast<Map<String, dynamic>>()
+            .where(
+              (entry) => entry['language']?['name'] == safeLanguage,
+            )
+            .firstOrNull ??
+        entries
+            .cast<Map<String, dynamic>>()
+            .where((entry) => entry['language']?['name'] == 'en')
+            .firstOrNull;
     return cleanFlavorText(match?['flavor_text'] as String? ?? '');
   }
 
-  String? _formatEvolutionMethod(Map<String, dynamic>? detail) {
+  String? _formatEvolutionMethod(
+    Map<String, dynamic>? detail,
+    String languageCode,
+  ) {
+    final spanish = languageCode == 'es';
     if (detail == null) return null;
-    if (detail['min_level'] != null) return 'Lvl ${detail['min_level']}';
+    if (detail['min_level'] != null) {
+      return spanish
+          ? 'Nv. ${detail['min_level']}'
+          : 'Lvl ${detail['min_level']}';
+    }
     if (detail['item'] != null) {
       return formatPokemonName(detail['item']['name']);
     }
-    if (detail['min_happiness'] != null) return 'High friendship';
-    if (detail['min_beauty'] != null) return 'Beauty ${detail['min_beauty']}';
-    if (detail['min_affection'] != null) return 'High affection';
+    if (detail['min_happiness'] != null) {
+      return spanish ? 'Amistad alta' : 'High friendship';
+    }
+    if (detail['min_beauty'] != null) {
+      return spanish
+          ? 'Belleza ${detail['min_beauty']}'
+          : 'Beauty ${detail['min_beauty']}';
+    }
+    if (detail['min_affection'] != null) {
+      return spanish ? 'Afecto alto' : 'High affection';
+    }
     if (detail['held_item'] != null) {
-      return 'Hold ${formatPokemonName(detail['held_item']['name'])}';
+      final item = formatPokemonName(detail['held_item']['name']);
+      return spanish ? 'Sostener $item' : 'Hold $item';
     }
     if (detail['known_move'] != null) {
-      return 'Know ${formatPokemonName(detail['known_move']['name'])}';
+      final move = formatPokemonName(detail['known_move']['name']);
+      return spanish ? 'Saber $move' : 'Know $move';
     }
     if (detail['known_move_type'] != null) {
-      return 'Know ${formatPokemonName(detail['known_move_type']['name'])} move';
+      final type = formatPokemonName(detail['known_move_type']['name']);
+      return spanish ? 'Saber movimiento $type' : 'Know $type move';
     }
     if (detail['location'] != null) {
-      return 'At ${formatPokemonName(detail['location']['name'])}';
+      final location = formatPokemonName(detail['location']['name']);
+      return spanish ? 'En $location' : 'At $location';
     }
-    if (detail['needs_overworld_rain'] == true) return 'During rain';
-    if (detail['turn_upside_down'] == true) return 'Turn upside down';
+    if (detail['needs_overworld_rain'] == true) {
+      return spanish ? 'Durante lluvia' : 'During rain';
+    }
+    if (detail['turn_upside_down'] == true) {
+      return spanish ? 'Voltear consola' : 'Turn upside down';
+    }
     final trigger = detail['trigger']?['name'] as String?;
-    if (trigger == 'trade') return 'Trade';
-    if (trigger == 'level-up') return 'Level up';
-    if (trigger == 'use-item') return 'Use item';
-    if (trigger == 'shed') return 'Special evolution';
+    if (trigger == 'trade') return spanish ? 'Intercambio' : 'Trade';
+    if (trigger == 'level-up') return spanish ? 'Subir nivel' : 'Level up';
+    if (trigger == 'use-item') return spanish ? 'Usar objeto' : 'Use item';
+    if (trigger == 'shed') {
+      return spanish ? 'Evolucion especial' : 'Special evolution';
+    }
     return trigger == null ? null : formatPokemonName(trigger);
   }
 }

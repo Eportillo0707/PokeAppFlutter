@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/domain/usecases/type_effectiveness.dart';
 import 'package:pokeapp_flutter/ui/components/pokemon_widgets.dart';
+import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
 
 class PokemonStatsPanel extends StatelessWidget {
   const PokemonStatsPanel({super.key, required this.pokemon});
@@ -24,7 +25,7 @@ class PokemonStatsPanel extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        stat.name.toUpperCase(),
+                        context.l10n.statName(stat.name),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 14,
@@ -78,28 +79,28 @@ class PokemonTypeEffectivenessPanel extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _TypeGroup(
-          title: 'Resistances',
-          label: '1/2x From:',
+          title: context.l10n.resistances,
+          label: context.l10n.multiplierFrom('1/2x'),
           types: effectiveness.resistantTo,
         ),
         _TypeGroup(
           title: null,
-          label: '1/4x From:',
+          label: context.l10n.multiplierFrom('1/4x'),
           types: effectiveness.veryResistantTo,
         ),
         _TypeGroup(
           title: null,
-          label: 'Immunities:',
+          label: context.l10n.immunities,
           types: effectiveness.immuneTo,
         ),
         _TypeGroup(
-          title: 'Weaknesses',
-          label: '4x From:',
+          title: context.l10n.weaknesses,
+          label: context.l10n.multiplierFrom('4x'),
           types: effectiveness.veryWeakTo,
         ),
         _TypeGroup(
           title: null,
-          label: '2x From:',
+          label: context.l10n.multiplierFrom('2x'),
           types: effectiveness.weakTo,
         ),
         const SizedBox(height: 10),

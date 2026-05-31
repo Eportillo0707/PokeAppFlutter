@@ -9,5 +9,5 @@ abstract class PokemonRepository {
 
   Future<PokemonItem> getPokemonItem(String name);
 
-  Future<PokemonInfo> getPokemonInfo(String name);
+  Future<PokemonInfo> getPokemonInfo(String name, {String languageCode = 'en'});
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/data/local/favorites_store.dart';
 import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
+import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_header.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/pokemon_detail_body.dart';
 import 'package:pokeapp_flutter/ui/components/pokemon_widgets.dart';
@@ -26,13 +27,20 @@ class PokemonDetailScreen extends StatefulWidget {
 class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   late Future<PokemonInfo> future;
   final detailScrollController = ScrollController();
+  String? languageCode;
   int selectedPage = 0;
   bool isPopping = false;
 
   @override
-  void initState() {
-    super.initState();
-    future = widget.api.getPokemonInfo(widget.initialPokemon.name);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final nextLanguageCode = context.l10n.languageCode;
+    if (languageCode == nextLanguageCode) return;
+    languageCode = nextLanguageCode;
+    future = widget.api.getPokemonInfo(
+      widget.initialPokemon.name,
+      languageCode: nextLanguageCode,
+    );
   }
 
   @override
@@ -103,8 +111,10 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
             if (snapshot.hasError) {
               return ErrorState(
                 onRetry: () => setState(
-                  () => future =
-                      widget.api.getPokemonInfo(widget.initialPokemon.name),
+                  () => future = widget.api.getPokemonInfo(
+                    widget.initialPokemon.name,
+                    languageCode: context.l10n.languageCode,
+                  ),
                 ),
               );
             }

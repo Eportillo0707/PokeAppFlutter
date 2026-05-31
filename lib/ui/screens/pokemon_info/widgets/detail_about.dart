@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
+import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
 import 'package:pokeapp_flutter/ui/utils/pokemon_formatters.dart';
 import 'detail_card.dart';
 
@@ -12,10 +13,10 @@ class PokemonDescriptionPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DetailPanel(
-      title: 'Description',
+      title: context.l10n.description,
       child: Text(
         pokemon.description.isEmpty
-            ? 'Description unavailable.'
+            ? context.l10n.descriptionUnavailable
             : pokemon.description,
         style: const TextStyle(height: 1.4),
       ),
@@ -35,11 +36,13 @@ class PokemonSpecsPanel extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _SpecColumn(label: 'Height', value: '${pokemon.height / 10} m'),
+          _SpecColumn(
+              label: context.l10n.height, value: '${pokemon.height / 10} m'),
           const SizedBox(width: 80),
           Container(width: 1, height: 60, color: Colors.white),
           const SizedBox(width: 30),
-          _SpecColumn(label: 'Weight', value: '${pokemon.weight / 10} kg'),
+          _SpecColumn(
+              label: context.l10n.weight, value: '${pokemon.weight / 10} kg'),
         ],
       ),
     );
@@ -78,7 +81,7 @@ class PokemonAbilitiesPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DetailPanel(
-      title: 'Abilities',
+      title: context.l10n.abilities,
       child: Align(
         alignment: Alignment.centerLeft,
         child: Wrap(

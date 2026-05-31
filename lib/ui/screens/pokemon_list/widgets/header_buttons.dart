@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
+
 class HeaderButtons extends StatelessWidget {
   const HeaderButtons({
     super.key,
@@ -29,9 +31,12 @@ class HeaderButtons extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Search',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                child: Text(
+                  context.l10n.search,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
             ),

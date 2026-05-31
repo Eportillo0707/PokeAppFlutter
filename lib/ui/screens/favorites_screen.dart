@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pokeapp_flutter/data/local/favorites_store.dart';
 import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
 import 'package:pokeapp_flutter/ui/components/pokemon_widgets.dart';
+import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/pokemon_detail_screen.dart';
 
 class FavoritesScreen extends StatelessWidget {
@@ -23,14 +24,14 @@ class FavoritesScreen extends StatelessWidget {
         bottom: false,
         child: Column(
           children: [
-            const SizedBox(
+            SizedBox(
               height: 60,
               child: Stack(
                 children: [
                   Align(
                     child: Text(
-                      'Favorites',
-                      style: TextStyle(
+                      context.l10n.favorites,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 28,
                         fontWeight: FontWeight.w900,
@@ -46,7 +47,7 @@ class FavoritesScreen extends StatelessWidget {
                 builder: (context, _) {
                   final items = favorites.items;
                   if (items.isEmpty) {
-                    return const Center(child: Text('Aun no hay favoritos'));
+                    return Center(child: Text(context.l10n.noFavorites));
                   }
                   return PokemonGrid(
                     items: items,
