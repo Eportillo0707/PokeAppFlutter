@@ -4,7 +4,7 @@ import 'package:pokeapp_flutter/data/remote/mappers/pokemon_mapper.dart';
 void main() {
   test('mapEvolutionSpecies preserves chain order when ids are not sequential',
       () {
-    final mapper = PokemonMapper();
+    const mapper = PokemonMapper();
     final species = mapper.mapEvolutionSpecies(_electabuzzEvolutionChain);
 
     expect(

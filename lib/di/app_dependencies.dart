@@ -11,7 +11,7 @@ class AppDependencies {
     final remoteDataSource = PokemonRemoteDataSource(client: httpClient);
     pokemonRepository = PokemonRepositoryImpl(
       remoteDataSource: remoteDataSource,
-      mapper: PokemonMapper(),
+      mapper: const PokemonMapper(),
     );
     favoritesStore = FavoritesStore();
   }
