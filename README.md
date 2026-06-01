@@ -9,5 +9,5 @@ Migracion Flutter de `Eportillo0707/PokeAPP`, orientada a Android y iOS.
 - Filtro por tipo.
 - Pantalla de favoritos persistidos localmente.
 - Detalle con imagen oficial, tipos, estadisticas, descripcion, habilidades, cadena evolutiva y mega evoluciones.
-- Tema oscuro con paleta cercana a la app Kotlin/Jetpack Compose original.
+
 
