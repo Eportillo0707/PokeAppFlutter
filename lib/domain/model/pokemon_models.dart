@@ -40,6 +40,7 @@ class PokemonInfo {
     required this.megaEvolutions,
     required this.abilities,
     required this.description,
+    required this.cryUrl,
     this.isFavorite = false,
   });
 
@@ -54,6 +55,7 @@ class PokemonInfo {
   final List<PokemonSpecies> megaEvolutions;
   final List<PokemonAbility> abilities;
   final String description;
+  final String? cryUrl;
   bool isFavorite;
 
   PokemonItem toItem() => PokemonItem(

@@ -60,11 +60,13 @@ class DetailHeader extends StatelessWidget {
     required this.pokemon,
     required this.onBack,
     required this.onFavorite,
+    required this.onPlayCry,
   });
 
   final PokemonInfo pokemon;
   final VoidCallback onBack;
   final VoidCallback onFavorite;
+  final VoidCallback onPlayCry;
 
   @override
   Widget build(BuildContext context) {
@@ -83,14 +85,25 @@ class DetailHeader extends StatelessWidget {
           alignment: Alignment.topRight,
           child: Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: IconButton(
-              onPressed: onFavorite,
-              icon: Icon(
-                pokemon.isFavorite ? Icons.star : Icons.star_border,
-                size: 34,
-                color:
-                    pokemon.isFavorite ? const Color(0xFFFFD54F) : Colors.white,
-              ),
+            child: Column(
+              children: [
+                IconButton(
+                  onPressed: onFavorite,
+                  icon: Icon(
+                    pokemon.isFavorite ? Icons.star : Icons.star_border,
+                    size: 34,
+                    color: pokemon.isFavorite
+                        ? const Color(0xFFFFD54F)
+                        : Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                _CryButton(
+                  enabled: pokemon.cryUrl != null && pokemon.cryUrl!.isNotEmpty,
+                  color: pokemonTypeColor(pokemon.types.firstOrNull),
+                  onTap: onPlayCry,
+                ),
+              ],
             ),
           ),
         ),
@@ -99,6 +112,41 @@ class DetailHeader extends StatelessWidget {
           child: PokemonDetailHero(pokemon: pokemon),
         ),
       ],
+    );
+  }
+}
+
+class _CryButton extends StatelessWidget {
+  const _CryButton({
+    required this.enabled,
+    required this.color,
+    required this.onTap,
+  });
+
+  final bool enabled;
+  final Color color;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: enabled ? color : Colors.grey,
+      shape: const CircleBorder(),
+      elevation: 5,
+      shadowColor: color.withValues(alpha: .45),
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: enabled ? onTap : null,
+        child: const SizedBox(
+          width: 42,
+          height: 42,
+          child: Icon(
+            Icons.volume_up,
+            color: Colors.white,
+            size: 24,
+          ),
+        ),
+      ),
     );
   }
 }

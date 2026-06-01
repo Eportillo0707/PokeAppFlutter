@@ -52,6 +52,13 @@ class PokemonInfoMapper {
         species?['flavor_text_entries'],
         languageCode,
       ),
+      cryUrl: _cryUrl(pokemon),
     );
+  }
+
+  String? _cryUrl(Map<String, dynamic> pokemon) {
+    final cries = pokemon['cries'];
+    if (cries is! Map<String, dynamic>) return null;
+    return (cries['latest'] as String?) ?? (cries['legacy'] as String?);
   }
 }

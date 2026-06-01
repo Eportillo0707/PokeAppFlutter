@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/data/local/favorites_store.dart';
@@ -26,6 +27,7 @@ class PokemonDetailScreen extends StatefulWidget {
 
 class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   late Future<PokemonInfo> future;
+  final cryPlayer = AudioPlayer();
   final detailScrollController = ScrollController();
   String? languageCode;
   int selectedPage = 0;
@@ -45,6 +47,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   @override
   void dispose() {
+    cryPlayer.dispose();
     detailScrollController.dispose();
     super.dispose();
   }
@@ -88,6 +91,22 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
 
   void _selectPage(int page) => setState(() => selectedPage = page);
 
+  Future<void> _playCry(PokemonInfo pokemon) async {
+    final cryUrl = pokemon.cryUrl;
+    if (cryUrl == null || cryUrl.isEmpty) return;
+    try {
+      await cryPlayer.stop();
+      await cryPlayer.play(UrlSource(cryUrl));
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No se pudo reproducir el sonido.'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -128,6 +147,7 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
                   scrollController: detailScrollController,
                   onBack: _popWithHero,
                   onFavorite: () => _toggle(pokemon),
+                  onPlayCry: () => _playCry(pokemon),
                   onPageSelected: _selectPage,
                   onEvolutionTap: _openEvolution,
                 );

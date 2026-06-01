@@ -15,6 +15,7 @@ class PokemonDetailBody extends StatelessWidget {
     required this.scrollController,
     required this.onBack,
     required this.onFavorite,
+    required this.onPlayCry,
     required this.onPageSelected,
     required this.onEvolutionTap,
   });
@@ -24,6 +25,7 @@ class PokemonDetailBody extends StatelessWidget {
   final ScrollController scrollController;
   final VoidCallback onBack;
   final VoidCallback onFavorite;
+  final VoidCallback onPlayCry;
   final ValueChanged<int> onPageSelected;
   final ValueChanged<PokemonSpecies> onEvolutionTap;
 
@@ -39,6 +41,7 @@ class PokemonDetailBody extends StatelessWidget {
               pokemon: pokemon,
               onBack: onBack,
               onFavorite: onFavorite,
+              onPlayCry: onPlayCry,
             ),
             PokemonDetailTypeBadges(types: pokemon.types),
             const SizedBox(height: 14),
