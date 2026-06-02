@@ -14,7 +14,7 @@ class ScrollTopButton extends StatelessWidget {
         duration: const Duration(milliseconds: 280),
         curve: Curves.easeOut,
       ),
-      child: const Icon(Icons.arrow_upward),
+      child: const Icon(Icons.arrow_upward, color: Colors.white),
     );
   }
 }
