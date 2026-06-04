@@ -1,4 +1,4 @@
-package com.example.pokeapp_flutter
+package com.emerson.pokeapp
 
 import io.flutter.embedding.android.FlutterActivity
 
