@@ -2,7 +2,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:label="pokeapp_flutter"
+        android:label="PokeApp"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
