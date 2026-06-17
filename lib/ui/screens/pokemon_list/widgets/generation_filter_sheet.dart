@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:pokeapp_flutter/domain/model/pokemon_generation.dart';
 import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_list/widgets/all_generations_button.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_list/widgets/generation_card.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_list/widgets/generation_filter_style.dart';
 
 class GenerationFilterSheet extends StatelessWidget {
   const GenerationFilterSheet({
@@ -13,15 +16,10 @@ class GenerationFilterSheet extends StatelessWidget {
   final PokemonGeneration? selectedGeneration;
   final ValueChanged<PokemonGeneration?> onSelected;
 
-  static const _background = Color(0xFF121422);
-  static const _surface = Color(0xFF232B4C);
-  static const _selectedSurface = Color(0xFF30385F);
-  static const _accent = Color(0xFFE8D8FF);
-
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(color: _background),
+      decoration: const BoxDecoration(color: GenerationFilterStyle.background),
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(18, 10, 18, 24),
@@ -32,7 +30,7 @@ class GenerationFilterSheet extends StatelessWidget {
                 width: 42,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: _accent,
+                  color: GenerationFilterStyle.accent,
                   borderRadius: BorderRadius.circular(50),
                 ),
               ),
@@ -58,7 +56,7 @@ class GenerationFilterSheet extends StatelessWidget {
                   ),
                   itemBuilder: (context, index) {
                     final generation = pokemonGenerations[index];
-                    return _GenerationCard(
+                    return GenerationCard(
                       generation: generation,
                       selected: selectedGeneration?.id == generation.id,
                       onTap: () => onSelected(generation),
@@ -70,7 +68,7 @@ class GenerationFilterSheet extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 height: 54,
-                child: _AllGenerationsButton(
+                child: AllGenerationsButton(
                   selected: selectedGeneration == null,
                   onTap: () => onSelected(null),
                 ),
@@ -78,128 +76,6 @@ class GenerationFilterSheet extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _GenerationCard extends StatelessWidget {
-  const _GenerationCard({
-    required this.generation,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final PokemonGeneration generation;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(10),
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
-        padding: const EdgeInsets.fromLTRB(8, 8, 8, 4),
-        decoration: BoxDecoration(
-          color: selected
-              ? GenerationFilterSheet._selectedSurface
-              : GenerationFilterSheet._surface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: selected ? GenerationFilterSheet._accent : Colors.white12,
-            width: selected ? 1.5 : 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: .18),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                context.l10n.generationName(generation.romanNumeral),
-                maxLines: 1,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ),
-            const SizedBox(height: 2),
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: generation.starterIds
-                    .map((id) => _StarterImage(id: id))
-                    .toList(),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _AllGenerationsButton extends StatelessWidget {
-  const _AllGenerationsButton({
-    required this.selected,
-    required this.onTap,
-  });
-
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(10),
-      onTap: onTap,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: selected
-              ? GenerationFilterSheet._selectedSurface
-              : GenerationFilterSheet._surface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: selected ? GenerationFilterSheet._accent : Colors.white12,
-          ),
-        ),
-        child: Center(
-          child: Text(
-            context.l10n.allGenerations,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _StarterImage extends StatelessWidget {
-  const _StarterImage({required this.id});
-
-  final int id;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Image.network(
-        officialPokemonArtworkUrl(id),
-        fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => const SizedBox.shrink(),
       ),
     );
   }

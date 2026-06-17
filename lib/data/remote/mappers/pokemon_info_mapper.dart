@@ -30,6 +30,8 @@ class PokemonInfoMapper {
     required Map<String, dynamic>? evolutionChain,
     required List<Map<String, dynamic>> abilities,
     required List<PokemonSpecies> megaEvolutions,
+    required List<PokemonSpecies> regionalForms,
+    required List<PokemonSpecies> gigantamaxForms,
     String languageCode = 'en',
   }) {
     final evolutions = [
@@ -47,12 +49,15 @@ class PokemonInfoMapper {
       types: _typeMapper.mapTypeNames(pokemon),
       evolutionChain: _evolutionMapper.distinctSpecies(evolutions),
       megaEvolutions: megaEvolutions,
+      regionalForms: regionalForms,
+      gigantamaxForms: gigantamaxForms,
       abilities: _abilityMapper.map(pokemon, abilities, languageCode),
       description: _textMapper.flavorText(
         species?['flavor_text_entries'],
         languageCode,
       ),
       cryUrl: _cryUrl(pokemon),
+      shinyImageUrl: _shinyArtworkUrl(pokemon),
     );
   }
 
@@ -60,5 +65,16 @@ class PokemonInfoMapper {
     final cries = pokemon['cries'];
     if (cries is! Map<String, dynamic>) return null;
     return (cries['latest'] as String?) ?? (cries['legacy'] as String?);
+  }
+
+  String? _shinyArtworkUrl(Map<String, dynamic> pokemon) {
+    final sprites = pokemon['sprites'];
+    if (sprites is! Map<String, dynamic>) return null;
+    final other = sprites['other'];
+    if (other is! Map<String, dynamic>) return null;
+    final officialArtwork = other['official-artwork'];
+    if (officialArtwork is! Map<String, dynamic>) return null;
+    final shiny = officialArtwork['front_shiny'];
+    return shiny is String && shiny.isNotEmpty ? shiny : null;
   }
 }

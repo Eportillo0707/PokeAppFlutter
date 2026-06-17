@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
 
-import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/data/local/favorites_store.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
 import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
-import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_header.dart';
-import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/pokemon_detail_body.dart';
-import 'package:pokeapp_flutter/ui/components/pokemon_widgets.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/pokemon_detail_controller.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/pokemon_detail_routes.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/pokemon_detail_loader.dart';
+
+part 'pokemon_detail_screen_actions.dart';
 
 class PokemonDetailScreen extends StatefulWidget {
   const PokemonDetailScreen({
@@ -26,89 +27,37 @@ class PokemonDetailScreen extends StatefulWidget {
 }
 
 class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
-  late Future<PokemonInfo> future;
-  final cryPlayer = AudioPlayer();
-  final detailScrollController = ScrollController();
-  String? languageCode;
-  int selectedPage = 0;
-  bool isPopping = false;
+  late final PokemonDetailController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = PokemonDetailController(
+      api: widget.api,
+      favorites: widget.favorites,
+      initialPokemon: widget.initialPokemon,
+    );
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final nextLanguageCode = context.l10n.languageCode;
-    if (languageCode == nextLanguageCode) return;
-    languageCode = nextLanguageCode;
-    future = widget.api.getPokemonInfo(
-      widget.initialPokemon.name,
-      languageCode: nextLanguageCode,
-    );
+    controller.loadForLanguage(context.l10n.languageCode);
   }
 
   @override
   void dispose() {
-    cryPlayer.dispose();
-    detailScrollController.dispose();
+    controller.dispose();
     super.dispose();
-  }
-
-  Future<void> _toggle(PokemonInfo pokemon) async {
-    await widget.favorites.toggle(pokemon.toItem());
-    setState(
-      () => pokemon.isFavorite = widget.favorites.isFavorite(pokemon.id),
-    );
-  }
-
-  Future<void> _popWithHero() async {
-    if (isPopping) return;
-    isPopping = true;
-
-    if (detailScrollController.hasClients &&
-        detailScrollController.offset > 12) {
-      await detailScrollController.animateTo(
-        0,
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOutCubic,
-      );
-    }
-
-    if (mounted) Navigator.pop(context);
-  }
-
-  Future<void> _openEvolution(PokemonSpecies species) async {
-    final pokemon = await widget.api.getPokemonItem(species.name);
-    if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => PokemonDetailScreen(
-          api: widget.api,
-          favorites: widget.favorites,
-          initialPokemon: pokemon,
-        ),
-      ),
-    );
-  }
-
-  void _selectPage(int page) => setState(() => selectedPage = page);
-
-  Future<void> _playCry(PokemonInfo pokemon) async {
-    final cryUrl = pokemon.cryUrl;
-    if (cryUrl == null || cryUrl.isEmpty) return;
-    try {
-      await cryPlayer.stop();
-      await cryPlayer.play(UrlSource(cryUrl));
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No se pudo reproducir el sonido.'),
-        ),
-      );
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final routes = PokemonDetailRoutes(
+      context: context,
+      api: widget.api,
+      favorites: widget.favorites,
+    );
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -116,44 +65,20 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       },
       child: Scaffold(
         backgroundColor: const Color(0xFF121422),
-        body: FutureBuilder<PokemonInfo>(
-          future: future,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
-              return DetailHeaderLoading(
-                initialPokemon: widget.initialPokemon,
-                onBack: _popWithHero,
-              );
-            }
-            if (snapshot.hasError) {
-              return ErrorState(
-                onRetry: () => setState(
-                  () => future = widget.api.getPokemonInfo(
-                    widget.initialPokemon.name,
-                    languageCode: context.l10n.languageCode,
-                  ),
-                ),
-              );
-            }
-            final pokemon = snapshot.data!
-              ..isFavorite = widget.favorites.isFavorite(snapshot.data!.id);
-            return AnimatedBuilder(
-              animation: widget.favorites,
-              builder: (context, _) {
-                pokemon.isFavorite = widget.favorites.isFavorite(pokemon.id);
-                return PokemonDetailBody(
-                  pokemon: pokemon,
-                  selectedPage: selectedPage,
-                  scrollController: detailScrollController,
-                  onBack: _popWithHero,
-                  onFavorite: () => _toggle(pokemon),
-                  onPlayCry: () => _playCry(pokemon),
-                  onPageSelected: _selectPage,
-                  onEvolutionTap: _openEvolution,
-                );
-              },
-            );
-          },
+        body: PokemonDetailLoader(
+          future: controller.future,
+          initialPokemon: widget.initialPokemon,
+          favorites: widget.favorites,
+          selectedPage: controller.selectedPage,
+          showShiny: controller.showShiny,
+          scrollController: controller.scrollController,
+          onRetry: _retry,
+          onBack: _popWithHero,
+          onFavorite: _toggle,
+          onPlayCry: (pokemon) => _playCry(pokemon, routes),
+          onShinyToggle: _toggleShiny,
+          onPageSelected: _selectPage,
+          onEvolutionTap: (species) => _openEvolution(species, routes),
         ),
       ),
     );

@@ -38,9 +38,12 @@ class PokemonInfo {
     required this.types,
     required this.evolutionChain,
     required this.megaEvolutions,
+    required this.regionalForms,
+    required this.gigantamaxForms,
     required this.abilities,
     required this.description,
     required this.cryUrl,
+    required this.shinyImageUrl,
     this.isFavorite = false,
   });
 
@@ -53,10 +56,16 @@ class PokemonInfo {
   final List<String> types;
   final List<PokemonSpecies> evolutionChain;
   final List<PokemonSpecies> megaEvolutions;
+  final List<PokemonSpecies> regionalForms;
+  final List<PokemonSpecies> gigantamaxForms;
   final List<PokemonAbility> abilities;
   final String description;
   final String? cryUrl;
+  final String? shinyImageUrl;
   bool isFavorite;
+
+  String get imageUrl =>
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png';
 
   PokemonItem toItem() => PokemonItem(
         id: id,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
 import 'package:pokeapp_flutter/ui/utils/pokemon_formatters.dart';
+import 'type_icons.dart';
 
 class TypeBadgeImage extends StatelessWidget {
   const TypeBadgeImage({super.key, required this.type, this.width = 100});
@@ -33,7 +34,7 @@ class TypeBadgeImage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                _typeIcon(type),
+                pokemonTypeIcon(type),
                 color: Colors.white,
                 size: (width * .15).clamp(12, 22).toDouble(),
               ),
@@ -57,29 +58,6 @@ class TypeBadgeImage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  IconData _typeIcon(String value) {
-    return switch (value.toLowerCase()) {
-      'fire' => Icons.local_fire_department,
-      'water' => Icons.water_drop,
-      'grass' => Icons.grass,
-      'electric' => Icons.bolt,
-      'poison' => Icons.science,
-      'ground' => Icons.terrain,
-      'flying' => Icons.air,
-      'psychic' => Icons.blur_on,
-      'bug' => Icons.bug_report,
-      'rock' => Icons.hexagon,
-      'ghost' => Icons.nightlight,
-      'dragon' => Icons.whatshot,
-      'dark' => Icons.dark_mode,
-      'steel' => Icons.shield,
-      'fairy' => Icons.auto_awesome,
-      'ice' => Icons.ac_unit,
-      'fighting' => Icons.sports_mma,
-      _ => Icons.circle,
-    };
   }
 }
 

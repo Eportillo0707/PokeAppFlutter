@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/data/local/favorites_store.dart';
 import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
-import 'package:pokeapp_flutter/ui/components/pokemon_widgets.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/pokemon_detail_screen.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_list/widgets/type_results_grid.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_list/widgets/type_screen_header.dart';
 
 class TypeScreen extends StatefulWidget {
   const TypeScreen({
@@ -39,61 +40,32 @@ class _TypeScreenState extends State<TypeScreen> {
         bottom: false,
         child: Column(
           children: [
-            SizedBox(
-              height: 60,
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    ),
-                  ),
-                  Align(
-                    child: TypeBadgeImage(type: widget.type, width: 120),
-                  ),
-                ],
-              ),
-            ),
+            TypeScreenHeader(type: widget.type),
             Expanded(
-              child: AnimatedBuilder(
-                animation: widget.favorites,
-                builder: (context, _) {
-                  return FutureBuilder<List<PokemonItem>>(
-                    future: future,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState != ConnectionState.done) {
-                        return const LoadingState();
-                      }
-                      if (snapshot.hasError) {
-                        return ErrorState(
-                          onRetry: () => setState(
-                            () => future =
-                                widget.api.getPokemonByType(widget.type),
-                          ),
-                        );
-                      }
-                      final items = snapshot.data ?? [];
-                      return PokemonGrid(
-                        items: items,
-                        favorites: widget.favorites,
-                        onPokemonTap: (pokemon) => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => PokemonDetailScreen(
-                              api: widget.api,
-                              favorites: widget.favorites,
-                              initialPokemon: pokemon,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
+              child: TypeResultsGrid(
+                future: future,
+                favorites: widget.favorites,
+                onRetry: _reload,
+                onPokemonTap: _openDetail,
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _reload() {
+    setState(() => future = widget.api.getPokemonByType(widget.type));
+  }
+
+  void _openDetail(PokemonItem pokemon) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => PokemonDetailScreen(
+          api: widget.api,
+          favorites: widget.favorites,
+          initialPokemon: pokemon,
         ),
       ),
     );

@@ -26,6 +26,8 @@ class PokemonMapper {
     required Map<String, dynamic>? evolutionChain,
     required List<Map<String, dynamic>> abilities,
     required List<PokemonSpecies> megaEvolutions,
+    required List<PokemonSpecies> regionalForms,
+    required List<PokemonSpecies> gigantamaxForms,
     String languageCode = 'en',
   }) {
     return _infoMapper.map(
@@ -34,6 +36,8 @@ class PokemonMapper {
       evolutionChain: evolutionChain,
       abilities: abilities,
       megaEvolutions: megaEvolutions,
+      regionalForms: regionalForms,
+      gigantamaxForms: gigantamaxForms,
       languageCode: languageCode,
     );
   }

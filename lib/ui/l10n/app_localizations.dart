@@ -44,6 +44,9 @@ class AppLocalizations {
   String get abilities => isSpanish ? 'Habilidades' : 'Abilities';
   String get evolutionChain =>
       isSpanish ? 'Cadena evolutiva' : 'Evolution Chain';
+  String get regionalForms =>
+      isSpanish ? 'Formas regionales' : 'Regional Forms';
+  String get gigantamaxForms => isSpanish ? 'Gigamax' : 'Gigantamax';
   String get megaEvolutions =>
       isSpanish ? 'Megaevoluciones' : 'Mega Evolutions';
   String get resistances => isSpanish ? 'Resistencias' : 'Resistances';

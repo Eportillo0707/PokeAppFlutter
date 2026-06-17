@@ -12,20 +12,24 @@ class PokemonDetailBody extends StatelessWidget {
     super.key,
     required this.pokemon,
     required this.selectedPage,
+    required this.showShiny,
     required this.scrollController,
     required this.onBack,
     required this.onFavorite,
     required this.onPlayCry,
+    required this.onShinyToggle,
     required this.onPageSelected,
     required this.onEvolutionTap,
   });
 
   final PokemonInfo pokemon;
   final int selectedPage;
+  final bool showShiny;
   final ScrollController scrollController;
   final VoidCallback onBack;
   final VoidCallback onFavorite;
   final VoidCallback onPlayCry;
+  final VoidCallback? onShinyToggle;
   final ValueChanged<int> onPageSelected;
   final ValueChanged<PokemonSpecies> onEvolutionTap;
 
@@ -39,27 +43,38 @@ class PokemonDetailBody extends StatelessWidget {
           children: [
             DetailHeader(
               pokemon: pokemon,
+              showShiny: showShiny,
               onBack: onBack,
               onFavorite: onFavorite,
               onPlayCry: onPlayCry,
+              onShinyToggle: onShinyToggle,
             ),
-            PokemonDetailTypeBadges(types: pokemon.types),
-            const SizedBox(height: 14),
-            DetailTabs(
-              selectedPage: selectedPage,
-              onInfoClick: () => onPageSelected(0),
-              onStatsClick: () => onPageSelected(1),
-            ),
-            DetailPageCard(
-              child: SwipeableDetailPage(
-                selectedPage: selectedPage,
-                onPageSelected: onPageSelected,
-                child: selectedPage == 0
-                    ? PokemonInfoPage(
-                        pokemon: pokemon,
-                        onEvolutionTap: onEvolutionTap,
-                      )
-                    : PokemonStatsPage(pokemon: pokemon),
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 720),
+                child: Column(
+                  children: [
+                    PokemonDetailTypeBadges(types: pokemon.types),
+                    const SizedBox(height: 14),
+                    DetailTabs(
+                      selectedPage: selectedPage,
+                      onInfoClick: () => onPageSelected(0),
+                      onStatsClick: () => onPageSelected(1),
+                    ),
+                    DetailPageCard(
+                      child: SwipeableDetailPage(
+                        selectedPage: selectedPage,
+                        onPageSelected: onPageSelected,
+                        child: selectedPage == 0
+                            ? PokemonInfoPage(
+                                pokemon: pokemon,
+                                onEvolutionTap: onEvolutionTap,
+                              )
+                            : PokemonStatsPage(pokemon: pokemon),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

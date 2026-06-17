@@ -14,22 +14,24 @@ class DetailTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 85),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _DetailTabButton(
-            icon: Icons.info,
-            selected: selectedPage == 0,
-            onTap: onInfoClick,
-          ),
-          _DetailTabButton(
-            icon: Icons.bar_chart,
-            selected: selectedPage == 1,
-            onTap: onStatsClick,
-          ),
-        ],
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 230),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _DetailTabButton(
+              icon: Icons.info,
+              selected: selectedPage == 0,
+              onTap: onInfoClick,
+            ),
+            _DetailTabButton(
+              icon: Icons.bar_chart,
+              selected: selectedPage == 1,
+              onTap: onStatsClick,
+            ),
+          ],
+        ),
       ),
     );
   }

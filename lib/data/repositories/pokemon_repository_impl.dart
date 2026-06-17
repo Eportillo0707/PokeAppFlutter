@@ -101,6 +101,14 @@ class PokemonRepositoryImpl implements PokemonRepository {
       normalEvolutions,
       languageCode,
     );
+    final regionalForms = await _getRegionalForms(
+      normalEvolutions,
+      languageCode,
+    );
+    final gigantamaxForms = await _getGigantamaxForms(
+      normalEvolutions,
+      languageCode,
+    );
     final abilityDtos = await _getAbilities(pokemon);
 
     return _mapper.mapPokemonInfo(
@@ -109,6 +117,8 @@ class PokemonRepositoryImpl implements PokemonRepository {
       evolutionChain: evolutionChain,
       abilities: abilityDtos,
       megaEvolutions: megaEvolutions,
+      regionalForms: regionalForms,
+      gigantamaxForms: gigantamaxForms,
       languageCode: languageCode,
     );
   }
@@ -160,6 +170,41 @@ class PokemonRepositoryImpl implements PokemonRepository {
     List<PokemonSpecies> baseSpecies,
     String languageCode,
   ) async {
+    return _getForms(
+      baseSpecies,
+      matches: (name) => name.contains('-mega'),
+      methodFor: (_) =>
+          languageCode == 'es' ? 'Megaevolucion' : 'Mega Evolution',
+    );
+  }
+
+  Future<List<PokemonSpecies>> _getRegionalForms(
+    List<PokemonSpecies> baseSpecies,
+    String languageCode,
+  ) async {
+    return _getForms(
+      baseSpecies,
+      matches: _isRegionalForm,
+      methodFor: (name) => _regionalFormLabel(name, languageCode),
+    );
+  }
+
+  Future<List<PokemonSpecies>> _getGigantamaxForms(
+    List<PokemonSpecies> baseSpecies,
+    String languageCode,
+  ) async {
+    return _getForms(
+      baseSpecies,
+      matches: (name) => name.contains('-gmax'),
+      methodFor: (_) => languageCode == 'es' ? 'Gigamax' : 'Gigantamax',
+    );
+  }
+
+  Future<List<PokemonSpecies>> _getForms(
+    List<PokemonSpecies> baseSpecies, {
+    required bool Function(String name) matches,
+    required String Function(String name) methodFor,
+  }) async {
     final all = <PokemonSpecies>[];
     for (final base in baseSpecies) {
       try {
@@ -168,16 +213,16 @@ class PokemonRepositoryImpl implements PokemonRepository {
           species['varieties'] as List? ?? [],
         );
         for (final variety in varieties) {
-          final varietyName = variety['pokemon']['name'] as String;
-          if (!varietyName.toLowerCase().contains('-mega')) continue;
+          final varietyName =
+              (variety['pokemon']['name'] as String).toLowerCase();
+          if (!matches(varietyName)) continue;
           final detail = await _remoteDataSource.getPokemon(varietyName);
           all.add(
             PokemonSpecies(
               id: detail['id'] as int,
               name: detail['name'] as String,
               evolvesFromSpeciesId: base.id,
-              evolutionMethod:
-                  languageCode == 'es' ? 'Megaevolucion' : 'Mega Evolution',
+              evolutionMethod: methodFor(varietyName),
             ),
           );
         }
@@ -185,5 +230,25 @@ class PokemonRepositoryImpl implements PokemonRepository {
     }
     all.sort((a, b) => a.id.compareTo(b.id));
     return _mapper.distinctSpecies(all);
+  }
+
+  bool _isRegionalForm(String name) {
+    return name.contains('-alola') ||
+        name.contains('-galar') ||
+        name.contains('-hisui') ||
+        name.contains('-paldea');
+  }
+
+  String _regionalFormLabel(String name, String languageCode) {
+    final region = _regionalName(name, languageCode);
+    return languageCode == 'es' ? 'Forma $region' : '$region Form';
+  }
+
+  String _regionalName(String name, String languageCode) {
+    if (name.contains('-alola')) return 'Alola';
+    if (name.contains('-galar')) return 'Galar';
+    if (name.contains('-hisui')) return 'Hisui';
+    if (name.contains('-paldea')) return 'Paldea';
+    return languageCode == 'es' ? 'regional' : 'Regional';
   }
 }
