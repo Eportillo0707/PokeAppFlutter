@@ -66,6 +66,9 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       child: Scaffold(
         backgroundColor: const Color(0xFF121422),
         body: PokemonDetailLoader(
+          loadMachines: widget.api.getMoveMachines,
+          loadDescription: widget.api.getMoveDescription,
+          loadBattleInfo: widget.api.getMoveBattleInfo,
           future: controller.future,
           initialPokemon: widget.initialPokemon,
           favorites: widget.favorites,

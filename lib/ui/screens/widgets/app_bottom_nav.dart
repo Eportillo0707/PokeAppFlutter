@@ -14,24 +14,42 @@ class AppBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Container(
-        height: 60,
+    return DecoratedBox(
+      decoration: BoxDecoration(
         color: const Color(0xFF232B4C),
-        child: Row(
-          children: [
-            _BottomTab(
-              title: context.l10n.pokemon,
-              selected: index == 0,
-              onTap: () => onSelected(0),
-            ),
-            _BottomTab(
-              title: context.l10n.favorites,
-              selected: index == 1,
-              onTap: () => onSelected(1),
-            ),
-          ],
+        border: Border(
+            top: BorderSide(
+                color: Colors.white.withValues(alpha: .22))),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: .25),
+              blurRadius: 16,
+              offset: const Offset(0, -4))
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 60,
+          child: Row(
+            children: [
+              _BottomTab(
+                title: 'Pokédex',
+                selected: index == 0,
+                onTap: () => onSelected(0),
+              ),
+              _BottomTab(
+                title: context.l10n.favorites,
+                selected: index == 1,
+                onTap: () => onSelected(1),
+              ),
+              _BottomTab(
+                title: context.l10n.isSpanish ? 'Equipos' : 'Teams',
+                selected: index == 2,
+                onTap: () => onSelected(2),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -52,25 +70,37 @@ class _BottomTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(title, style: _textStyle),
-            const SizedBox(height: 6),
-            _SelectionIndicator(selected: selected),
-          ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+        child: Material(
+          color: selected
+              ? Colors.white.withValues(alpha: .14)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(14),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: onTap,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(title,
+                    style: TextStyle(
+                        color: selected
+                            ? Colors.white
+                            : Colors.white70,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 6),
+                _SelectionIndicator(selected: selected),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
-
-  TextStyle get _textStyle => TextStyle(
-        color: selected ? Colors.white : Colors.grey,
-        fontSize: 16,
-        fontWeight: FontWeight.w800,
-      );
 }
 
 class _SelectionIndicator extends StatelessWidget {
@@ -82,9 +112,9 @@ class _SelectionIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 35,
-      height: 7,
+      height: 3,
       decoration: BoxDecoration(
-        color: selected ? const Color(0xFFE8D8FF) : Colors.transparent,
+        color: selected ? Colors.white : Colors.transparent,
         borderRadius: BorderRadius.circular(50),
       ),
     );

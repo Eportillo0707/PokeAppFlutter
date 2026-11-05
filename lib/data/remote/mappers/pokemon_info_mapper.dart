@@ -1,4 +1,5 @@
 import 'package:pokeapp_flutter/data/remote/mappers/localized_text_mapper.dart';
+import 'package:pokeapp_flutter/data/remote/mappers/pokemon_move_mapper.dart';
 import 'package:pokeapp_flutter/data/remote/mappers/pokemon_ability_mapper.dart';
 import 'package:pokeapp_flutter/data/remote/mappers/pokemon_evolution_mapper.dart';
 import 'package:pokeapp_flutter/data/remote/mappers/pokemon_stats_mapper.dart';
@@ -58,6 +59,7 @@ class PokemonInfoMapper {
       ),
       cryUrl: _cryUrl(pokemon),
       shinyImageUrl: _shinyArtworkUrl(pokemon),
+      moves: const PokemonMoveMapper().map(pokemon),
     );
   }
 

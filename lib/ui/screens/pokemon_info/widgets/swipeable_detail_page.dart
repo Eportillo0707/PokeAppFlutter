@@ -18,10 +18,10 @@ class SwipeableDetailPage extends StatelessWidget {
       behavior: HitTestBehavior.translucent,
       onHorizontalDragEnd: (details) {
         final velocity = details.primaryVelocity ?? 0;
-        if (velocity < -120 && selectedPage == 0) {
-          onPageSelected(1);
-        } else if (velocity > 120 && selectedPage == 1) {
-          onPageSelected(0);
+        if (velocity < -120 && selectedPage < 2) {
+          onPageSelected(selectedPage + 1);
+        } else if (velocity > 120 && selectedPage > 0) {
+          onPageSelected(selectedPage - 1);
         }
       },
       child: AnimatedSwitcher(

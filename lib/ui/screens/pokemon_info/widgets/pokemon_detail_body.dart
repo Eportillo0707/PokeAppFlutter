@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_move.dart';
 
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_card.dart';
+import 'detail_moves.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_header.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_pages.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_tabs.dart';
@@ -20,6 +22,9 @@ class PokemonDetailBody extends StatelessWidget {
     required this.onShinyToggle,
     required this.onPageSelected,
     required this.onEvolutionTap,
+    this.loadMachines,
+    this.loadDescription,
+    this.loadBattleInfo,
   });
 
   final PokemonInfo pokemon;
@@ -32,6 +37,9 @@ class PokemonDetailBody extends StatelessWidget {
   final VoidCallback? onShinyToggle;
   final ValueChanged<int> onPageSelected;
   final ValueChanged<PokemonSpecies> onEvolutionTap;
+  final MoveMachineLoader? loadMachines;
+  final MoveDescriptionLoader? loadDescription;
+  final MoveBattleLoader? loadBattleInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +68,7 @@ class PokemonDetailBody extends StatelessWidget {
                       selectedPage: selectedPage,
                       onInfoClick: () => onPageSelected(0),
                       onStatsClick: () => onPageSelected(1),
+                      onMovesClick: () => onPageSelected(2),
                     ),
                     DetailPageCard(
                       child: SwipeableDetailPage(
@@ -70,7 +79,16 @@ class PokemonDetailBody extends StatelessWidget {
                                 pokemon: pokemon,
                                 onEvolutionTap: onEvolutionTap,
                               )
-                            : PokemonStatsPage(pokemon: pokemon),
+                            : selectedPage == 1
+                                ? PokemonStatsPage(pokemon: pokemon)
+                                : PokemonMovesPage(
+                                    key: ValueKey('moves-${pokemon.id}'),
+                                    moves: pokemon.moves,
+                                    pokemonId: pokemon.id,
+                                    loadMachines: loadMachines,
+                                    loadDescription: loadDescription,
+                                    loadBattleInfo: loadBattleInfo,
+                                  ),
                       ),
                     ),
                   ],

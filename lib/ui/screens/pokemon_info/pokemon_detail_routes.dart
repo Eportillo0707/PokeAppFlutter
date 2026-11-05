@@ -18,7 +18,7 @@ class PokemonDetailRoutes {
 
   Future<void> openEvolution(PokemonItem pokemon) async {
     if (!context.mounted) return;
-    Navigator.of(context).pushReplacement(
+    await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => PokemonDetailScreen(
           api: api,

@@ -1,3 +1,5 @@
+import 'pokemon_move.dart';
+
 class PokemonItem {
   PokemonItem({
     required this.id,
@@ -44,6 +46,7 @@ class PokemonInfo {
     required this.description,
     required this.cryUrl,
     required this.shinyImageUrl,
+    this.moves = const [],
     this.isFavorite = false,
   });
 
@@ -62,6 +65,7 @@ class PokemonInfo {
   final String description;
   final String? cryUrl;
   final String? shinyImageUrl;
+  final List<PokemonMove> moves;
   bool isFavorite;
 
   String get imageUrl =>

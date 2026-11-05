@@ -83,3 +83,5 @@ macos/Runner/GeneratedPluginRegistrant.*
 # Test and tooling output
 test-results/
 reports/
+backup-antes-constructor-equipos.zip
+backup-antes-offline-first-2026-11-05.zip

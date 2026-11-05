@@ -1,11 +1,13 @@
 import 'package:pokeapp_flutter/data/remote/mappers/pokemon_mapper.dart';
+import 'package:pokeapp_flutter/data/remote/move_machine_source.dart';
 import 'package:pokeapp_flutter/data/remote/pokemon_remote_data_source.dart';
 import 'package:pokeapp_flutter/domain/model/pokemon_generation.dart';
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_move.dart';
 import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
 
 class PokemonRepositoryImpl implements PokemonRepository {
-  const PokemonRepositoryImpl({
+  PokemonRepositoryImpl({
     required PokemonRemoteDataSource remoteDataSource,
     required PokemonMapper mapper,
   })  : _remoteDataSource = remoteDataSource,
@@ -13,6 +15,21 @@ class PokemonRepositoryImpl implements PokemonRepository {
 
   final PokemonRemoteDataSource _remoteDataSource;
   final PokemonMapper _mapper;
+  late final _moveMachines = MoveMachineSource(_remoteDataSource);
+
+  @override
+  Future<MoveBattleInfo> getMoveBattleInfo(
+          String move, String game, String language) =>
+      _moveMachines.getBattleInfo(move, game, language);
+
+  @override
+  Future<MoveDescription?> getMoveDescription(
+          String move, String game, String language) =>
+      _moveMachines.getDescription(move, game, language);
+
+  @override
+  Future<List<String>> getMoveMachines(String move, String game) =>
+      _moveMachines.getMachines(move, game);
 
   @override
   Future<List<PokemonItem>> getPokemonList({
