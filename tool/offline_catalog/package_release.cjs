@@ -2,15 +2,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const {sha256} = require('./source.cjs');
-
-async function checkedCopy(source, destination, entry) {
-  const bytes = await fs.readFile(source);
-  if (bytes.length !== entry.bytes || sha256(bytes) !== entry.sha256) {
-    throw new Error(`Invalid source file: ${source}`);
-  }
-  await fs.mkdir(path.dirname(destination), {recursive: true});
-  await fs.writeFile(destination, bytes, {flag: 'wx'});
-}
+const {assetName, checkedCopy} = require('./release_files.cjs');
 
 async function packageRelease({catalogDir, baselineFile, reportFile,
   outputDir, version, baseVersion, privateKeyFile}) {
@@ -50,12 +42,12 @@ async function packageRelease({catalogDir, baselineFile, reportFile,
     minAppVersion: '1.1.0', schemaVersion: 1, keyId,
     sourceSnapshot: current.snapshotAt, changes: report.changes,
     files: files.map(({path: file, bytes, sha256: hash}) =>
-      ({path: file, bytes, sha256: hash}))};
+      ({path: file, asset: assetName(file), bytes, sha256: hash}))};
   await fs.mkdir(path.dirname(outputDir), {recursive: true});
   await fs.mkdir(outputDir, {recursive: false});
   for (const entry of files) {
     await checkedCopy(path.join(catalogDir, entry.path),
-      path.join(outputDir, entry.path), entry);
+      path.join(outputDir, assetName(entry.path)), entry);
   }
   const encoded = Buffer.from(`${JSON.stringify(manifest, null, 2)}\n`);
   const signature = crypto.sign(null, encoded, key).toString('base64');

@@ -90,7 +90,7 @@ necesarias antes de implementar el sistema. No autoriza publicar un release.
 - **Fase 2 incompleta:** falta enlazar el snapshot nuevo con una adquisición
   de medios consistente, generar un catálogo SQLite nuevo, validar medios
   incrementales frente al catálogo instalado y definir la clave pública de
-  pruebas. No hay aún instalador Flutter ni GitHub Actions.
+  pruebas. No hay aún GitHub Actions.
 
 ## Detección en Flutter iniciada
 
@@ -105,14 +105,41 @@ necesarias antes de implementar el sistema. No autoriza publicar un release.
   si se compila con `POKEAPP_CATALOG_MANIFEST_URL` y
   `POKEAPP_CATALOG_PUBLIC_KEY` (32 bytes Ed25519 codificados en base64).
   En release no se crea el servicio. Sin esos valores tampoco hay solicitudes.
-- Esta conexión todavía no muestra avisos ni instala paquetes. La versión base
-  está fijada a `2026.11.05` hasta que exista un catálogo activo versionado.
-  No se debe presentar esta etapa como actualización funcional completa.
+- La detección inicial se completó con un aviso en Ajustes. La instalación
+  posterior lee la versión activa del almacenamiento local y limita la
+  descarga a paquetes de solo SQLite. No se debe presentar esta etapa como
+  actualización funcional completa para catálogos con medios nuevos.
 - `flutter analyze --no-pub` no encontró problemas y `flutter test --no-pub`
-  pasó 49 pruebas, incluidas firma válida, firma alterada, intervalo, búsqueda
+  pasó 58 pruebas, incluidas firma válida, firma alterada, intervalo, búsqueda
   manual y recuperación tras una consulta fallida. Falta validar en teléfono
   con un manifiesto firmado de prueba y comprobar el flujo de interfaz.
 - En debug/profile, `AppShell` muestra una pestaña Ajustes/Settings con la
   versión base, la última comprobación, el estado y búsqueda manual. La pestaña
   no existe en release. Con URL o clave de pruebas ausentes, el botón queda
-  deshabilitado y no hay solicitudes. La interfaz no ofrece descarga todavía.
+  deshabilitado y no hay solicitudes. La descarga se añadió después solo para
+  actualizaciones de SQLite sin cambios de medios.
+
+## Instalación local de SQLite iniciada
+
+- Los assets del paquete tienen nombres planos compatibles con GitHub Releases;
+  el manifiesto firmado conserva rutas lógicas seguras. Los archivos se
+  descargan por streaming, se limitan por tamaño y se verifican con SHA-256.
+  Los archivos válidos se reutilizan y los `.part` se borran tras un fallo.
+- El instalador descomprime en un directorio de versión independiente, valida
+  integridad SQLite, claves foráneas, esquema y asignación de medios, y solo
+  después escribe la referencia activa. La base abierta no se reemplaza; la
+  nueva versión se usa al siguiente inicio. El seed y la versión anterior
+  siguen disponibles para recuperación.
+- Por ahora se acepta **solo una actualización de SQLite sin cambios de
+  medios**. Si el paquete añade imágenes, gritos o íconos, el botón no aparece
+  y el instalador rechaza el paquete. Falta el resolvedor de medios descargados.
+- Una prueba local de extremo a extremo verificó firma, descarga, instalación,
+  reapertura y conservación de las claves de favoritos y equipos. También se
+  probó rechazo de SQLite incompatible, hash erróneo y medios no instalados.
+- No se ha probado en teléfono: ADB no detectó dispositivos conectados.
+  Tampoco se ha creado un Release ni una clave de firma persistente.
+- La compilación profile sin URL ni clave de pruebas no consulta la red. Para
+  probar el flujo en un dispositivo harán falta un manifiesto de test firmado,
+  su clave pública en la compilación y un servidor accesible al teléfono.
+- `flutter build apk --profile --no-pub` generó una APK de 197,7 MB; `aapt`
+  confirmó el identificador `com.emerson.pokeapp.offlinetest`. No se instaló.

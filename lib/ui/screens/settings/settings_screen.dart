@@ -4,6 +4,7 @@ import 'package:pokeapp_flutter/data/updates/catalog_update_checker.dart';
 import 'package:pokeapp_flutter/data/updates/catalog_update_service.dart';
 import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
 import 'settings_status.dart';
+import 'settings_install_button.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key, required this.updates});
@@ -16,6 +17,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   final ValueNotifier<int> _idle = ValueNotifier(0);
   String? lastChecked;
+  String installedVersion = '2026.11.05';
 
   @override
   void dispose() {
@@ -29,12 +31,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     widget.updates?.addListener(_onUpdate);
     _loadLastCheck();
+    _loadVersion();
   }
 
   void _onUpdate() {
-    if (widget.updates?.checking == false) {
+    if (widget.updates?.checking == false &&
+        widget.updates?.installing == false) {
       _loadLastCheck();
+      _loadVersion();
     }
+  }
+
+  Future<void> _loadVersion() async {
+    final version = await widget.updates?.installedVersion() ?? '2026.11.05';
+    if (mounted) setState(() => installedVersion = version);
   }
 
   Future<void> _loadLastCheck() async {
@@ -64,7 +74,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 16),
             Text('${spanish ? 'Versión instalada' : 'Installed version'}: '
-              '2026.11.05'),
+              '$installedVersion'),
             const SizedBox(height: 8),
             Text(lastChecked == null
               ? (spanish ? 'Nunca se ha comprobado' : 'Never checked')
@@ -78,6 +88,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: const Icon(Icons.refresh),
               label: Text(spanish ? 'Buscar actualizaciones' : 'Check for updates'),
             ),
+            SettingsInstallButton(updates: updates, spanish: spanish),
           ]),
       ),
     );

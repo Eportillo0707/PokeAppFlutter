@@ -22,7 +22,8 @@ void main() {
     'formatVersion': 1, 'schemaVersion': 1, 'channel': 'offlinetest',
     'minAppVersion': '1.1.0', 'catalogVersion': '2026.11.11',
     'baseCatalogVersion': '2026.11.05',
-    'files': [{'path': 'catalog.sqlite.gz', 'bytes': 100, 'sha256': fileHash}],
+    'files': [{'path': 'catalog.sqlite.gz', 'asset': 'catalog.sqlite.gz',
+      'bytes': 100, 'sha256': fileHash}],
   }));
 
   test('accepts a signed test manifest', () async {

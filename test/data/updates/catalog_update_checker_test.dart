@@ -12,7 +12,7 @@ void main() {
   test('checks once and waits 15 days after success', () async {
     var calls = 0;
     var now = DateTime.utc(2026, 11, 11);
-    final checker = CatalogUpdateChecker(installedVersion: current,
+    final checker = CatalogUpdateChecker(installedVersion: () async => current,
       now: () => now, fetch: () async { calls++; return update; });
     expect((await checker.check())?.version, update.version);
     expect(await checker.check(), isNull);
@@ -24,7 +24,7 @@ void main() {
 
   test('manual check bypasses the interval', () async {
     var calls = 0;
-    final checker = CatalogUpdateChecker(installedVersion: current,
+    final checker = CatalogUpdateChecker(installedVersion: () async => current,
       now: () => DateTime.utc(2026, 11, 11),
       fetch: () async { calls++; return update; });
     await checker.check();
@@ -35,7 +35,7 @@ void main() {
   test('failed request does not update last success', () async {
     var calls = 0;
     var now = DateTime.utc(2026, 11, 11);
-    final checker = CatalogUpdateChecker(installedVersion: current,
+    final checker = CatalogUpdateChecker(installedVersion: () async => current,
       now: () => now, fetch: () async {
         calls++;
         if (calls == 1) throw StateError('offline');
@@ -50,7 +50,7 @@ void main() {
   });
 
   test('rejects an update for another base version', () async {
-    final checker = CatalogUpdateChecker(installedVersion: current,
+    final checker = CatalogUpdateChecker(installedVersion: () async => current,
       fetch: () async => const CatalogManifest('2026.11.11', '2026.11.01', []));
     expect(await checker.check(manual: true), isNull);
   });

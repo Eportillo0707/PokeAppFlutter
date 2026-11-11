@@ -1,6 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'package:sqflite/sqflite.dart';
+import 'catalog_active_store.dart';
+import 'catalog_downloader.dart';
+import 'catalog_installer.dart';
 import 'catalog_manifest.dart';
 import 'catalog_manifest_client.dart';
 import 'catalog_update_checker.dart';
@@ -16,7 +22,7 @@ class CatalogUpdateService extends ChangeNotifier {
       final client = CatalogManifestClient(
         url: Uri.parse(url), publicKey: base64Decode(key));
       final checker = CatalogUpdateChecker(fetch: client.fetch,
-        installedVersion: '2026.11.05');
+        installedVersion: () async => (await _store()).activeVersion());
       return CatalogUpdateService._(client, checker);
     } on FormatException {
       return null;
@@ -28,7 +34,15 @@ class CatalogUpdateService extends ChangeNotifier {
   CatalogManifest? available;
   Object? error;
   bool checking = false;
+  bool installing = false;
+  bool restartRequired = false;
+  int downloadedBytes = 0;
   bool _disposed = false;
+
+  static Future<CatalogActiveStore> _store() async =>
+      CatalogActiveStore(Directory(await getDatabasesPath()));
+
+  Future<String> installedVersion() async => (await _store()).activeVersion();
 
   Future<void> check({bool manual = false}) async {
     if (checking) return;
@@ -41,6 +55,34 @@ class CatalogUpdateService extends ChangeNotifier {
       error = caught;
     } finally {
       checking = false;
+      if (!_disposed) notifyListeners();
+    }
+  }
+
+  Future<void> installAvailable() async {
+    final manifest = available;
+    if (manifest == null || installing) return;
+    installing = true;
+    error = null;
+    downloadedBytes = 0;
+    notifyListeners();
+    final client = http.Client();
+    try {
+      final store = await _store();
+      final staging = Directory('${store.root.path}/staging/${manifest.version}');
+      await CatalogDownloader(manifestUrl: _client.url, client: client)
+          .download(manifest, staging, onProgress: (done, _) {
+        downloadedBytes = done;
+        if (!_disposed) notifyListeners();
+      });
+      await CatalogInstaller(store).install(manifest, staging);
+      available = null;
+      restartRequired = true;
+    } catch (caught) {
+      error = caught;
+    } finally {
+      client.close();
+      installing = false;
       if (!_disposed) notifyListeners();
     }
   }

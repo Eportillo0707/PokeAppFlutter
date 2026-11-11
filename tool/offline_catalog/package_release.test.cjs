@@ -44,7 +44,10 @@ test('packages changed media and signs the update manifest', async () => {
       'update-manifest.sig'), 'utf8')).trim(), 'base64');
     assert.ok(crypto.verify(null, manifest, publicKey, signature));
     assert.equal(JSON.parse(manifest).channel, 'offlinetest');
-    assert.deepEqual(await fs.readFile(path.join(outputDir, mediaPath)), media);
+    assert.equal(JSON.parse(manifest).files[1].asset,
+      `media-${mediaPath.slice(6)}`);
+    assert.deepEqual(await fs.readFile(path.join(outputDir,
+      `media-${mediaPath.slice(6)}`)), media);
     await assert.rejects(packageRelease(args), /exist/);
     await fs.writeFile(reportFile, JSON.stringify({changed: false}));
     await assert.rejects(packageRelease({...args,

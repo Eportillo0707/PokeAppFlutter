@@ -1,21 +1,25 @@
 class CatalogFile {
-  const CatalogFile(this.path, this.bytes, this.sha256);
+  const CatalogFile(this.path, this.asset, this.bytes, this.sha256);
 
   final String path;
+  final String asset;
   final int bytes;
   final String sha256;
 
   factory CatalogFile.fromJson(Map<String, dynamic> json) {
     final path = json['path'];
+    final asset = json['asset'];
     final bytes = json['bytes'];
     final sha256 = json['sha256'];
-    if (path is! String || bytes is! int || bytes < 0 ||
+    if (path is! String || asset is! String || bytes is! int || bytes < 0 ||
         sha256 is! String || !RegExp(r'^[a-f0-9]{64}$').hasMatch(sha256) ||
         (path != 'catalog.sqlite.gz' &&
-            !RegExp(r'^media/[a-f0-9]{64}\.(webp|ogg|mp3)$').hasMatch(path))) {
+            !RegExp(r'^media/[a-f0-9]{64}\.(webp|ogg|mp3)$').hasMatch(path)) ||
+        asset != (path == 'catalog.sqlite.gz'
+            ? path : 'media-${path.substring(6)}')) {
       throw const FormatException('Invalid catalog file');
     }
-    return CatalogFile(path, bytes, sha256);
+    return CatalogFile(path, asset, bytes, sha256);
   }
 }
 

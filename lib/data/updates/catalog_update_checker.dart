@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'catalog_manifest.dart';
+import 'catalog_version.dart';
 
 class CatalogUpdateChecker {
   CatalogUpdateChecker({required this.fetch, required this.installedVersion,
@@ -10,7 +11,7 @@ class CatalogUpdateChecker {
   static const lastSuccessKey = 'catalog_update_last_success';
   static const lastAttemptKey = 'catalog_update_last_attempt';
   final Future<CatalogManifest> Function() fetch;
-  final String installedVersion;
+  final Future<String> Function() installedVersion;
   final DateTime Function() _now;
   Future<CatalogManifest?>? _pending;
 
@@ -29,19 +30,10 @@ class CatalogUpdateChecker {
     await prefs.setString(lastAttemptKey, now.toIso8601String());
     final manifest = await fetch();
     await prefs.setString(lastSuccessKey, now.toIso8601String());
-    if (_compare(manifest.version, installedVersion) <= 0) return null;
-    if (manifest.baseVersion != installedVersion) return null;
+    final current = await installedVersion();
+    if (compareCatalogVersions(manifest.version, current) <= 0) return null;
+    if (manifest.baseVersion != current) return null;
     return manifest;
   }
 
-  int _compare(String left, String right) {
-    final a = left.split('.').map(int.parse).toList();
-    final b = right.split('.').map(int.parse).toList();
-    for (var i = 0; i < 4; i++) {
-      final x = i < a.length ? a[i] : 0;
-      final y = i < b.length ? b[i] : 0;
-      if (x != y) return x.compareTo(y);
-    }
-    return 0;
-  }
 }

@@ -57,3 +57,5 @@ Ed25519 private key path in `POKEAPP_SIGNING_KEY`, a changed report, a base
 manifest, a new catalog directory, output directory and two catalog versions.
 It refuses to overwrite an output directory or package unchanged data. Never
 commit the private key to this repository.
+Release media files use flat `media-<sha256>.<extension>` asset names; their
+logical `media/<sha256>.<extension>` paths remain in the signed manifest.

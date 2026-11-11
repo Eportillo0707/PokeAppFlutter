@@ -9,6 +9,13 @@ String catalogUpdateStatus(bool spanish, CatalogUpdateService? updates) {
   if (updates.checking) {
     return spanish ? 'Buscando...' : 'Checking...';
   }
+  if (updates.installing) {
+    return spanish ? 'Descargando y verificando...' : 'Downloading and verifying...';
+  }
+  if (updates.restartRequired) {
+    return spanish ? 'Actualización lista. Reinicia la app.'
+      : 'Update ready. Restart the app.';
+  }
   if (updates.error != null) {
     return spanish
       ? 'No se pudo comprobar. Inténtalo de nuevo.'
