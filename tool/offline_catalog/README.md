@@ -44,11 +44,16 @@ Run `node tool/offline_catalog/check_upstream.cjs` to compare all nine source
 resource groups with the manifest of the bundled catalog. It makes at most four
 concurrent requests, retries transient failures, writes a complete fresh JSON
 snapshot under `build/offline-catalog/upstream-snapshot/json/`, and writes
-`build/offline-catalog/upstream-check.json` with added, changed and removed IDs.
+`build/offline-catalog/upstream-check.json` with added, changed, removed and
+reformatted IDs. Canonical JSON hashes ignore whitespace and object key order.
 The check fails rather than reporting “no changes” when a request fails.
 Run `node --test tool/offline_catalog/check_upstream.test.cjs` for its local test.
 
 This is a developer-side validation step. The app does not download updates yet:
-it needs a published HTTPS catalog manifest and media package. The raw JSON
-hashes can also flag harmless formatting changes, so inspect the report before
-building and publishing an updated catalog. Do not run this full scan on phones.
+it needs a published HTTPS catalog manifest and media package. Do not run this
+full scan on phones. `package_release.cjs` can prepare a signed test package
+from a separately built and validated new catalog. It requires an external
+Ed25519 private key path in `POKEAPP_SIGNING_KEY`, a changed report, a base
+manifest, a new catalog directory, output directory and two catalog versions.
+It refuses to overwrite an output directory or package unchanged data. Never
+commit the private key to this repository.

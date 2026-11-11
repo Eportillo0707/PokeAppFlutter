@@ -1,40 +1,18 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const {sha256} = require('./source.cjs');
+const {semanticHash} = require('./semantic_hash.cjs');
+const {api, get, entries} = require('./upstream_http.cjs');
 
-const api = process.env.POKEAPI_BASE_URL || 'https://pokeapi.co/api/v2/';
 const kinds = ['pokemon', 'pokemon-species', 'move', 'ability',
   'evolution-chain', 'version-group', 'generation', 'type', 'machine'];
 const baseline = process.argv[2] ||
   'build/offline-catalog/catalog-2026-11-05-final/manifest.json';
 const output = process.argv[3] || 'build/offline-catalog/upstream-check.json';
-
-async function get(url) {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      const response = await fetch(url, {signal: AbortSignal.timeout(30000)});
-      if (!response.ok) throw new Error(`${response.status} ${url}`);
-      return Buffer.from(await response.arrayBuffer());
-    } catch (error) {
-      if (attempt === 2) throw error;
-      await new Promise(resolve => setTimeout(resolve, 1000 * 2 ** attempt));
-    }
-  }
-}
-
-async function entries(kind) {
-  const urls = [];
-  let next = `${api}${kind}/?limit=500`;
-  while (next) {
-    const page = JSON.parse(await get(next));
-    urls.push(...page.results.map(item => item.url));
-    next = page.next;
-  }
-  return urls;
-}
+const baselineJson = process.env.POKEAPI_BASELINE_JSON || 'build/offline-audit/json';
 
 async function compare(kind, urls, old) {
-  const changes = {added: [], changed: [], removed: []};
+  const changes = {added: [], changed: [], removed: [], reformatted: []};
   const seen = new Set();
   let cursor = 0;
   await Promise.all(Array.from({length: 4}, async () => {
@@ -46,7 +24,16 @@ async function compare(kind, urls, old) {
       const bytes = await get(url);
       const digest = sha256(bytes);
       if (!old.has(id)) changes.added.push(id);
-      else if (old.get(id) !== digest) changes.changed.push(id);
+      else if (old.get(id) !== digest) {
+        const file = path.join(baselineJson, `${kind}_${id}_.json`);
+        const prior = await fs.readFile(file);
+        if (sha256(prior) !== old.get(id)) {
+          throw new Error(`Baseline hash mismatch: ${file}`);
+        }
+        const group = semanticHash(prior) === semanticHash(bytes)
+          ? changes.reformatted : changes.changed;
+        group.push(id);
+      }
       // Keep a complete fresh snapshot for a later catalog build.
       const file = path.join(path.dirname(output), 'upstream-snapshot',
         'json', `${kind}_${id}_.json`);
@@ -74,7 +61,7 @@ async function main() {
   const report = {checkedAt: new Date().toISOString(), baseline,
     source: api,
     changes, changed: Object.values(changes).some(group =>
-      Object.values(group).some(ids => ids.length > 0))};
+      ['added', 'changed', 'removed'].some(key => group[key].length > 0))};
   await fs.mkdir(path.dirname(output), {recursive: true});
   await fs.writeFile(output, `${JSON.stringify(report, null, 2)}\n`);
   console.log(`Report: ${output}`);
