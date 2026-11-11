@@ -136,10 +136,39 @@ necesarias antes de implementar el sistema. No autoriza publicar un release.
 - Una prueba local de extremo a extremo verificó firma, descarga, instalación,
   reapertura y conservación de las claves de favoritos y equipos. También se
   probó rechazo de SQLite incompatible, hash erróneo y medios no instalados.
-- No se ha probado en teléfono: ADB no detectó dispositivos conectados.
-  Tampoco se ha creado un Release ni una clave de firma persistente.
+- La primera ejecución no pudo probarse en teléfono porque ADB no detectó
+  dispositivos. La prueba USB posterior se registra abajo. No se ha creado un
+  Release ni una clave de firma persistente.
 - La compilación profile sin URL ni clave de pruebas no consulta la red. Para
   probar el flujo en un dispositivo harán falta un manifiesto de test firmado,
   su clave pública en la compilación y un servidor accesible al teléfono.
 - `flutter build apk --profile --no-pub` generó una APK de 197,7 MB; `aapt`
-  confirmó el identificador `com.emerson.pokeapp.offlinetest`. No se instaló.
+  confirmó el identificador `com.emerson.pokeapp.offlinetest`. Se instaló
+  después para la prueba USB registrada abajo.
+
+## Prueba USB en S25 Ultra, 11 de noviembre de 2026
+
+- ADB detectó el `SM_S938B` y las dos apps separadas. Se generó un paquete
+  **solo de prueba** a partir del SQLite actual: agrega un marcador en
+  `catalog_meta`, versión `2026.11.11.1`, sin modificar Pokémon ni medios.
+  `make_test_release.cjs` crea una clave Ed25519 temporal y guarda únicamente
+  la clave pública; no persiste la privada.
+- Un servidor limitado a `127.0.0.1:8765` y `adb reverse` entregaron el paquete
+  al teléfono. La APK profile se compiló con URL y clave pública de prueba;
+  `aapt` confirmó `com.emerson.pokeapp.offlinetest` antes de `adb install -r`.
+  El permiso de HTTP claro se añadió **solo** al manifiesto profile.
+- La primera consulta automática falló porque el servidor local estaba bajo
+  aislamiento de red del entorno. Al reiniciarlo con acceso local, la búsqueda
+  manual verificó la firma y mostró `2026.11.11.1` disponible.
+- El diálogo indicó 18,1 MiB. La descarga e instalación terminaron y Ajustes
+  pidió reiniciar. Tras reiniciar, mostró `2026.11.11.1` instalada y catálogo
+  actualizado. El puntero privado apuntaba al nuevo SQLite de 63,3 MB.
+- Se retiró `adb reverse` y se detuvo el servidor. Un nuevo inicio cargó la
+  Pokédex (Bulbasaur visible) sin el servidor. La APK de pruebas conserva la
+  URL local temporal: la búsqueda manual fallará hasta reactivar el servidor.
+- No se capturó una línea base de favoritos/equipos del teléfono antes de la
+  instalación; su preservación está cubierta por la prueba automatizada local,
+  no se declara validada manualmente en este dispositivo.
+- No se creó GitHub Release ni se modificó la app de Play Store. Sigue pendiente
+  el soporte de medios descargados, la prueba con interrupción en teléfono y
+  una configuración de distribución estable.

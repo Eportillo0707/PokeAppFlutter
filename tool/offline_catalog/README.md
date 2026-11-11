@@ -59,3 +59,16 @@ It refuses to overwrite an output directory or package unchanged data. Never
 commit the private key to this repository.
 Release media files use flat `media-<sha256>.<extension>` asset names; their
 logical `media/<sha256>.<extension>` paths remain in the signed manifest.
+
+## Local device test
+
+`node tool/offline_catalog/make_test_release.cjs` creates an ignored, SQLite-only
+fixture under `build/offline-test-release/`. It changes only a test metadata row
+in a copy of the catalog. The signing key is ephemeral; only its public key is
+written. `node tool/offline_catalog/serve_test_release.cjs` serves the three
+fixture assets on localhost port 8765. Use `adb reverse tcp:8765 tcp:8765` and
+compile the **profile** variant with `POKEAPP_CATALOG_MANIFEST_URL` pointing to
+`http://127.0.0.1:8765/update-manifest.json` and
+`POKEAPP_CATALOG_PUBLIC_KEY` set to the fixture's base64 public key. Cleartext
+traffic is enabled only in the profile manifest for this USB test. The server
+and reverse tunnel must be running for manual update checks to work.
