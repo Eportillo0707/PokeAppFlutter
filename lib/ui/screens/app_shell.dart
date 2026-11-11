@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'package:pokeapp_flutter/data/local/favorites_store.dart';
@@ -6,6 +7,7 @@ import 'package:pokeapp_flutter/ui/screens/favorites_screen.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_list/pokemon_list_screen.dart';
 import 'package:pokeapp_flutter/ui/screens/widgets/app_bottom_nav.dart';
 import 'package:pokeapp_flutter/data/local/teams_store.dart';
+import 'package:pokeapp_flutter/data/updates/catalog_update_service.dart';
 import 'package:pokeapp_flutter/ui/screens/teams/teams_screen.dart';
 
 class AppShell extends StatefulWidget {
@@ -29,10 +31,12 @@ class _AppShellState extends State<AppShell> {
   final heroes =
       List.generate(3, (_) => MaterialApp.createMaterialHeroController());
   final visited = <int>{0};
+  CatalogUpdateService? updates;
 
   @override
   void dispose() {
     teams.dispose();
+    updates?.dispose();
     super.dispose();
   }
 
@@ -40,6 +44,8 @@ class _AppShellState extends State<AppShell> {
   void initState() {
     super.initState();
     widget.favorites.load();
+    updates = CatalogUpdateService.fromEnvironment();
+    if (updates != null) unawaited(updates!.check());
   }
 
   @override

@@ -90,4 +90,25 @@ necesarias antes de implementar el sistema. No autoriza publicar un release.
 - **Fase 2 incompleta:** falta enlazar el snapshot nuevo con una adquisición
   de medios consistente, generar un catálogo SQLite nuevo, validar medios
   incrementales frente al catálogo instalado y definir la clave pública de
-  pruebas. No hay aún cliente Flutter ni GitHub Actions.
+  pruebas. No hay aún instalador Flutter ni GitHub Actions.
+
+## Detección en Flutter iniciada
+
+- `CatalogManifestClient` descarga manifiesto y firma con timeout, verifica
+  Ed25519 y después valida canal, esquema, versiones y rutas de archivos.
+  La clave pública se inyecta en la compilación de pruebas; no hay una clave
+  privada ni un token dentro de Flutter.
+- `CatalogUpdateChecker` registra la última comprobación exitosa y limita la
+  automática a una cada 15 días. Tras un fallo, espera una hora antes de otro
+  intento automático; la búsqueda manual puede ejecutarse en cualquier momento.
+- `AppShell` inicia una comprobación no bloqueante solo en debug/profile y solo
+  si se compila con `POKEAPP_CATALOG_MANIFEST_URL` y
+  `POKEAPP_CATALOG_PUBLIC_KEY` (32 bytes Ed25519 codificados en base64).
+  En release no se crea el servicio. Sin esos valores tampoco hay solicitudes.
+- Esta conexión todavía no muestra avisos ni instala paquetes. La versión base
+  está fijada a `2026.11.05` hasta que exista un catálogo activo versionado.
+  No se debe presentar esta etapa como actualización funcional completa.
+- `flutter analyze --no-pub` no encontró problemas y `flutter test --no-pub`
+  pasó 47 pruebas, incluidas firma válida, firma alterada, intervalo, búsqueda
+  manual y recuperación tras una consulta fallida. Falta validar en teléfono
+  con un manifiesto firmado de prueba y comprobar el flujo de interfaz.
