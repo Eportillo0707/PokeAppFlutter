@@ -50,14 +50,17 @@ class _LoadingDetailHero extends StatelessWidget {
         final imageSize = 315.0 * scale;
         return Column(
           children: [
-            Hero(
-              tag: 'pokemon-image-${initialPokemon.name}',
-              transitionOnUserGestures: true,
-              child: Image.network(
-                initialPokemon.imageUrl,
-                height: imageSize,
-                width: imageSize,
-                fit: BoxFit.contain,
+            Opacity(
+              opacity: 1,
+              child: Hero(
+                tag: 'pokemon-image-${initialPokemon.name}',
+                transitionOnUserGestures: true,
+                child: Image.asset(
+                  initialPokemon.imageUrl,
+                  height: imageSize,
+                  width: imageSize,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
             SizedBox(height: 12 * scale),

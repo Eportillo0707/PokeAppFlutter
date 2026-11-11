@@ -16,6 +16,7 @@ class PokemonDescriptionPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return DetailPanel(
       title: context.l10n.description,
+      revealOnScroll: false,
       child: Text(
         pokemon.description.isEmpty
             ? context.l10n.descriptionUnavailable

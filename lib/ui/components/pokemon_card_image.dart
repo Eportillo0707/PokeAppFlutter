@@ -14,13 +14,13 @@ class _PokemonImage extends StatelessWidget {
     return Hero(
       tag: 'pokemon-image-${pokemon.name}',
       transitionOnUserGestures: true,
-      child: Image.network(
+      child: Image.asset(
         pokemon.imageUrl,
         width: imageSize,
         height: imageSize,
         fit: BoxFit.contain,
-        cacheWidth: (imageSize * 1.8).round(),
-        cacheHeight: (imageSize * 1.8).round(),
+        cacheWidth: (imageSize * MediaQuery.devicePixelRatioOf(context)).round(),
+        cacheHeight: (imageSize * MediaQuery.devicePixelRatioOf(context)).round(),
         filterQuality: FilterQuality.medium,
         errorBuilder: (_, __, ___) => SizedBox(height: imageSize),
       ),

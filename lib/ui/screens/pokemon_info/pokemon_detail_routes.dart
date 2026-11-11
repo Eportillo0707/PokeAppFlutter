@@ -18,15 +18,15 @@ class PokemonDetailRoutes {
 
   Future<void> openEvolution(PokemonItem pokemon) async {
     if (!context.mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
+    final route = MaterialPageRoute<void>(
         builder: (_) => PokemonDetailScreen(
           api: api,
           favorites: favorites,
           initialPokemon: pokemon,
         ),
-      ),
     );
+    await Navigator.of(context).push(route);
+    await route.completed;
   }
 
   void showCryError() {

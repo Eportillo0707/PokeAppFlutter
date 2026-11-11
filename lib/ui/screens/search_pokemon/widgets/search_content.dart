@@ -58,7 +58,9 @@ class _SearchResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (controller.loading) return const LoadingState();
+    if (controller.loading && controller.results.isEmpty) {
+      return const LoadingState();
+    }
     if (controller.searched && controller.results.isEmpty) {
       return Center(child: Text(context.l10n.noResults));
     }

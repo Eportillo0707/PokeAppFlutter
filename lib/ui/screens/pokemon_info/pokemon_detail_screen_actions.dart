@@ -7,10 +7,17 @@ extension _PokemonDetailScreenActions on _PokemonDetailScreenState {
         () => controller.retry(context.l10n.languageCode),
       );
 
-  void _selectPage(int page) => setState(() => controller.selectedPage = page);
+  void _selectPage(int page) {
+    if (page == controller.selectedPage) return;
+    setState(() => controller.selectedPage = page);
+  }
 
   void _toggleShiny() {
-    setState(() => controller.showShiny = !controller.showShiny);
+    final becomingShiny = !controller.showShiny;
+    setState(() => controller.showShiny = becomingShiny);
+    if (becomingShiny) {
+      controller.playShinySound().catchError((Object _) {});
+    }
   }
 
   Future<void> _toggle(PokemonInfo pokemon) async {
@@ -30,7 +37,11 @@ extension _PokemonDetailScreenActions on _PokemonDetailScreenState {
     PokemonDetailRoutes routes,
   ) async {
     final pokemon = await controller.getPokemonItem(species);
+    if (!mounted) return;
+    setState(() => selectedEvolution = species.name);
+    await WidgetsBinding.instance.endOfFrame;
     await routes.openEvolution(pokemon);
+    if (mounted) setState(() => selectedEvolution = null);
   }
 
   Future<void> _playCry(PokemonInfo pokemon, PokemonDetailRoutes routes) async {

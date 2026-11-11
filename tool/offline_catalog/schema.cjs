@@ -1,0 +1,36 @@
+const {DatabaseSync} = require('node:sqlite');
+function createDatabase(file) {
+  const db = new DatabaseSync(file);
+  db.exec(`PRAGMA foreign_keys=ON;
+CREATE TABLE catalog_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+CREATE TABLE generations (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE);
+CREATE TABLE games (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE, sort_order INTEGER, generation_id INTEGER REFERENCES generations(id));
+CREATE TABLE types (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE);
+CREATE TABLE species (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE, generation_id INTEGER REFERENCES generations(id), evolution_chain_id INTEGER, evolves_from_id INTEGER REFERENCES species(id), is_legendary INTEGER, is_mythical INTEGER);
+CREATE TABLE species_text (species_id INTEGER REFERENCES species(id), language TEXT NOT NULL, description TEXT NOT NULL, source_version TEXT, PRIMARY KEY(species_id,language));
+CREATE TABLE pokemon (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE, species_id INTEGER NOT NULL REFERENCES species(id), height INTEGER, weight INTEGER, base_experience INTEGER, is_default INTEGER, normal_asset TEXT, shiny_asset TEXT, cry_asset TEXT, normal_fallback INTEGER DEFAULT 0);
+CREATE TABLE pokemon_types (pokemon_id INTEGER REFERENCES pokemon(id), type_id INTEGER REFERENCES types(id), slot INTEGER, PRIMARY KEY(pokemon_id,slot));
+CREATE TABLE pokemon_stats (pokemon_id INTEGER REFERENCES pokemon(id), name TEXT, base_stat INTEGER, PRIMARY KEY(pokemon_id,name));
+CREATE TABLE abilities (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE);
+CREATE TABLE ability_text (ability_id INTEGER REFERENCES abilities(id), language TEXT, name TEXT, description TEXT, source_game TEXT, PRIMARY KEY(ability_id,language));
+CREATE TABLE pokemon_abilities (pokemon_id INTEGER REFERENCES pokemon(id), ability_id INTEGER REFERENCES abilities(id), slot INTEGER, is_hidden INTEGER, PRIMARY KEY(pokemon_id,slot));
+CREATE TABLE moves (id INTEGER PRIMARY KEY, name TEXT NOT NULL UNIQUE, type_id INTEGER REFERENCES types(id), category TEXT, power INTEGER, accuracy INTEGER, pp INTEGER, generation_id INTEGER REFERENCES generations(id));
+CREATE TABLE move_names (move_id INTEGER REFERENCES moves(id), language TEXT, name TEXT NOT NULL, PRIMARY KEY(move_id,language));
+CREATE TABLE move_descriptions (move_id INTEGER REFERENCES moves(id), game_id INTEGER REFERENCES games(id), language TEXT, description TEXT, source_index INTEGER, PRIMARY KEY(move_id,game_id,language));
+CREATE TABLE move_past_values (move_id INTEGER REFERENCES moves(id), game_id INTEGER REFERENCES games(id), power INTEGER, accuracy INTEGER, pp INTEGER, type_id INTEGER REFERENCES types(id), PRIMARY KEY(move_id,game_id));
+CREATE TABLE learnsets (pokemon_id INTEGER REFERENCES pokemon(id), move_id INTEGER REFERENCES moves(id), game_id INTEGER REFERENCES games(id), method TEXT NOT NULL, level INTEGER NOT NULL, PRIMARY KEY(pokemon_id,move_id,game_id,method,level));
+CREATE TABLE machines (id INTEGER PRIMARY KEY, game_id INTEGER REFERENCES games(id), move_id INTEGER REFERENCES moves(id), item_name TEXT);
+CREATE TABLE evolution_edges (chain_id INTEGER, from_species_id INTEGER REFERENCES species(id), to_species_id INTEGER REFERENCES species(id), details_json TEXT NOT NULL, PRIMARY KEY(chain_id,from_species_id,to_species_id));
+CREATE TABLE media (asset_id TEXT PRIMARY KEY, kind TEXT NOT NULL, relative_path TEXT NOT NULL, sha256 TEXT NOT NULL, bytes INTEGER NOT NULL);
+CREATE TABLE evolution_items (item_name TEXT PRIMARY KEY, asset_id TEXT REFERENCES media(asset_id));
+CREATE TABLE source_hashes (kind TEXT, source_id INTEGER, sha256 TEXT NOT NULL, PRIMARY KEY(kind,source_id));
+CREATE INDEX idx_pokemon_species ON pokemon(species_id);
+CREATE INDEX idx_species_generation ON species(generation_id);
+CREATE INDEX idx_pokemon_types_type ON pokemon_types(type_id,pokemon_id);
+CREATE INDEX idx_learnsets_game ON learnsets(pokemon_id,game_id,method,level);
+CREATE INDEX idx_learnsets_move ON learnsets(move_id,game_id);
+CREATE INDEX idx_machines_move_game ON machines(move_id,game_id);
+CREATE INDEX idx_evolution_chain ON evolution_edges(chain_id);`);
+  return db;
+}
+module.exports = {createDatabase};

@@ -1,0 +1,275 @@
+{
+  "date": "2026-11-05",
+  "source": "https://pokeapi.co/api/v2/",
+  "counts": {
+    "pokemon": 1351,
+    "pokemon-species": 1025,
+    "move": 937,
+    "ability": 374,
+    "evolution-chain": 540,
+    "version-group": 32,
+    "generation": 9,
+    "type": 21,
+    "machine": 2372
+  },
+  "learnsetRows": 638321,
+  "jsonSizes": {
+    "pokemon": {
+      "rawBytes": 177204415,
+      "gzipBytes": 5448155
+    },
+    "pokemon-species": {
+      "rawBytes": 24112332,
+      "gzipBytes": 3882399
+    },
+    "move": {
+      "rawBytes": 24137217,
+      "gzipBytes": 2316155
+    },
+    "ability": {
+      "rawBytes": 5295381,
+      "gzipBytes": 410977
+    },
+    "evolution-chain": {
+      "rawBytes": 755406,
+      "gzipBytes": 26010
+    },
+    "version-group": {
+      "rawBytes": 22133,
+      "gzipBytes": 1809
+    },
+    "generation": {
+      "rawBytes": 179095,
+      "gzipBytes": 23525
+    },
+    "type": {
+      "rawBytes": 393816,
+      "gzipBytes": 38835
+    },
+    "machine": {
+      "rawBytes": 577004,
+      "gzipBytes": 32638
+    }
+  },
+  "mediaSizes": {
+    "normal": {
+      "files": 1347,
+      "bytes": 175443219,
+      "uniqueFiles": 1318,
+      "uniqueBytes": 171882572
+    },
+    "shiny": {
+      "files": 1340,
+      "bytes": 185083114,
+      "uniqueFiles": 1327,
+      "uniqueBytes": 183505654
+    },
+    "cry": {
+      "files": 1351,
+      "bytes": 23011456,
+      "uniqueFiles": 1275,
+      "uniqueBytes": 19487223
+    },
+    "item": {
+      "files": 50,
+      "bytes": 185580,
+      "uniqueFiles": 50,
+      "uniqueBytes": 185580
+    }
+  },
+  "compression": {
+    "encoder": "libwebp 1.6.0",
+    "images": 2695,
+    "totals": {
+      "original": 355573806,
+      "lossless": 229175940,
+      "q85": 62585380
+    }
+  },
+  "measurementDatabase": {
+    "rows": 6661,
+    "rawSqliteBytes": 236150784,
+    "gzipBytes": 12978358,
+    "integrity": {
+      "integrity_check": "ok"
+    }
+  },
+  "coverage": {
+    "records": 6661,
+    "missingReferences": [],
+    "textCoverage": {
+      "pokemon-species": {
+        "en": {
+          "total": 1025,
+          "withoutText": 0,
+          "examples": []
+        },
+        "es": {
+          "total": 1025,
+          "withoutText": 127,
+          "examples": [
+            "gholdengo",
+            "wo-chien",
+            "chien-pao",
+            "ting-lu",
+            "chi-yu",
+            "roaring-moon",
+            "iron-valiant",
+            "koraidon",
+            "miraidon",
+            "walking-wake",
+            "iron-leaves",
+            "dipplin"
+          ]
+        }
+      },
+      "move": {
+        "en": {
+          "total": 937,
+          "withoutText": 5,
+          "examples": [
+            "blazing-torque",
+            "wicked-torque",
+            "noxious-torque",
+            "combat-torque",
+            "magical-torque"
+          ]
+        },
+        "es": {
+          "total": 937,
+          "withoutText": 111,
+          "examples": [
+            "shadow-rush",
+            "shadow-blast",
+            "shadow-blitz",
+            "shadow-bolt",
+            "shadow-break",
+            "shadow-chill",
+            "shadow-end",
+            "shadow-fire",
+            "shadow-rave",
+            "shadow-storm",
+            "shadow-wave",
+            "shadow-down"
+          ]
+        }
+      },
+      "ability": {
+        "en": {
+          "total": 374,
+          "withoutText": 60,
+          "examples": [
+            "mountaineer",
+            "wave-rider",
+            "skater",
+            "thrust",
+            "perception",
+            "parry",
+            "instinct",
+            "dodge",
+            "jagged-edge",
+            "frostbite",
+            "tenacity",
+            "pride"
+          ]
+        },
+        "es": {
+          "total": 374,
+          "withoutText": 107,
+          "examples": [
+            "mountaineer",
+            "wave-rider",
+            "skater",
+            "thrust",
+            "perception",
+            "parry",
+            "instinct",
+            "dodge",
+            "jagged-edge",
+            "frostbite",
+            "tenacity",
+            "pride"
+          ]
+        }
+      }
+    }
+  },
+  "absent": [
+    {
+      "kind": "shiny",
+      "owner": "pikachu-starter",
+      "reason": "null in source"
+    },
+    {
+      "kind": "shiny",
+      "owner": "eevee-starter",
+      "reason": "null in source"
+    },
+    {
+      "kind": "shiny",
+      "owner": "koraidon-limited-build",
+      "reason": "null in source"
+    },
+    {
+      "kind": "shiny",
+      "owner": "koraidon-swimming-build",
+      "reason": "null in source"
+    },
+    {
+      "kind": "shiny",
+      "owner": "miraidon-low-power-mode",
+      "reason": "null in source"
+    },
+    {
+      "kind": "shiny",
+      "owner": "miraidon-aquatic-mode",
+      "reason": "null in source"
+    },
+    {
+      "kind": "shiny",
+      "owner": "terapagos-stellar",
+      "reason": "null in source"
+    },
+    {
+      "kind": "shiny",
+      "owner": "garchomp-mega-z",
+      "reason": "null in source"
+    },
+    {
+      "kind": "shiny",
+      "owner": "magearna-original-mega",
+      "reason": "null in source"
+    },
+    {
+      "kind": "shiny",
+      "owner": "tatsugiri-curly-mega",
+      "reason": "null in source"
+    },
+    {
+      "kind": "shiny",
+      "owner": "tatsugiri-droopy-mega",
+      "reason": "null in source"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10264.png",
+      "kind": "normal",
+      "reason": "unavailable; see failures for network errors"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10266.png",
+      "kind": "normal",
+      "reason": "unavailable; see failures for network errors"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10268.png",
+      "kind": "normal",
+      "reason": "unavailable; see failures for network errors"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10270.png",
+      "kind": "normal",
+      "reason": "unavailable; see failures for network errors"
+    }
+  ],
+  "failures": []
+}

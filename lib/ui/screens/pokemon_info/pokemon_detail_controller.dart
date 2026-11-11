@@ -10,12 +10,18 @@ class PokemonDetailController {
     required this.api,
     required this.favorites,
     required this.initialPokemon,
+    this.preloadedInfo,
+    this.preloadedLanguageCode,
   });
 
   final PokemonRepository api;
   final FavoritesStore favorites;
   final PokemonItem initialPokemon;
+  final PokemonInfo? preloadedInfo;
+  final String? preloadedLanguageCode;
   final cryPlayer = AudioPlayer();
+  final shinyPlayer = AudioPlayer();
+  Future<void> _shinyPlayback = Future<void>.value();
   final scrollController = ScrollController();
 
   late Future<PokemonInfo> future;
@@ -27,10 +33,12 @@ class PokemonDetailController {
   void loadForLanguage(String nextLanguageCode) {
     if (languageCode == nextLanguageCode) return;
     languageCode = nextLanguageCode;
-    future = api.getPokemonInfo(
-      initialPokemon.name,
-      languageCode: nextLanguageCode,
-    );
+    future = preloadedInfo != null && preloadedLanguageCode == nextLanguageCode
+        ? Future.value(preloadedInfo)
+        : api.getPokemonInfo(
+            initialPokemon.name,
+            languageCode: nextLanguageCode,
+          );
   }
 
   void retry(String nextLanguageCode) {
@@ -49,7 +57,16 @@ class PokemonDetailController {
     final cryUrl = pokemon.cryUrl;
     if (cryUrl == null || cryUrl.isEmpty) return;
     await cryPlayer.stop();
-    await cryPlayer.play(UrlSource(cryUrl));
+    await cryPlayer.play(
+        cryUrl.startsWith('http') ? UrlSource(cryUrl) : AssetSource(cryUrl));
+  }
+
+  Future<void> playShinySound() {
+    _shinyPlayback = _shinyPlayback.catchError((Object _) {}).then((_) async {
+      await shinyPlayer.stop();
+      await shinyPlayer.play(AssetSource('sounds/shiny_8.mp3'));
+    });
+    return _shinyPlayback;
   }
 
   Future<PokemonItem> getPokemonItem(PokemonSpecies species) {
@@ -63,16 +80,15 @@ class PokemonDetailController {
       await Future<void>.delayed(const Duration(milliseconds: 80));
     }
     if (scrollController.hasClients && scrollController.offset > 12) {
-      await scrollController.animateTo(
-        0,
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOutCubic,
-      );
+      await scrollController.animateTo(0,
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOutCubic);
     }
   }
 
   void dispose() {
     cryPlayer.dispose();
+    shinyPlayer.dispose();
     scrollController.dispose();
   }
 }

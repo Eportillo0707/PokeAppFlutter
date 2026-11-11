@@ -10,7 +10,7 @@ class GenerationStarterImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Image.network(
+      child: Image.asset(
         officialPokemonArtworkUrl(id),
         fit: BoxFit.contain,
         gaplessPlayback: true,

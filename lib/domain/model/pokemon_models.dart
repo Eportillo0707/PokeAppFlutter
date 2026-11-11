@@ -1,3 +1,7 @@
+import 'pokemon_move.dart';
+import 'pokemon_models_support.dart';
+export 'pokemon_models_support.dart';
+
 class PokemonItem {
   PokemonItem({
     required this.id,
@@ -11,8 +15,7 @@ class PokemonItem {
   final List<String> types;
   bool isFavorite;
 
-  String get imageUrl =>
-      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png';
+  String get imageUrl => 'assets/offline_catalog/normal/$id.webp';
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -44,6 +47,7 @@ class PokemonInfo {
     required this.description,
     required this.cryUrl,
     required this.shinyImageUrl,
+    this.moves = const [],
     this.isFavorite = false,
   });
 
@@ -62,10 +66,10 @@ class PokemonInfo {
   final String description;
   final String? cryUrl;
   final String? shinyImageUrl;
+  final List<PokemonMove> moves;
   bool isFavorite;
 
-  String get imageUrl =>
-      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png';
+  String get imageUrl => 'assets/offline_catalog/normal/$id.webp';
 
   PokemonItem toItem() => PokemonItem(
         id: id,
@@ -73,39 +77,4 @@ class PokemonInfo {
         types: types,
         isFavorite: isFavorite,
       );
-}
-
-class PokemonStat {
-  const PokemonStat({required this.name, required this.baseStat});
-
-  final String name;
-  final int baseStat;
-}
-
-class PokemonAbility {
-  const PokemonAbility({required this.name, required this.flavorText});
-
-  final String name;
-  final String flavorText;
-}
-
-class PokemonSpecies {
-  const PokemonSpecies({
-    required this.id,
-    required this.name,
-    this.evolvesFromSpeciesId,
-    this.evolutionMethod,
-    this.evolutionItemName,
-    this.evolutionItemImageUrl,
-  });
-
-  final int id;
-  final String name;
-  final int? evolvesFromSpeciesId;
-  final String? evolutionMethod;
-  final String? evolutionItemName;
-  final String? evolutionItemImageUrl;
-
-  String get imageUrl =>
-      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png';
 }

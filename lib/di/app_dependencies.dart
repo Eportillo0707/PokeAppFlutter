@@ -1,19 +1,14 @@
 import 'package:pokeapp_flutter/data/local/favorites_store.dart';
-import 'package:pokeapp_flutter/data/remote/mappers/pokemon_mapper.dart';
-import 'package:pokeapp_flutter/data/remote/pokeapi_http_client.dart';
-import 'package:pokeapp_flutter/data/remote/pokemon_remote_data_source.dart';
-import 'package:pokeapp_flutter/data/repositories/pokemon_repository_impl.dart';
+import 'package:pokeapp_flutter/data/local/offline_catalog_database.dart';
+import 'package:pokeapp_flutter/data/local/offline_pokemon_repository.dart';
 import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
 
 class AppDependencies {
-  AppDependencies() {
-    final httpClient = PokeApiHttpClient();
-    final remoteDataSource = PokemonRemoteDataSource(client: httpClient);
-    pokemonRepository = PokemonRepositoryImpl(
-      remoteDataSource: remoteDataSource,
-      mapper: const PokemonMapper(),
-    );
-    favoritesStore = FavoritesStore();
+  AppDependencies._(this.pokemonRepository, this.favoritesStore);
+
+  static Future<AppDependencies> create() async {
+    final catalog = await OfflineCatalogDatabase.open();
+    return AppDependencies._(OfflinePokemonRepository(catalog), FavoritesStore());
   }
 
   late final PokemonRepository pokemonRepository;

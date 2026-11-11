@@ -46,6 +46,7 @@ class _NormalizedPokemonArtworkState extends State<NormalizedPokemonArtwork> {
   Future<void> _loadTransform() async {
     final key = '${widget.normalUrl}|${widget.imageUrl}|${widget.size}';
     _measuredKey = key;
+    _transform = null;
     if (widget.normalUrl == widget.imageUrl) {
       if (mounted) setState(() => _transform = null);
       return;
@@ -63,7 +64,7 @@ class _NormalizedPokemonArtworkState extends State<NormalizedPokemonArtwork> {
   }
 
   Future<VisibleArtwork?> _measureImage(String url) async {
-    final image = await resolveUiImage(NetworkImage(url));
+    final image = await resolveUiImage(AssetImage(url));
     final bytes = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
     if (bytes == null) return null;
     return visibleArtworkFromImage(image, bytes, widget.size);
@@ -72,10 +73,8 @@ class _NormalizedPokemonArtworkState extends State<NormalizedPokemonArtwork> {
   @override
   Widget build(BuildContext context) {
     final transform = _transform;
-    final waiting = widget.normalUrl != widget.imageUrl && transform == null;
-    final visibleUrl = waiting ? widget.normalUrl : widget.imageUrl;
     Widget image = ArtworkNetworkImage(
-      url: visibleUrl,
+      url: widget.imageUrl,
       fallbackUrl: widget.normalUrl,
       size: widget.size,
     );

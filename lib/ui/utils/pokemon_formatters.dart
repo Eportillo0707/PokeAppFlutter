@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pokeapp_flutter/domain/utils/pokemon_name.dart' as domain;
 
-String formatPokemonName(String value) {
-  return value
-      .split('-')
-      .where((part) => part.isNotEmpty)
-      .map((part) => part[0].toUpperCase() + part.substring(1))
-      .join(' ');
-}
+String formatPokemonName(String value) => domain.formatPokemonName(value);
 
 String cleanFlavorText(String value) {
   return value

@@ -1,254 +1,65 @@
 import 'package:pokeapp_flutter/data/remote/mappers/pokemon_mapper.dart';
+import 'package:pokeapp_flutter/data/remote/move_machine_source.dart';
 import 'package:pokeapp_flutter/data/remote/pokemon_remote_data_source.dart';
 import 'package:pokeapp_flutter/domain/model/pokemon_generation.dart';
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_move.dart';
 import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
 
-class PokemonRepositoryImpl implements PokemonRepository {
-  const PokemonRepositoryImpl({
+part 'pokemon_repository_lists.dart';
+part 'pokemon_repository_info.dart';
+part 'pokemon_repository_helpers.dart';
+part 'pokemon_repository_forms.dart';
+
+abstract class _RepositoryBase {
+  PokemonRemoteDataSource get _remoteDataSource;
+  PokemonMapper get _mapper;
+  Future<PokemonItem> getPokemonItem(String name);
+  Future<List<PokemonItem>> getPokemonList({int limit = 20, int offset = 0});
+  Future<List<PokemonItem>> searchPokemon(String query);
+  Future<List<PokemonItem>> getPokemonByType(String type);
+  Future<List<PokemonItem>> getPokemonByGeneration(PokemonGeneration generation,
+      {int limit = 20, int offset = 0});
+  Future<PokemonInfo> getPokemonInfo(String name, {String languageCode = 'en'});
+  Future<Map<String, dynamic>?> _getSpeciesOrNull(Map<String, dynamic> pokemon);
+  Future<Map<String, dynamic>?> _getEvolutionChainOrNull(
+      Map<String, dynamic>? species);
+  Future<List<Map<String, dynamic>>> _getAbilities(
+      Map<String, dynamic> pokemon);
+  Future<List<PokemonSpecies>> _getMegaEvolutions(
+      List<PokemonSpecies> species, String language);
+  Future<List<PokemonSpecies>> _getRegionalForms(
+      List<PokemonSpecies> species, String language);
+  Future<List<PokemonSpecies>> _getGigantamaxForms(
+      List<PokemonSpecies> species, String language);
+}
+
+class PokemonRepositoryImpl extends _RepositoryBase
+    with _RepositoryLists, _RepositoryInfo, _RepositoryHelpers, _RepositoryForms
+    implements PokemonRepository {
+  PokemonRepositoryImpl({
     required PokemonRemoteDataSource remoteDataSource,
     required PokemonMapper mapper,
   })  : _remoteDataSource = remoteDataSource,
         _mapper = mapper;
 
+  @override
   final PokemonRemoteDataSource _remoteDataSource;
+  @override
   final PokemonMapper _mapper;
+  late final _moveMachines = MoveMachineSource(_remoteDataSource);
 
   @override
-  Future<List<PokemonItem>> getPokemonList({
-    int limit = 20,
-    int offset = 0,
-  }) async {
-    final data = await _remoteDataSource.getPokemonList(
-      limit: limit,
-      offset: offset,
-    );
-    final results = List<Map<String, dynamic>>.from(data['results'] as List);
-    final items = await Future.wait(
-      results.map((item) => getPokemonItem(item['name'] as String)),
-    );
-    items.sort((a, b) => a.id.compareTo(b.id));
-    return items;
-  }
+  Future<MoveBattleInfo> getMoveBattleInfo(
+          String move, String game, String language) =>
+      _moveMachines.getBattleInfo(move, game, language);
 
   @override
-  Future<List<PokemonItem>> searchPokemon(String query) async {
-    final trimmed = query.trim().toLowerCase();
-    if (trimmed.isEmpty) return [];
-    try {
-      return [await getPokemonItem(trimmed)];
-    } catch (_) {
-      final data = await _remoteDataSource.getAllPokemonNames();
-      final results = List<Map<String, dynamic>>.from(data['results'] as List);
-      final matches = results
-          .where((item) => (item['name'] as String).contains(trimmed))
-          .take(40)
-          .toList();
-      return Future.wait(matches.map((item) => getPokemonItem(item['name'])));
-    }
-  }
+  Future<MoveDescription?> getMoveDescription(
+          String move, String game, String language) =>
+      _moveMachines.getDescription(move, game, language);
 
   @override
-  Future<List<PokemonItem>> getPokemonByType(String type) async {
-    final data = await _remoteDataSource.getPokemonByType(type);
-    final pokemon = List<Map<String, dynamic>>.from(data['pokemon'] as List);
-    final items = await Future.wait(
-      pokemon.map((slot) => getPokemonItem(slot['pokemon']['name'] as String)),
-    );
-    items.sort((a, b) => a.id.compareTo(b.id));
-    return items;
-  }
-
-  @override
-  Future<List<PokemonItem>> getPokemonByGeneration(
-    PokemonGeneration generation, {
-    int limit = 20,
-    int offset = 0,
-  }) async {
-    final total = generation.endId - generation.startId + 1;
-    if (offset >= total) return [];
-    final pageSize = limit.clamp(0, total - offset).toInt();
-    final ids = List<int>.generate(
-      pageSize,
-      (index) => generation.startId + offset + index,
-    );
-    final items = await Future.wait(
-      ids.map((id) => getPokemonItem('$id')),
-    );
-    items.sort((a, b) => a.id.compareTo(b.id));
-    return items;
-  }
-
-  @override
-  Future<PokemonItem> getPokemonItem(String name) async {
-    final detail = await _remoteDataSource.getPokemon(name);
-    return _mapper.mapPokemonItem(detail);
-  }
-
-  @override
-  Future<PokemonInfo> getPokemonInfo(
-    String name, {
-    String languageCode = 'en',
-  }) async {
-    final pokemon = await _remoteDataSource.getPokemon(name);
-    final species = await _getSpeciesOrNull(pokemon);
-    final evolutionChain = await _getEvolutionChainOrNull(species);
-    final normalEvolutions = _mapper.mapEvolutionSpecies(
-      evolutionChain,
-      languageCode: languageCode,
-    );
-    final megaEvolutions = await _getMegaEvolutions(
-      normalEvolutions,
-      languageCode,
-    );
-    final regionalForms = await _getRegionalForms(
-      normalEvolutions,
-      languageCode,
-    );
-    final gigantamaxForms = await _getGigantamaxForms(
-      normalEvolutions,
-      languageCode,
-    );
-    final abilityDtos = await _getAbilities(pokemon);
-
-    return _mapper.mapPokemonInfo(
-      pokemon: pokemon,
-      species: species,
-      evolutionChain: evolutionChain,
-      abilities: abilityDtos,
-      megaEvolutions: megaEvolutions,
-      regionalForms: regionalForms,
-      gigantamaxForms: gigantamaxForms,
-      languageCode: languageCode,
-    );
-  }
-
-  Future<Map<String, dynamic>?> _getSpeciesOrNull(
-    Map<String, dynamic> pokemon,
-  ) async {
-    try {
-      return await _remoteDataSource.getPokemonSpecies(
-        pokemon['species']['name'] as String,
-      );
-    } catch (_) {
-      return null;
-    }
-  }
-
-  Future<Map<String, dynamic>?> _getEvolutionChainOrNull(
-    Map<String, dynamic>? species,
-  ) async {
-    try {
-      final url = species?['evolution_chain']?['url'] as String?;
-      if (url == null) return null;
-      return await _remoteDataSource.getAbsoluteJson(url);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  Future<List<Map<String, dynamic>>> _getAbilities(
-    Map<String, dynamic> pokemon,
-  ) async {
-    final abilities = await Future.wait(
-      List<Map<String, dynamic>>.from(pokemon['abilities'] as List).map(
-        (slot) async {
-          try {
-            return await _remoteDataSource.getAbility(
-              slot['ability']['name'] as String,
-            );
-          } catch (_) {
-            return null;
-          }
-        },
-      ),
-    );
-    return abilities.whereType<Map<String, dynamic>>().toList();
-  }
-
-  Future<List<PokemonSpecies>> _getMegaEvolutions(
-    List<PokemonSpecies> baseSpecies,
-    String languageCode,
-  ) async {
-    return _getForms(
-      baseSpecies,
-      matches: (name) => name.contains('-mega'),
-      methodFor: (_) =>
-          languageCode == 'es' ? 'Megaevolucion' : 'Mega Evolution',
-    );
-  }
-
-  Future<List<PokemonSpecies>> _getRegionalForms(
-    List<PokemonSpecies> baseSpecies,
-    String languageCode,
-  ) async {
-    return _getForms(
-      baseSpecies,
-      matches: _isRegionalForm,
-      methodFor: (name) => _regionalFormLabel(name, languageCode),
-    );
-  }
-
-  Future<List<PokemonSpecies>> _getGigantamaxForms(
-    List<PokemonSpecies> baseSpecies,
-    String languageCode,
-  ) async {
-    return _getForms(
-      baseSpecies,
-      matches: (name) => name.contains('-gmax'),
-      methodFor: (_) => languageCode == 'es' ? 'Gigamax' : 'Gigantamax',
-    );
-  }
-
-  Future<List<PokemonSpecies>> _getForms(
-    List<PokemonSpecies> baseSpecies, {
-    required bool Function(String name) matches,
-    required String Function(String name) methodFor,
-  }) async {
-    final all = <PokemonSpecies>[];
-    for (final base in baseSpecies) {
-      try {
-        final species = await _remoteDataSource.getPokemonSpecies(base.name);
-        final varieties = List<Map<String, dynamic>>.from(
-          species['varieties'] as List? ?? [],
-        );
-        for (final variety in varieties) {
-          final varietyName =
-              (variety['pokemon']['name'] as String).toLowerCase();
-          if (!matches(varietyName)) continue;
-          final detail = await _remoteDataSource.getPokemon(varietyName);
-          all.add(
-            PokemonSpecies(
-              id: detail['id'] as int,
-              name: detail['name'] as String,
-              evolvesFromSpeciesId: base.id,
-              evolutionMethod: methodFor(varietyName),
-            ),
-          );
-        }
-      } catch (_) {}
-    }
-    all.sort((a, b) => a.id.compareTo(b.id));
-    return _mapper.distinctSpecies(all);
-  }
-
-  bool _isRegionalForm(String name) {
-    return name.contains('-alola') ||
-        name.contains('-galar') ||
-        name.contains('-hisui') ||
-        name.contains('-paldea');
-  }
-
-  String _regionalFormLabel(String name, String languageCode) {
-    final region = _regionalName(name, languageCode);
-    return languageCode == 'es' ? 'Forma $region' : '$region Form';
-  }
-
-  String _regionalName(String name, String languageCode) {
-    if (name.contains('-alola')) return 'Alola';
-    if (name.contains('-galar')) return 'Galar';
-    if (name.contains('-hisui')) return 'Hisui';
-    if (name.contains('-paldea')) return 'Paldea';
-    return languageCode == 'es' ? 'regional' : 'Regional';
-  }
+  Future<List<String>> getMoveMachines(String move, String game) =>
+      _moveMachines.getMachines(move, game);
 }

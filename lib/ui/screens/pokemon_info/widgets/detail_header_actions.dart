@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/animated_action.dart';
 
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_round_action_button.dart';
-import 'package:pokeapp_flutter/ui/utils/pokemon_formatters.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/shiny_sparkle_burst.dart';
 
 class DetailHeaderActions extends StatelessWidget {
   const DetailHeaderActions({
@@ -28,31 +29,52 @@ class DetailHeaderActions extends StatelessWidget {
         padding: const EdgeInsets.only(right: 8),
         child: Column(
           children: [
-            IconButton(
-              onPressed: onFavorite,
-              icon: Icon(
-                pokemon.isFavorite ? Icons.star : Icons.star_border,
-                size: 34,
-                color:
-                    pokemon.isFavorite ? const Color(0xFFFFD54F) : Colors.white,
+            AnimatedAction(
+              onTap: onFavorite,
+              child: IconButton(
+                onPressed: null,
+                icon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  transitionBuilder: (child, animation) => ScaleTransition(
+                    scale: animation,
+                    child: child,
+                  ),
+                  child: Icon(
+                    pokemon.isFavorite ? Icons.star : Icons.star_border,
+                    key: ValueKey(pokemon.isFavorite),
+                    size: 34,
+                    color: pokemon.isFavorite
+                        ? const Color(0xFFFFD54F)
+                        : Colors.white,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 4),
-            DetailRoundActionButton(
-              enabled: pokemon.cryUrl != null && pokemon.cryUrl!.isNotEmpty,
-              color: pokemonTypeColor(pokemon.types.firstOrNull),
-              icon: Icons.volume_up,
-              iconColor: Colors.white,
-              onTap: onPlayCry,
+            AnimatedAction(
+              onTap: pokemon.cryUrl != null && pokemon.cryUrl!.isNotEmpty
+                  ? onPlayCry
+                  : null,
+              child: DetailRoundActionButton(
+                enabled: pokemon.cryUrl != null && pokemon.cryUrl!.isNotEmpty,
+                color: const Color(0xFF232B4C),
+                icon: Icons.volume_up,
+                iconColor: Colors.white,
+                onTap: null,
+              ),
             ),
             const SizedBox(height: 8),
-            DetailRoundActionButton(
-              enabled: pokemon.shinyImageUrl != null,
-              color:
-                  showShiny ? const Color(0xFFFFD54F) : const Color(0xFF232B4C),
-              icon: Icons.auto_awesome,
-              iconColor: showShiny ? const Color(0xFF121422) : Colors.white,
-              onTap: onShinyToggle,
+            ShinySparkleBurst(
+              active: showShiny,
+              child: DetailRoundActionButton(
+                enabled: pokemon.shinyImageUrl != null,
+                color: showShiny
+                    ? const Color(0xFFFFD54F)
+                    : const Color(0xFF232B4C),
+                icon: Icons.auto_awesome,
+                iconColor: showShiny ? const Color(0xFF121422) : Colors.white,
+                onTap: onShinyToggle,
+              ),
             ),
           ],
         ),

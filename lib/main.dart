@@ -19,16 +19,12 @@ class PokeApp extends StatefulWidget {
 }
 
 class _PokeAppState extends State<PokeApp> {
-  late final AppDependencies dependencies;
-  bool showSplash = true;
+  late Future<AppDependencies> dependencies;
 
   @override
   void initState() {
     super.initState();
-    dependencies = AppDependencies();
-    Future<void>.delayed(const Duration(seconds: 1), () {
-      if (mounted) setState(() => showSplash = false);
-    });
+    dependencies = AppDependencies.create();
   }
 
   @override
@@ -44,12 +40,27 @@ class _PokeAppState extends State<PokeApp> {
         GlobalCupertinoLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
-      home: showSplash
-          ? const SplashScreen()
-          : AppShell(
-              api: dependencies.pokemonRepository,
-              favorites: dependencies.favoritesStore,
-            ),
+      home: FutureBuilder<AppDependencies>(
+        future: dependencies,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Scaffold(
+              body: Center(child: TextButton(
+                onPressed: () => setState(() {
+                  dependencies = AppDependencies.create();
+                }),
+                child: const Text('Could not open local catalog. Retry'),
+              )),
+            );
+          }
+          if (!snapshot.hasData) return const SplashScreen();
+          final ready = snapshot.data!;
+          return AppShell(
+            api: ready.pokemonRepository,
+            favorites: ready.favoritesStore,
+          );
+        },
+      ),
     );
   }
 }

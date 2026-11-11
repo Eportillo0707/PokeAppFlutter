@@ -52,35 +52,28 @@ class _StatRow extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          _AnimatedStatBar(value: value),
+          _StatBar(value: value),
         ],
       ),
     );
   }
 }
 
-class _AnimatedStatBar extends StatelessWidget {
-  const _AnimatedStatBar({required this.value});
+class _StatBar extends StatelessWidget {
+  const _StatBar({required this.value});
 
   final double value;
 
   @override
   Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: value),
-      duration: const Duration(milliseconds: 1000),
-      curve: Curves.linear,
-      builder: (context, animatedValue, _) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: LinearProgressIndicator(
-            value: animatedValue,
-            minHeight: 10,
-            backgroundColor: Colors.grey.withValues(alpha: .3),
-            color: Colors.white,
-          ),
-        );
-      },
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: LinearProgressIndicator(
+        value: value,
+        minHeight: 10,
+        backgroundColor: Colors.grey.withValues(alpha: .3),
+        color: Colors.white,
+      ),
     );
   }
 }

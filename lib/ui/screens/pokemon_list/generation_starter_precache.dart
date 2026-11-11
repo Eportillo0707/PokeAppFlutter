@@ -7,6 +7,6 @@ Future<void> precacheGenerationStarterImages(BuildContext context) {
       .expand((generation) => generation.starterIds)
       .map(officialPokemonArtworkUrl);
   return Future.wait(
-    urls.map((url) => precacheImage(NetworkImage(url), context)),
+    urls.map((url) => precacheImage(AssetImage(url), context)),
   ).then((_) {});
 }

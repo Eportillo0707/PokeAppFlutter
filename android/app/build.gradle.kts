@@ -43,6 +43,14 @@ android {
     }
 
     buildTypes {
+        getByName("profile") {
+            applicationIdSuffix = ".offlinetest"
+            signingConfig = signingConfigs.getByName("release")
+        }
+        debug {
+            applicationIdSuffix = ".offlinetest"
+            signingConfig = signingConfigs.getByName("release")
+        }
         release {
             signingConfig = signingConfigs.getByName("release")
         }

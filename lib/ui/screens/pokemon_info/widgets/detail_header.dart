@@ -41,6 +41,13 @@ class DetailHeader extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.topCenter,
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 52),
+                    child: PokemonDetailHero(
+                      pokemon: pokemon,
+                      showShiny: showShiny,
+                    ),
+                  ),
                   _BackButton(onPressed: onBack),
                   DetailHeaderActions(
                     pokemon: pokemon,
@@ -48,13 +55,6 @@ class DetailHeader extends StatelessWidget {
                     onFavorite: onFavorite,
                     onPlayCry: onPlayCry,
                     onShinyToggle: onShinyToggle,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 52),
-                    child: PokemonDetailHero(
-                      pokemon: pokemon,
-                      showShiny: showShiny,
-                    ),
                   ),
                 ],
               ),

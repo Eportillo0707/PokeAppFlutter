@@ -14,13 +14,13 @@ class ArtworkNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.network(
+    return Image.asset(
       url,
       height: size,
       width: size,
       fit: BoxFit.contain,
       errorBuilder: (_, __, ___) {
-        return Image.network(fallbackUrl, height: size, width: size);
+        return Image.asset(fallbackUrl, height: size, width: size);
       },
     );
   }

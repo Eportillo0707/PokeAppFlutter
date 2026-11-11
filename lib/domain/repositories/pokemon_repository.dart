@@ -1,7 +1,14 @@
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_move.dart';
 import 'package:pokeapp_flutter/domain/model/pokemon_generation.dart';
 
 abstract class PokemonRepository {
+  Future<MoveBattleInfo> getMoveBattleInfo(
+      String move, String game, String language);
+  Future<MoveDescription?> getMoveDescription(
+      String move, String game, String language);
+  Future<List<String>> getMoveMachines(String move, String game);
+
   Future<List<PokemonItem>> getPokemonList({int limit = 20, int offset = 0});
 
   Future<List<PokemonItem>> searchPokemon(String query);

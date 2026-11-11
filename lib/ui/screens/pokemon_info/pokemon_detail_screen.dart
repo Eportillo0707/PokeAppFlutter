@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'widgets/evolution_hero_scope.dart';
 
 import 'package:pokeapp_flutter/data/local/favorites_store.dart';
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
@@ -16,11 +17,15 @@ class PokemonDetailScreen extends StatefulWidget {
     required this.api,
     required this.favorites,
     required this.initialPokemon,
+    this.preloadedInfo,
+    this.preloadedLanguageCode,
   });
 
   final PokemonRepository api;
   final FavoritesStore favorites;
   final PokemonItem initialPokemon;
+  final PokemonInfo? preloadedInfo;
+  final String? preloadedLanguageCode;
 
   @override
   State<PokemonDetailScreen> createState() => _PokemonDetailScreenState();
@@ -28,6 +33,7 @@ class PokemonDetailScreen extends StatefulWidget {
 
 class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
   late final PokemonDetailController controller;
+  String? selectedEvolution;
 
   @override
   void initState() {
@@ -36,6 +42,8 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       api: widget.api,
       favorites: widget.favorites,
       initialPokemon: widget.initialPokemon,
+      preloadedInfo: widget.preloadedInfo,
+      preloadedLanguageCode: widget.preloadedLanguageCode,
     );
   }
 
@@ -65,20 +73,26 @@ class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
       },
       child: Scaffold(
         backgroundColor: const Color(0xFF121422),
-        body: PokemonDetailLoader(
-          future: controller.future,
-          initialPokemon: widget.initialPokemon,
-          favorites: widget.favorites,
-          selectedPage: controller.selectedPage,
-          showShiny: controller.showShiny,
-          scrollController: controller.scrollController,
-          onRetry: _retry,
-          onBack: _popWithHero,
-          onFavorite: _toggle,
-          onPlayCry: (pokemon) => _playCry(pokemon, routes),
-          onShinyToggle: _toggleShiny,
-          onPageSelected: _selectPage,
-          onEvolutionTap: (species) => _openEvolution(species, routes),
+        body: EvolutionHeroScope(
+          selected: selectedEvolution,
+          child: PokemonDetailLoader(
+            loadMachines: widget.api.getMoveMachines,
+            loadDescription: widget.api.getMoveDescription,
+            loadBattleInfo: widget.api.getMoveBattleInfo,
+            future: controller.future,
+            initialPokemon: widget.initialPokemon,
+            favorites: widget.favorites,
+            selectedPage: controller.selectedPage,
+            showShiny: controller.showShiny,
+            scrollController: controller.scrollController,
+            onRetry: _retry,
+            onBack: _popWithHero,
+            onFavorite: _toggle,
+            onPlayCry: (pokemon) => _playCry(pokemon, routes),
+            onShinyToggle: _toggleShiny,
+            onPageSelected: _selectPage,
+            onEvolutionTap: (species) => _openEvolution(species, routes),
+          ),
         ),
       ),
     );

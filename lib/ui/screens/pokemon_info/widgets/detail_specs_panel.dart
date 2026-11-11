@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/scroll_reveal.dart';
 
 class PokemonSpecsPanel extends StatelessWidget {
   const PokemonSpecsPanel({super.key, required this.pokemon});
@@ -10,7 +11,8 @@ class PokemonSpecsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return ScrollReveal(
+        child: Padding(
       padding: const EdgeInsets.only(top: 20, bottom: 20),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -34,7 +36,7 @@ class PokemonSpecsPanel extends StatelessWidget {
           );
         },
       ),
-    );
+    ));
   }
 }
 

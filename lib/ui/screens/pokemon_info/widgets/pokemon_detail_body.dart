@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_move.dart';
 
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_card.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_header.dart';
-import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_pages.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/pokemon_detail_page_content.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_tabs.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/swipeable_detail_page.dart';
 
@@ -20,6 +21,9 @@ class PokemonDetailBody extends StatelessWidget {
     required this.onShinyToggle,
     required this.onPageSelected,
     required this.onEvolutionTap,
+    this.loadMachines,
+    this.loadDescription,
+    this.loadBattleInfo,
   });
 
   final PokemonInfo pokemon;
@@ -32,6 +36,9 @@ class PokemonDetailBody extends StatelessWidget {
   final VoidCallback? onShinyToggle;
   final ValueChanged<int> onPageSelected;
   final ValueChanged<PokemonSpecies> onEvolutionTap;
+  final MoveMachineLoader? loadMachines;
+  final MoveDescriptionLoader? loadDescription;
+  final MoveBattleLoader? loadBattleInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -60,17 +67,20 @@ class PokemonDetailBody extends StatelessWidget {
                       selectedPage: selectedPage,
                       onInfoClick: () => onPageSelected(0),
                       onStatsClick: () => onPageSelected(1),
+                      onMovesClick: () => onPageSelected(2),
                     ),
                     DetailPageCard(
                       child: SwipeableDetailPage(
                         selectedPage: selectedPage,
                         onPageSelected: onPageSelected,
-                        child: selectedPage == 0
-                            ? PokemonInfoPage(
-                                pokemon: pokemon,
-                                onEvolutionTap: onEvolutionTap,
-                              )
-                            : PokemonStatsPage(pokemon: pokemon),
+                        child: PokemonDetailPageContent(
+                          pokemon: pokemon,
+                          selectedPage: selectedPage,
+                          onEvolutionTap: onEvolutionTap,
+                          loadMachines: loadMachines,
+                          loadDescription: loadDescription,
+                          loadBattleInfo: loadBattleInfo,
+                        ),
                       ),
                     ),
                   ],

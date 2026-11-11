@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
+import 'package:pokeapp_flutter/ui/l10n/move_localizations.dart';
 
 class DetailTabs extends StatelessWidget {
   const DetailTabs({
@@ -6,17 +8,19 @@ class DetailTabs extends StatelessWidget {
     required this.selectedPage,
     required this.onInfoClick,
     required this.onStatsClick,
+    required this.onMovesClick,
   });
 
   final int selectedPage;
   final VoidCallback onInfoClick;
   final VoidCallback onStatsClick;
+  final VoidCallback onMovesClick;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 230),
+        constraints: const BoxConstraints(maxWidth: 300),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -29,6 +33,14 @@ class DetailTabs extends StatelessWidget {
               icon: Icons.bar_chart,
               selected: selectedPage == 1,
               onTap: onStatsClick,
+            ),
+            Tooltip(
+              message: context.l10n.moves,
+              child: _DetailTabButton(
+                icon: Icons.album_outlined,
+                selected: selectedPage == 2,
+                onTap: onMovesClick,
+              ),
             ),
           ],
         ),
@@ -57,12 +69,12 @@ class _DetailTabButton extends StatelessWidget {
         children: [
           Icon(
             icon,
-            size: 40,
-            color: selected ? Colors.white : Colors.grey,
+            size: 26,
+            color: selected ? Colors.white : Colors.white60,
           ),
           const SizedBox(height: 6),
           Container(
-            width: 50,
+            width: 36,
             height: 3,
             decoration: BoxDecoration(
               color: selected ? Colors.white : Colors.transparent,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_section.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/mega_evolution_section.dart';
 
 class PokemonEvolutionsPanel extends StatelessWidget {
   const PokemonEvolutionsPanel({
@@ -26,7 +27,14 @@ class PokemonEvolutionsPanel extends StatelessWidget {
         _section(context.l10n.evolutionChain, normal, showArrows: true),
         _section(context.l10n.regionalForms, pokemon.regionalForms),
         _section(context.l10n.gigantamaxForms, pokemon.gigantamaxForms),
-        _section(context.l10n.megaEvolutions, mega),
+        if (mega.isNotEmpty)
+          MegaEvolutionSection(
+            title: context.l10n.megaEvolutions,
+            normal: normal,
+            mega: mega,
+            currentPokemonId: pokemon.id,
+            onSpeciesTap: onSpeciesTap,
+          ),
       ].whereType<Widget>().toList(),
     );
   }
@@ -41,6 +49,7 @@ class PokemonEvolutionsPanel extends StatelessWidget {
       title: title,
       species: species,
       showArrows: showArrows,
+      currentPokemonId: pokemon.id,
       onSpeciesTap: onSpeciesTap,
     );
   }

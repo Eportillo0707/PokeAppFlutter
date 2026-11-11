@@ -1,4 +1,5 @@
-import 'package:pokeapp_flutter/ui/utils/pokemon_formatters.dart';
+import 'package:pokeapp_flutter/domain/utils/pokemon_name.dart';
+import 'spanish_evolution_items.dart';
 
 class EvolutionMethodFormatter {
   const EvolutionMethodFormatter();
@@ -63,51 +64,6 @@ class EvolutionMethodFormatter {
   String formatItemName(dynamic itemName, String languageCode) {
     final raw = itemName as String;
     if (languageCode != 'es') return formatPokemonName(raw);
-    return _spanishEvolutionItems[raw] ?? formatPokemonName(raw);
+    return spanishEvolutionItems[raw] ?? formatPokemonName(raw);
   }
-
-  static const _spanishEvolutionItems = {
-    'sun-stone': 'Piedra Solar',
-    'moon-stone': 'Piedra Lunar',
-    'fire-stone': 'Piedra Fuego',
-    'thunder-stone': 'Piedra Trueno',
-    'water-stone': 'Piedra Agua',
-    'leaf-stone': 'Piedra Hoja',
-    'shiny-stone': 'Piedra Dia',
-    'dusk-stone': 'Piedra Noche',
-    'dawn-stone': 'Piedra Alba',
-    'ice-stone': 'Piedra Hielo',
-    'oval-stone': 'Piedra Oval',
-    'kings-rock': 'Roca del Rey',
-    'metal-coat': 'Revestimiento Metalico',
-    'dragon-scale': 'Escama Dragon',
-    'upgrade': 'Mejora',
-    'dubious-disc': 'Disco Extrano',
-    'protector': 'Protector',
-    'electirizer': 'Electrizador',
-    'magmarizer': 'Magmatizador',
-    'reaper-cloth': 'Tela Terrible',
-    'razor-claw': 'Garra Afilada',
-    'razor-fang': 'Colmillo Agudo',
-    'prism-scale': 'Escama Bella',
-    'deep-sea-tooth': 'Diente Marino',
-    'deep-sea-scale': 'Escama Marina',
-    'sachet': 'Saquito Fragante',
-    'whipped-dream': 'Dulce de Nata',
-    'sweet-apple': 'Manzana Dulce',
-    'tart-apple': 'Manzana Acida',
-    'cracked-pot': 'Tetera Rota',
-    'chipped-pot': 'Tetera Agrietada',
-    'galarica-cuff': 'Brazal Galanuez',
-    'galarica-wreath': 'Corona Galanuez',
-    'black-augurite': 'Augurita Negra',
-    'peat-block': 'Bloque de Turba',
-    'auspicious-armor': 'Armadura Auspiciosa',
-    'malicious-armor': 'Armadura Maldita',
-    'scroll-of-darkness': 'Pergamino Oscuro',
-    'scroll-of-waters': 'Pergamino Agua',
-    'masterpiece-teacup': 'Taza Exquisita',
-    'unremarkable-teacup': 'Taza Corriente',
-    'syrupy-apple': 'Manzana Melosa',
-  };
 }

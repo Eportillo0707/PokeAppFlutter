@@ -14,7 +14,7 @@ class EvolutionMethodLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasItem = itemImageUrl != null && itemImageUrl!.isNotEmpty;
     return SizedBox(
-      width: 155,
+      width: double.infinity,
       child: Center(
         child: Container(
           margin: const EdgeInsets.only(top: 4),
@@ -60,7 +60,7 @@ class _EvolutionItemImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 4),
-      child: Image.network(
+      child: Image.asset(
         url,
         width: 22,
         height: 22,

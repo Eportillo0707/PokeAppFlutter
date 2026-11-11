@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokeapp_flutter/domain/model/pokemon_move.dart';
 
 import 'package:pokeapp_flutter/data/local/favorites_store.dart';
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
@@ -18,6 +19,9 @@ class FavoriteAwareDetail extends StatelessWidget {
     required this.onShinyToggle,
     required this.onPageSelected,
     required this.onEvolutionTap,
+    this.loadMachines,
+    this.loadDescription,
+    this.loadBattleInfo,
   });
 
   final PokemonInfo pokemon;
@@ -31,6 +35,9 @@ class FavoriteAwareDetail extends StatelessWidget {
   final VoidCallback onShinyToggle;
   final ValueChanged<int> onPageSelected;
   final ValueChanged<PokemonSpecies> onEvolutionTap;
+  final MoveMachineLoader? loadMachines;
+  final MoveDescriptionLoader? loadDescription;
+  final MoveBattleLoader? loadBattleInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +56,9 @@ class FavoriteAwareDetail extends StatelessWidget {
           onShinyToggle: pokemon.shinyImageUrl == null ? null : onShinyToggle,
           onPageSelected: onPageSelected,
           onEvolutionTap: onEvolutionTap,
+          loadMachines: loadMachines,
+          loadDescription: loadDescription,
+          loadBattleInfo: loadBattleInfo,
         );
       },
     );

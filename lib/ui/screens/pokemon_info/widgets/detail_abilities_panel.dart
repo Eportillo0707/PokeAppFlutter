@@ -38,8 +38,9 @@ class _AbilityButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       style: TextButton.styleFrom(
-        backgroundColor: const Color(0xFF232B4C),
-        foregroundColor: Colors.white,
+        backgroundColor:
+            Theme.of(context).colorScheme.primary.withValues(alpha: .14),
+        foregroundColor: Theme.of(context).colorScheme.primary,
       ),
       onPressed: () => _showAbilitySheet(context, ability),
       child: Text(
