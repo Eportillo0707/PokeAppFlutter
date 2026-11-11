@@ -109,6 +109,10 @@ necesarias antes de implementar el sistema. No autoriza publicar un release.
   está fijada a `2026.11.05` hasta que exista un catálogo activo versionado.
   No se debe presentar esta etapa como actualización funcional completa.
 - `flutter analyze --no-pub` no encontró problemas y `flutter test --no-pub`
-  pasó 47 pruebas, incluidas firma válida, firma alterada, intervalo, búsqueda
+  pasó 49 pruebas, incluidas firma válida, firma alterada, intervalo, búsqueda
   manual y recuperación tras una consulta fallida. Falta validar en teléfono
   con un manifiesto firmado de prueba y comprobar el flujo de interfaz.
+- En debug/profile, `AppShell` muestra una pestaña Ajustes/Settings con la
+  versión base, la última comprobación, el estado y búsqueda manual. La pestaña
+  no existe en release. Con URL o clave de pruebas ausentes, el botón queda
+  deshabilitado y no hay solicitudes. La interfaz no ofrece descarga todavía.

@@ -9,10 +9,12 @@ class AppBottomNav extends StatelessWidget {
     super.key,
     required this.index,
     required this.onSelected,
+    this.showSettings = false,
   });
 
   final int index;
   final ValueChanged<int> onSelected;
+  final bool showSettings;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +50,11 @@ class AppBottomNav extends StatelessWidget {
                 title: context.l10n.isSpanish ? 'Equipos' : 'Teams',
                 selected: index == 2,
                 onTap: () => onSelected(2),
+              ),
+              if (showSettings) _BottomTab(
+                title: context.l10n.isSpanish ? 'Ajustes' : 'Settings',
+                selected: index == 3,
+                onTap: () => onSelected(3),
               ),
             ],
           ),
