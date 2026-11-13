@@ -29,14 +29,15 @@ flutter_launcher_icons:
   android: true
   ios: true
   image_path: assets/icons/app_icon.png
-  adaptive_icon_background: "#121422"
-  adaptive_icon_foreground: assets/icons/app_icon.png
+  adaptive_icon_background: "#00000000"
+  adaptive_icon_foreground: assets/splash/logo.png
   remove_alpha_ios: true
 
 flutter:
   uses-material-design: true
   assets:
     - assets/icons/
+    - assets/splash/
     - assets/sounds/
     - assets/offline_catalog/
     - assets/offline_catalog/normal/
