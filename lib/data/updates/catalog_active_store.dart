@@ -54,8 +54,10 @@ class CatalogActiveStore {
   }
 
   Future<void> recover(File working) async {
+    final failed = (await _readPointer())['active'];
     if (working.path == seed.path) {
       if (await pointer.exists()) await pointer.delete();
+      await _removeFailed(failed, null);
       return;
     }
     final version = working.parent.path.replaceAll('\\', '/').split('/').last;
@@ -67,5 +69,14 @@ class CatalogActiveStore {
       'active': version, 'previous': null,
     }), flush: true);
     await temporary.rename(pointer.path);
+    await _removeFailed(failed, version);
+  }
+
+  Future<void> _removeFailed(String? failed, String? selected) async {
+    if (failed == null || failed == selected) return;
+    try {
+      final directory = versionDirectory(failed);
+      if (await directory.exists()) await directory.delete(recursive: true);
+    } catch (_) { /* Recovery remains valid if cleanup fails. */ }
   }
 }

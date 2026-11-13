@@ -57,6 +57,7 @@ void main() {
       expect(selected?.path, oldFile.path);
       await store.recover(selected!);
       expect(await store.activeVersion(), '2026.11.11');
+      expect(await active.exists(), isFalse);
     } finally {
       await root.delete(recursive: true);
     }

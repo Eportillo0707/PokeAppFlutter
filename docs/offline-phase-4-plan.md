@@ -213,3 +213,22 @@ necesarias antes de implementar el sistema. No autoriza publicar un release.
   23,1 MiB y la instaló. El puntero privado quedó con `2026.11.13.3` activa y
   `2026.11.13.2` anterior. Tras reiniciar, la Pokédex cargó con normalidad.
   La app de producción y su distribución en Play Store no se modificaron.
+
+## Interrupción y recuperación en S25 Ultra, 13 de noviembre de 2026
+
+- Se corrigió la recuperación para retirar el directorio de una versión
+  dañada después de volver al catálogo anterior. Así puede reinstalarse el
+  mismo Release. La prueba `catalog_media_recovery_test.dart` pasó; el análisis
+  de los dos archivos modificados no encontró problemas.
+- Se alteró un WebP de `2026.11.13.3` con copia previa. Al reiniciar,
+  `offlinetest` volvió automáticamente a `2026.11.13.2`, retiró el directorio
+  dañado y abrió la Pokédex. Después detectó y reinstaló `.3` desde HTTPS.
+- Actions 43521828233 generó el paquete firmado `2026.11.13.4` basado en
+  `.3`. Se verificaron firma, hashes y tamaños de sus 187 archivos. El Release
+  público se publicó tras confirmar que tenía los 189 assets esperados.
+- Se interrumpió la descarga `.4` cuando quedaba `catalog.sqlite.gz.part` en
+  staging. El puntero mantuvo `.3` activa y la app abrió normalmente tras
+  reiniciar. Un nuevo intento terminó la instalación; al reiniciar otra vez,
+  `.4` quedó activa, `.3` anterior y la Pokédex abrió correctamente.
+- Todo se probó en `com.emerson.pokeapp.offlinetest`. Sigue pendiente evaluar
+  el mecanismo antes de incorporarlo a la app de producción.
