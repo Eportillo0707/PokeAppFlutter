@@ -10,26 +10,21 @@
   `2026.11.05`, la versión inicial que incluye el AAB. El manifiesto contiene
   `catalogVersion: 2026.11.13.5`. La app usa la URL fija del Release
   `catalog-play-internal-2026.11.13.5`, independiente de `/releases/latest/`.
+  El Release ya está publicado en GitHub con sus 189 archivos; manifiesto y
+  firma responden HTTP 200. El Release `latest` de offlinetest sigue en `.4`.
 
 ## Publicación que harás tú
 
-1. Desde la raíz del proyecto, ejecuta en PowerShell
-   `./tool/offline_catalog/publish_play_internal.ps1`. El script comprueba los
-   archivos, crea un Release borrador en `Eportillo0707/PokeAppCatalog`, sube
-   todos los assets, confirma que están completos y entonces lo publica. Usa
-   GitHub CLI ya autenticado. Si PowerShell bloquea el script, ejecútalo con
-   `powershell -ExecutionPolicy Bypass -File
-   tool/offline_catalog/publish_play_internal.ps1`.
-2. En Play Console abre **PokeApp → Pruebas → Pruebas internas**. Añade solo tu
+1. En Play Console abre **PokeApp → Pruebas → Pruebas internas**. Añade solo tu
    cuenta Google a la lista de testers y crea una versión nueva con el AAB de
    arriba. Publícala únicamente en el canal interno. Si Play Console indica
    que el código 10 ya está usado, detente: habrá que generar otro AAB con un
    código superior.
-3. Mantén instalada la versión original de Play Store en el teléfono. Abre el
+2. Mantén instalada la versión original de Play Store en el teléfono. Abre el
    enlace de invitación del canal interno con la misma cuenta Google, acepta
    la prueba y actualiza PokeApp desde Play Store. No desinstales la app: así
    validas la actualización encima de `1.1.0 (9)` y la conservación de datos.
-4. Comprueba que siguen tus favoritos y equipos. En Ajustes de PokeApp usa
+3. Comprueba que siguen tus favoritos y equipos. En Ajustes de PokeApp usa
    **Check for updates**; debe ofrecer `2026.11.13.5`. Instálala, reinicia la
    app y comprueba la Pokédex. Envíame una captura o el resultado para revisar
    cualquier fallo antes de considerar el canal de producción.
