@@ -74,7 +74,7 @@ class SplashScreen extends StatelessWidget {
       backgroundColor: Color(0xFF121422),
       body: Center(
         child: Image(
-          image: AssetImage('assets/splash/bulbasaur_seeklogo.png'),
+          image: AssetImage('assets/icons/app_icon.png'),
           width: 170,
           fit: BoxFit.contain,
         ),

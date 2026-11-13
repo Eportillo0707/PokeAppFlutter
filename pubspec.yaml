@@ -38,7 +38,6 @@ flutter:
   assets:
     - assets/icons/
     - assets/sounds/
-    - assets/splash/
     - assets/offline_catalog/
     - assets/offline_catalog/normal/
     - assets/offline_catalog/shiny/
