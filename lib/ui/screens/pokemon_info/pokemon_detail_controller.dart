@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
 import 'package:pokeapp_flutter/data/local/favorites_store.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/pokemon_cry_player.dart';
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
 
@@ -56,9 +57,7 @@ class PokemonDetailController {
   Future<void> playCry(PokemonInfo pokemon) async {
     final cryUrl = pokemon.cryUrl;
     if (cryUrl == null || cryUrl.isEmpty) return;
-    await cryPlayer.stop();
-    await cryPlayer.play(
-        cryUrl.startsWith('http') ? UrlSource(cryUrl) : AssetSource(cryUrl));
+    await playPokemonCry(cryPlayer, cryUrl);
   }
 
   Future<void> playShinySound() {

@@ -33,10 +33,9 @@ is not atomic across PokéAPI and GitHub; the validation command checks all copi
 files, database integrity, foreign keys, row counts and sample queries.
 
 The generator does not modify app code, user preferences, teams or favorites.
-The compressed file and media are **not** bundled into the app yet. Startup
-copying, runtime queries, image resolution, background synchronization and a Play
-Store size measurement are subsequent phases. The SQLite schema is version 1;
-future app migrations and changes to package format require explicit versioning.
+The compressed file and media are bundled into the app. `offlinetest` can also
+install signed updates and resolve downloaded media after restart. The SQLite
+schema is version 1; future migrations and package changes need versioning.
 
 ## Check PokéAPI for changes
 
@@ -49,9 +48,9 @@ reformatted IDs. Canonical JSON hashes ignore whitespace and object key order.
 The check fails rather than reporting “no changes” when a request fails.
 Run `node --test tool/offline_catalog/check_upstream.test.cjs` for its local test.
 
-This is a developer-side validation step. The app does not download updates yet:
-it needs a published HTTPS catalog manifest and media package. Do not run this
-full scan on phones. `package_release.cjs` can prepare a signed test package
+This is a developer-side validation step. Do not run this full scan on phones.
+The app still needs a published HTTPS catalog manifest and media package for
+remote updates. `package_release.cjs` can prepare a signed test package
 from a separately built and validated new catalog. It requires an external
 Ed25519 private key path in `POKEAPP_SIGNING_KEY`, a changed report, a base
 manifest, a new catalog directory, output directory and two catalog versions.
@@ -72,3 +71,18 @@ compile the **profile** variant with `POKEAPP_CATALOG_MANIFEST_URL` pointing to
 `POKEAPP_CATALOG_PUBLIC_KEY` set to the fixture's base64 public key. Cleartext
 traffic is enabled only in the profile manifest for this USB test. The server
 and reverse tunnel must be running for manual update checks to work.
+
+`node tool/offline_catalog/make_test_media_release.cjs` creates a second,
+ignored fixture based on the SQLite-only USB test. It adds a content-addressed
+WebP with unchanged visible artwork and signs a `2026.11.13.2` manifest whose
+base is `2026.11.11.1`. Pass `build/offline-test-media-release` to the local
+server to test an update containing media. The app verifies every referenced
+media file before activation and uses its downloaded copy after restart.
+
+The prepared GitHub Actions workflow is in `.github/workflows/`. It requires a
+verified baseline archive with `manifest.json` and `json/` at its root, plus
+repository variables `CATALOG_BASELINE_URL` and `CATALOG_BASELINE_SHA256`.
+Manual signed packaging also needs the `CATALOG_SIGNING_KEY_PEM` secret and
+`base_version` / `version` inputs. The workflow uploads an Actions artifact;
+it does not publish a release. The baseline archive currently exists only at
+`build/offline-catalog/baseline-2026-11-05.tar.gz` and is ignored by Git.

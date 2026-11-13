@@ -172,3 +172,39 @@ necesarias antes de implementar el sistema. No autoriza publicar un release.
 - No se creó GitHub Release ni se modificó la app de Play Store. Sigue pendiente
   el soporte de medios descargados, la prueba con interrupción en teléfono y
   una configuración de distribución estable.
+
+## Medios y distribución, 13 de noviembre de 2026
+
+- `offlinetest` resuelve imágenes y objetos desde el catálogo activo mediante
+  `DefaultAssetBundle`; usa los assets incluidos si el hash es el mismo que el
+  del catálogo base. Los Cry descargados se reproducen desde un archivo local.
+  Se conserva la lista histórica de MP3 para el catálogo incluido porque unas
+  filas antiguas de SQLite tienen extensión `.ogg` para bytes MP3.
+- El instalador verifica hash, tamaño y referencias de todos los medios antes
+  de activar SQLite. Copia al directorio nuevo los medios reutilizados de la
+  versión anterior; una descarga parcial o un archivo inválido deja el puntero
+  intacto. Al iniciar, los medios activos se verifican y se intenta la versión
+  anterior o el seed si están dañados.
+- Pasaron 60 pruebas Flutter y 4 pruebas Node. Las nuevas pruebas incluyen
+  medio nuevo, descarga parcial, archivo alterado y recuperación anterior.
+  `flutter analyze --no-pub` no encontró problemas.
+- En el S25 Ultra se instaló por USB un paquete firmado `2026.11.13.2` basado
+  en `2026.11.11.1`, con un WebP válido de Bulbasaur de hash nuevo y aspecto
+  idéntico. Tras reiniciar, el archivo de 25.862 bytes estaba en el directorio
+  de la versión activa y la Pokédex mostró Bulbasaur. Se retiró `adb reverse`
+  y la app volvió a abrir sin servidor. Los fallos inducidos se probaron en
+  tests locales; no se dañó el catálogo del teléfono para simular recuperación.
+- `.github/workflows/catalog-offlinetest.yml` prepara auditoría quincenal y
+  empaquetado firmado manual como artefacto de Actions. Necesita publicar un
+  archivo base verificado y configurar `CATALOG_BASELINE_URL`,
+  `CATALOG_BASELINE_SHA256` y `CATALOG_SIGNING_KEY_PEM`; mientras falten las
+  variables, el trabajo programado se omite. El archivo base local pesa
+  13.150.218 bytes y tiene SHA-256
+  `51CCD7A31EFFF00773996AC1CA8FFF92854201C7813ACB56C4EB9BFF32994CCB`.
+- Se propone un repositorio público separado `Eportillo0707/PokeAppCatalog`
+  para Releases solo de `offlinetest`. Su URL estable sería
+  `https://github.com/Eportillo0707/PokeAppCatalog/releases/latest/download/update-manifest.json`.
+  La app descarga firma y assets desde la misma carpeta de Release. Aún no
+  existe ese repositorio ni una clave persistente; tampoco se ha publicado el
+  archivo base ni un Release. Se requiere revisar la publicación pública antes
+  de crear el alojamiento y configurar la APK con esa URL y clave.

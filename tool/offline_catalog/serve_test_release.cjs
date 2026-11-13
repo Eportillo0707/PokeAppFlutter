@@ -10,7 +10,9 @@ const allowed = new Set([
 
 http.createServer((request, response) => {
   const name = request.url.slice(1);
-  if (request.method !== 'GET' || !allowed.has(name)) {
+  if (request.method !== 'GET' ||
+      (!allowed.has(name) &&
+       !/^media-[a-f0-9]{64}\.(webp|ogg|mp3)$/.test(name))) {
     response.writeHead(404).end();
     return;
   }

@@ -45,7 +45,8 @@ class _PokeAppState extends State<PokeApp> {
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Scaffold(
-              body: Center(child: TextButton(
+              body: Center(
+                  child: TextButton(
                 onPressed: () => setState(() {
                   dependencies = AppDependencies.create();
                 }),
@@ -55,9 +56,12 @@ class _PokeAppState extends State<PokeApp> {
           }
           if (!snapshot.hasData) return const SplashScreen();
           final ready = snapshot.data!;
-          return AppShell(
-            api: ready.pokemonRepository,
-            favorites: ready.favoritesStore,
+          return DefaultAssetBundle(
+            bundle: ready.mediaResolver,
+            child: AppShell(
+              api: ready.pokemonRepository,
+              favorites: ready.favoritesStore,
+            ),
           );
         },
       ),

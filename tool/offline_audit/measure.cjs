@@ -5,7 +5,8 @@ const {promisify} = require('node:util');
 const zlib = require('node:zlib');
 const run = promisify(execFile);
 const root = path.resolve('build/offline-audit');
-const encoder = path.join(root,'tools/libwebp-1.6.0-windows-x64/bin/cwebp.exe');
+const encoder = process.env.CWEBP_PATH ||
+  path.join(root,'tools/libwebp-1.6.0-windows-x64/bin/cwebp.exe');
 async function main() {
   const manifest = JSON.parse(await fs.readFile(path.join(root,'media-manifest.json')));
   const images = [...new Map(manifest.filter(m=>m.bytes && m.kind!=='cry').map(m=>[m.hash,m])).values()];

@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:pokeapp_flutter/data/updates/catalog_media_resolver.dart';
 
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/artwork_image_measurement.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/artwork_network_image.dart';
@@ -64,7 +65,8 @@ class _NormalizedPokemonArtworkState extends State<NormalizedPokemonArtwork> {
   }
 
   Future<VisibleArtwork?> _measureImage(String url) async {
-    final image = await resolveUiImage(AssetImage(url));
+    final image = await resolveUiImage(
+        AssetImage(url, bundle: CatalogMediaResolver.current));
     final bytes = await image.toByteData(format: ui.ImageByteFormat.rawRgba);
     if (bytes == null) return null;
     return visibleArtworkFromImage(image, bytes, widget.size);

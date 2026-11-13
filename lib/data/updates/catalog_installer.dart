@@ -3,12 +3,13 @@ import 'catalog_active_store.dart';
 import 'catalog_decompress.dart';
 import 'catalog_file_verifier.dart';
 import 'catalog_manifest.dart';
+import 'catalog_media_installer.dart';
 import 'catalog_sqlite_validator.dart';
 import 'catalog_version.dart';
 
 class CatalogInstaller {
-  CatalogInstaller(this.store, {CatalogFileVerifier? verifier,
-    CatalogSqliteValidator? sqliteValidator})
+  CatalogInstaller(this.store,
+      {CatalogFileVerifier? verifier, CatalogSqliteValidator? sqliteValidator})
       : verifier = verifier ?? CatalogFileVerifier(),
         sqliteValidator = sqliteValidator ?? CatalogSqliteValidator();
 
@@ -22,11 +23,8 @@ class CatalogInstaller {
         compareCatalogVersions(manifest.version, current) <= 0) {
       throw const FormatException('Catalog base version changed');
     }
-    if (manifest.files.length != 1 ||
-        manifest.files.single.path != 'catalog.sqlite.gz') {
-      throw const FormatException('Media updates are not supported yet');
-    }
-    final entry = manifest.files.single;
+    final entry =
+        manifest.files.firstWhere((file) => file.path == 'catalog.sqlite.gz');
     final compressed = File('${staging.path}/${entry.asset}');
     if (!await verifier.matches(compressed, entry)) {
       throw const FormatException('Catalog download is incomplete');
@@ -39,7 +37,14 @@ class CatalogInstaller {
     try {
       final file = File('${directory.path}/catalog.sqlite');
       await decompressCatalog(compressed, file);
-      await sqliteValidator.validate(file, store.seed);
+      await sqliteValidator.validate(file);
+      await CatalogMediaInstaller(verifier).install(
+          catalog: file,
+          seed: store.seed,
+          previous: store.versionDirectory(current),
+          staging: staging,
+          target: directory,
+          manifest: manifest);
       await store.activate(manifest.version);
     } catch (_) {
       await directory.delete(recursive: true);

@@ -11,23 +11,17 @@ import 'package:pokeapp_flutter/data/updates/catalog_active_store.dart';
 import 'package:pokeapp_flutter/data/updates/catalog_downloader.dart';
 import 'package:pokeapp_flutter/data/updates/catalog_installer.dart';
 import 'package:pokeapp_flutter/data/updates/catalog_manifest_client.dart';
-
-Future<void> makeCatalog(File file, String marker) async {
-  final db = await openDatabase(file.path);
-  await db.execute('CREATE TABLE catalog_meta (key TEXT, value TEXT)');
-  await db.insert('catalog_meta', {'key': 'schema_version', 'value': '1'});
-  await db.insert('catalog_meta', {'key': 'marker', 'value': marker});
-  await db.execute('CREATE TABLE media (sha256 TEXT)');
-  await db.execute('CREATE TABLE pokemon (id INTEGER, normal_asset TEXT, '
-    'shiny_asset TEXT, cry_asset TEXT)');
-  await db.execute('CREATE TABLE evolution_items (item_name TEXT, asset_id TEXT)');
-  await db.close();
-}
+import 'catalog_test_support.dart';
 
 void main() {
-  setUpAll(() { sqfliteFfiInit(); databaseFactory = databaseFactoryFfi; });
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  });
 
-  test('signed download activates SQLite and preserves personal data', () async {
+  test('signed download activates SQLite and preserves personal data',
+      () async {
     final root = await Directory.systemTemp.createTemp('poke-flow-');
     try {
       SharedPreferences.setMockInitialValues({
@@ -35,18 +29,28 @@ void main() {
         'pokemon_teams_v1': '[{"id":"team"}]',
       });
       final store = CatalogActiveStore(root);
-      await makeCatalog(store.seed, 'original');
+      await createCatalog(store.seed, '1', marker: 'original');
       final next = File('${root.path}/next.sqlite');
-      await makeCatalog(next, 'updated');
+      await createCatalog(next, '1', marker: 'updated');
       final bytes = gzip.encode(await next.readAsBytes());
       final digest = await Sha256().hash(bytes);
-      final hash = digest.bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+      final hash =
+          digest.bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
       final manifestBytes = utf8.encode(jsonEncode({
-        'formatVersion': 1, 'schemaVersion': 1, 'channel': 'offlinetest',
-        'minAppVersion': '1.1.0', 'catalogVersion': '2026.11.11',
+        'formatVersion': 1,
+        'schemaVersion': 1,
+        'channel': 'offlinetest',
+        'minAppVersion': '1.1.0',
+        'catalogVersion': '2026.11.11',
         'baseCatalogVersion': '2026.11.05',
-        'files': [{'path': 'catalog.sqlite.gz', 'asset': 'catalog.sqlite.gz',
-          'bytes': bytes.length, 'sha256': hash}],
+        'files': [
+          {
+            'path': 'catalog.sqlite.gz',
+            'asset': 'catalog.sqlite.gz',
+            'bytes': bytes.length,
+            'sha256': hash
+          }
+        ],
       }));
       final pair = await Ed25519().newKeyPair();
       final key = await pair.extractPublicKey();
@@ -61,16 +65,19 @@ void main() {
         return http.Response.bytes(manifestBytes, 200);
       });
       final url = Uri.parse('http://localhost/update-manifest.json');
-      final manifest = await CatalogManifestClient(url: url,
-        publicKey: key.bytes, client: httpClient).fetch();
+      final manifest = await CatalogManifestClient(
+              url: url, publicKey: key.bytes, client: httpClient)
+          .fetch();
       final staging = Directory('${root.path}/staging');
       await CatalogDownloader(manifestUrl: url, client: httpClient)
-        .download(manifest, staging);
+          .download(manifest, staging);
       await CatalogInstaller(store).install(manifest, staging);
       final db = await openCatalogCandidate((await store.candidates()).first);
-      expect((await db.rawQuery(
-        "SELECT value FROM catalog_meta WHERE key = 'marker'"
-      )).single['value'], 'updated');
+      expect(
+          (await db.rawQuery(
+                  "SELECT value FROM catalog_meta WHERE key = 'marker'"))
+              .single['value'],
+          'updated');
       await db.close();
       final prefs = await SharedPreferences.getInstance();
       expect(prefs.getString('favorite_pokemon'), contains('6'));
