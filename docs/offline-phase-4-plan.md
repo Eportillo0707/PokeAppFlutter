@@ -194,17 +194,22 @@ necesarias antes de implementar el sistema. No autoriza publicar un release.
   de la versión activa y la Pokédex mostró Bulbasaur. Se retiró `adb reverse`
   y la app volvió a abrir sin servidor. Los fallos inducidos se probaron en
   tests locales; no se dañó el catálogo del teléfono para simular recuperación.
-- `.github/workflows/catalog-offlinetest.yml` prepara auditoría quincenal y
-  empaquetado firmado manual como artefacto de Actions. Necesita publicar un
-  archivo base verificado y configurar `CATALOG_BASELINE_URL`,
-  `CATALOG_BASELINE_SHA256` y `CATALOG_SIGNING_KEY_PEM`; mientras falten las
-  variables, el trabajo programado se omite. El archivo base local pesa
-  13.150.218 bytes y tiene SHA-256
-  `51CCD7A31EFFF00773996AC1CA8FFF92854201C7813ACB56C4EB9BFF32994CCB`.
-- Se propone un repositorio público separado `Eportillo0707/PokeAppCatalog`
-  para Releases solo de `offlinetest`. Su URL estable sería
+- `.github/workflows/catalog-offlinetest.yml` ejecuta una auditoría quincenal
+  y permite generar manualmente un paquete firmado como artefacto de Actions.
+  El archivo base verificado está publicado en el repositorio público
+  `Eportillo0707/PokeAppCatalog`; las variables `CATALOG_BASELINE_URL` y
+  `CATALOG_BASELINE_SHA256`, y el secreto `CATALOG_SIGNING_KEY_PEM`, están
+  configurados en el repositorio de la app. La clave pública persistente está
+  en `tool/offline_catalog/public-key.base64`.
+- La ejecución 43492121785 de Actions generó el paquete firmado
+  `2026.11.13.3`. Se verificaron el manifiesto, la firma y sus 187 archivos
+  antes de publicar el Release `catalog-2026.11.13.3` con 189 assets. La URL
+  estable de la app de pruebas es
   `https://github.com/Eportillo0707/PokeAppCatalog/releases/latest/download/update-manifest.json`.
-  La app descarga firma y assets desde la misma carpeta de Release. Aún no
-  existe ese repositorio ni una clave persistente; tampoco se ha publicado el
-  archivo base ni un Release. Se requiere revisar la publicación pública antes
-  de crear el alojamiento y configurar la APK con esa URL y clave.
+  Las publicaciones futuras requieren revisar el artefacto y subir el Release;
+  el workflow todavía no publica automáticamente.
+- La APK profile de `com.emerson.pokeapp.offlinetest` se compiló con esa URL
+  HTTPS y la clave pública. En el S25 Ultra detectó `2026.11.13.3`, descargó
+  23,1 MiB y la instaló. El puntero privado quedó con `2026.11.13.3` activa y
+  `2026.11.13.2` anterior. Tras reiniciar, la Pokédex cargó con normalidad.
+  La app de producción y su distribución en Play Store no se modificaron.
