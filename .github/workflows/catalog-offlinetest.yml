@@ -1,0 +1,86 @@
+name: Offline test catalog
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_version:
+        description: Installed catalog version
+        required: false
+        type: string
+      version:
+        description: New catalog version (YYYY.MM.DD[.revision])
+        required: false
+        type: string
+  schedule:
+    - cron: '17 9 1,16 * *'
+
+permissions:
+  contents: read
+
+jobs:
+  catalog:
+    if: ${{ vars.CATALOG_BASELINE_URL != '' && vars.CATALOG_BASELINE_SHA256 != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/offlinetest-phase4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install WebP encoder
+        run: sudo apt-get update && sudo apt-get install -y webp
+      - name: Fetch verified baseline
+        env:
+          BASELINE_URL: ${{ vars.CATALOG_BASELINE_URL }}
+          BASELINE_SHA256: ${{ vars.CATALOG_BASELINE_SHA256 }}
+        run: |
+          mkdir -p build/catalog-baseline
+          curl -fL --proto '=https' --proto-redir '=https' --tlsv1.2 "$BASELINE_URL" -o baseline.tar.gz
+          printf '%s  baseline.tar.gz\n' "$BASELINE_SHA256" | sha256sum -c -
+          tar -xzf baseline.tar.gz -C build/catalog-baseline
+          test -f build/catalog-baseline/manifest.json
+          test -d build/catalog-baseline/json
+      - name: Acquire and validate fresh snapshot
+        env:
+          CWEBP_PATH: /usr/bin/cwebp
+        run: |
+          node tool/offline_audit/collect.cjs
+          node tool/offline_audit/measure.cjs
+          node tool/offline_catalog/build.cjs build/offline-catalog/current
+          node tool/offline_catalog/validate.cjs build/offline-catalog/current
+      - name: Compare with baseline
+        id: compare
+        run: |
+          node tool/offline_catalog/compare_snapshots.cjs \
+            build/catalog-baseline/manifest.json build/catalog-baseline/json \
+            build/offline-audit/json build/offline-catalog/report.json
+          echo "changed=$(node -p "require('./build/offline-catalog/report.json').changed")" >> "$GITHUB_OUTPUT"
+      - name: Test package builder
+        run: node --test tool/offline_catalog/compare_snapshots.test.cjs tool/offline_catalog/package_release.test.cjs
+      - name: Sign test package
+        if: ${{ github.event_name == 'workflow_dispatch' && steps.compare.outputs.changed == 'true' && inputs.base_version != '' && inputs.version != '' }}
+        env:
+          SIGNING_KEY: ${{ secrets.CATALOG_SIGNING_KEY_PEM }}
+          BASE_VERSION: ${{ inputs.base_version }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          test -n "$SIGNING_KEY"
+          umask 077
+          printf '%s' "$SIGNING_KEY" > "$RUNNER_TEMP/catalog-key.pem"
+          export POKEAPP_SIGNING_KEY="$RUNNER_TEMP/catalog-key.pem"
+          trap 'rm -f "$POKEAPP_SIGNING_KEY"' EXIT
+          node tool/offline_catalog/package_release.cjs \
+            build/offline-catalog/current build/catalog-baseline/manifest.json \
+            build/offline-catalog/report.json build/offline-catalog/release \
+            "$VERSION" "$BASE_VERSION"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: catalog-audit
+          path: build/offline-catalog/report.json
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('build/offline-catalog/release/update-manifest.json') != '' }}
+        with:
+          name: catalog-offlinetest-signed
+          path: build/offline-catalog/release/
