@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 import 'package:pokeapp_flutter/data/local/favorites_store.dart';
 import 'package:pokeapp_flutter/domain/repositories/pokemon_repository.dart';
@@ -9,6 +8,7 @@ import 'package:pokeapp_flutter/ui/screens/pokemon_list/pokemon_list_screen.dart
 import 'package:pokeapp_flutter/ui/screens/widgets/app_bottom_nav.dart';
 import 'package:pokeapp_flutter/data/local/teams_store.dart';
 import 'package:pokeapp_flutter/data/updates/catalog_update_service.dart';
+import 'package:pokeapp_flutter/data/updates/catalog_update_access.dart';
 import 'package:pokeapp_flutter/ui/screens/teams/teams_screen.dart';
 import 'package:pokeapp_flutter/ui/screens/settings/settings_screen.dart';
 
@@ -57,7 +57,7 @@ class _AppShellState extends State<AppShell> {
       (_) => FavoritesScreen(api: widget.api, favorites: widget.favorites),
       (_) => TeamsScreen(
           store: teams, api: widget.api, favorites: widget.favorites),
-      if (!kReleaseMode) (_) => SettingsScreen(updates: updates),
+      if (catalogUpdateAccess) (_) => SettingsScreen(updates: updates),
     ];
     return Scaffold(
       body: IndexedStack(index: index, children: [
@@ -80,7 +80,7 @@ class _AppShellState extends State<AppShell> {
       ]),
       bottomNavigationBar: AppBottomNav(
         index: index,
-        showSettings: !kReleaseMode,
+        showSettings: catalogUpdateAccess,
         onSelected: (next) {
           if (index == next) {
             navigators[next].currentState?.popUntil((route) => route.isFirst);

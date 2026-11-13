@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:sqflite/sqflite.dart';
 import 'catalog_active_store.dart';
+import 'catalog_update_access.dart';
 import 'catalog_downloader.dart';
 import 'catalog_installer.dart';
 import 'catalog_manifest.dart';
@@ -17,7 +18,7 @@ class CatalogUpdateService extends ChangeNotifier {
   static CatalogUpdateService? fromEnvironment() {
     const url = String.fromEnvironment('POKEAPP_CATALOG_MANIFEST_URL');
     const key = String.fromEnvironment('POKEAPP_CATALOG_PUBLIC_KEY');
-    if (kReleaseMode || url.isEmpty || key.isEmpty) return null;
+    if (!catalogUpdateAccess || url.isEmpty || key.isEmpty) return null;
     try {
       final client = CatalogManifestClient(
         url: Uri.parse(url), publicKey: base64Decode(key));

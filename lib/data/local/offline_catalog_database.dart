@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:pokeapp_flutter/data/updates/catalog_active_store.dart';
+import 'package:pokeapp_flutter/data/updates/catalog_update_access.dart';
 import 'package:pokeapp_flutter/data/updates/catalog_media_resolver.dart';
 import 'offline_catalog_candidate.dart';
 
@@ -32,7 +33,7 @@ class OfflineCatalogDatabase {
       await temporary.rename(file.path);
     }
     final store = CatalogActiveStore(Directory(directory));
-    final candidates = kReleaseMode ? [file] : await store.candidates();
+    final candidates = catalogUpdateAccess ? await store.candidates() : [file];
     Database? database;
     CatalogMediaResolver? resolver;
     File? selected;
@@ -53,7 +54,7 @@ class OfflineCatalogDatabase {
     if (database == null) {
       throw StateError('No valid offline catalog: $lastError');
     }
-    if (!kReleaseMode && selected!.path != candidates.first.path) {
+    if (catalogUpdateAccess && selected!.path != candidates.first.path) {
       try {
         await store.recover(selected);
       } catch (_) {/* Keep local access. */}
