@@ -34,8 +34,8 @@ void main() {
       home: AppShell(api: api, favorites: FavoritesStore()),
     ));
     await tester.pumpAndSettle();
-    expect(find.text('Pokédex'), findsOneWidget);
-    await tester.tap(find.text('Teams'));
+    expect(find.bySemanticsLabel('Pokédex'), findsOneWidget);
+    await tester.tap(find.bySemanticsLabel('Teams'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Create team'));
     await tester.pumpAndSettle();
@@ -59,9 +59,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     await tester.pumpAndSettle();
     expect(find.text('Pikachu'), findsOneWidget);
-    await tester.tap(find.text('Favorites'));
+    await tester.tap(find.bySemanticsLabel('Favorites'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Teams'));
+    await tester.tap(find.bySemanticsLabel('Teams'));
     await tester.pumpAndSettle();
     expect(find.byType(TextField), findsOneWidget);
     await tester.tap(find.text('Pikachu'));
@@ -72,7 +72,7 @@ void main() {
     await tester.tap(find.byTooltip('Remove from team'));
     await tester.pumpAndSettle();
     expect(find.text('0/6 Pokémon'), findsOneWidget);
-    await tester.tap(find.text('Teams'));
+    await tester.tap(find.bySemanticsLabel('Teams'));
     await tester.pumpAndSettle();
     expect(find.text('My teams'), findsOneWidget);
     expect(find.text('Champions squad'), findsOneWidget);

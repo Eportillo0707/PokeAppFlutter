@@ -3,11 +3,13 @@ part of 'app_bottom_nav.dart';
 class _BottomTab extends StatelessWidget {
   const _BottomTab({
     required this.title,
+    required this.icon,
     required this.selected,
     required this.onTap,
   });
 
   final String title;
+  final Widget icon;
   final bool selected;
   final VoidCallback onTap;
 
@@ -21,22 +23,27 @@ class _BottomTab extends StatelessWidget {
               ? Colors.white.withValues(alpha: .14)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(14),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(14),
-            onTap: onTap,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(title,
-                    style: TextStyle(
-                        color: selected ? Colors.white : Colors.white70,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis),
-                const SizedBox(height: 6),
-                _SelectionIndicator(selected: selected),
-              ],
+          child: Semantics(
+            label: title,
+            button: true,
+            selected: selected,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: onTap,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconTheme(
+                    data: IconThemeData(
+                      color: selected ? Colors.white : Colors.white70,
+                      size: 27,
+                    ),
+                    child: ExcludeSemantics(child: icon),
+                  ),
+                  const SizedBox(height: 6),
+                  _SelectionIndicator(selected: selected),
+                ],
+              ),
             ),
           ),
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:pokeapp_flutter/ui/l10n/app_localizations.dart';
+import 'package:pokeapp_flutter/ui/screens/widgets/pokeball_nav_icon.dart';
 
 part 'app_bottom_nav_tabs.dart';
 
@@ -38,24 +39,29 @@ class AppBottomNav extends StatelessWidget {
             children: [
               _BottomTab(
                 title: 'Pokédex',
+                icon: const PokeballNavIcon(),
                 selected: index == 0,
                 onTap: () => onSelected(0),
               ),
               _BottomTab(
                 title: context.l10n.favorites,
+                icon: const Icon(Icons.favorite_rounded),
                 selected: index == 1,
                 onTap: () => onSelected(1),
               ),
               _BottomTab(
                 title: context.l10n.isSpanish ? 'Equipos' : 'Teams',
+                icon: const Icon(Icons.groups_rounded),
                 selected: index == 2,
                 onTap: () => onSelected(2),
               ),
-              if (showSettings) _BottomTab(
-                title: context.l10n.isSpanish ? 'Ajustes' : 'Settings',
-                selected: index == 3,
-                onTap: () => onSelected(3),
-              ),
+              if (showSettings)
+                _BottomTab(
+                  title: context.l10n.isSpanish ? 'Ajustes' : 'Settings',
+                  icon: const Icon(Icons.settings_rounded),
+                  selected: index == 3,
+                  onTap: () => onSelected(3),
+                ),
             ],
           ),
         ),
