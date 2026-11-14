@@ -29,10 +29,10 @@ class CatalogUpdateChecker {
     }
     await prefs.setString(lastAttemptKey, now.toIso8601String());
     final manifest = await fetch();
-    await prefs.setString(lastSuccessKey, now.toIso8601String());
     final current = await installedVersion();
+    if (compareCatalogVersions(manifest.baseVersion, current) > 0) return null;
+    await prefs.setString(lastSuccessKey, now.toIso8601String());
     if (compareCatalogVersions(manifest.version, current) <= 0) return null;
-    if (manifest.baseVersion != current) return null;
     return manifest;
   }
 

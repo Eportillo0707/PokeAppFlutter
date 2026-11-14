@@ -51,7 +51,18 @@ void main() {
 
   test('rejects an update for another base version', () async {
     final checker = CatalogUpdateChecker(installedVersion: () async => current,
-      fetch: () async => const CatalogManifest('2026.11.11', '2026.11.01', []));
+      fetch: () async => const CatalogManifest('2026.11.11', '2026.11.10', []));
     expect(await checker.check(manual: true), isNull);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString(CatalogUpdateChecker.lastSuccessKey), isNull);
+  });
+
+  test('offers the latest catalog after intermediate versions were skipped',
+      () async {
+    const latest = CatalogManifest('2026.11.20', current, []);
+    final checker = CatalogUpdateChecker(
+      installedVersion: () async => '2026.11.13.2',
+      fetch: () async => latest);
+    expect(await checker.check(manual: true), latest);
   });
 }

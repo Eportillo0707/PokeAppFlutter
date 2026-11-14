@@ -19,7 +19,7 @@ class CatalogInstaller {
 
   Future<void> install(CatalogManifest manifest, Directory staging) async {
     final current = await store.activeVersion();
-    if (manifest.baseVersion != current ||
+    if (compareCatalogVersions(manifest.baseVersion, current) > 0 ||
         compareCatalogVersions(manifest.version, current) <= 0) {
       throw const FormatException('Catalog base version changed');
     }

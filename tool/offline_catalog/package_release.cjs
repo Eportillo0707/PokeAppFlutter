@@ -12,6 +12,9 @@ async function packageRelease({catalogDir, baselineFile, reportFile,
   if (!/^\d{4}\.\d{2}\.\d{2}(?:\.\d+)?$/.test(baseVersion)) {
     throw new Error('Base version must be YYYY.MM.DD[.revision]');
   }
+  if (baseVersion !== '2026.11.05') {
+    throw new Error('Package must support the bundled seed catalog');
+  }
   const report = JSON.parse(await fs.readFile(reportFile));
   if (report.changed !== true) throw new Error('No semantic changes to publish');
   const current = JSON.parse(await fs.readFile(

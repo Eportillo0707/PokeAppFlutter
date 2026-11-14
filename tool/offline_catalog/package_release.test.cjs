@@ -49,6 +49,9 @@ test('packages changed media and signs the update manifest', async () => {
     assert.deepEqual(await fs.readFile(path.join(outputDir,
       `media-${mediaPath.slice(6)}`)), media);
     await assert.rejects(packageRelease(args), /exist/);
+    await assert.rejects(packageRelease({...args,
+      outputDir: path.join(root, 'wrong-base'),
+      baseVersion: '2026.11.10'}), /bundled seed/);
     await fs.writeFile(reportFile, JSON.stringify({changed: false}));
     await assert.rejects(packageRelease({...args,
       outputDir: path.join(root, 'unchanged')}), /No semantic changes/);
