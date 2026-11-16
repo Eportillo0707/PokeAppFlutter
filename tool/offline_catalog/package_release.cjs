@@ -5,7 +5,10 @@ const {sha256} = require('./source.cjs');
 const {assetName, checkedCopy} = require('./release_files.cjs');
 
 async function packageRelease({catalogDir, baselineFile, reportFile,
-  outputDir, version, baseVersion, privateKeyFile}) {
+  outputDir, version, baseVersion, privateKeyFile, channel = 'offlinetest'}) {
+  if (!['offlinetest', 'production'].includes(channel)) {
+    throw new Error('Unsupported catalog channel');
+  }
   if (!/^\d{4}\.\d{2}\.\d{2}(?:\.\d+)?$/.test(version)) {
     throw new Error('Catalog version must be YYYY.MM.DD[.revision]');
   }
@@ -40,7 +43,7 @@ async function packageRelease({catalogDir, baselineFile, reportFile,
   if (key.asymmetricKeyType !== 'ed25519') throw new Error('Expected Ed25519 key');
   const publicKey = crypto.createPublicKey(key).export({type: 'spki', format: 'der'});
   const keyId = sha256(publicKey).slice(0, 16);
-  const manifest = {formatVersion: 1, channel: 'offlinetest',
+  const manifest = {formatVersion: 1, channel,
     catalogVersion: version, baseCatalogVersion: baseVersion,
     minAppVersion: '1.1.0', schemaVersion: 1, keyId,
     sourceSnapshot: current.snapshotAt, changes: report.changes,
@@ -74,7 +77,8 @@ if (require.main === module) {
     process.exitCode = 1;
   } else {
     packageRelease({catalogDir, baselineFile, reportFile, outputDir,
-      version, baseVersion, privateKeyFile})
+      version, baseVersion, privateKeyFile,
+      channel: process.env.POKEAPP_CATALOG_CHANNEL || 'offlinetest'})
       .then(result => console.log(JSON.stringify(result)))
       .catch(error => { console.error(error); process.exitCode = 1; });
   }

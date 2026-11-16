@@ -32,8 +32,10 @@ class CatalogManifest {
   int get downloadBytes => files.fold(0, (sum, file) => sum + file.bytes);
 
   factory CatalogManifest.fromJson(Map<String, dynamic> json) {
+    const channel = String.fromEnvironment('POKEAPP_CATALOG_CHANNEL',
+        defaultValue: 'offlinetest');
     if (json['formatVersion'] != 1 || json['schemaVersion'] != 1 ||
-        json['channel'] != 'offlinetest' || json['minAppVersion'] != '1.1.0') {
+        json['channel'] != channel || json['minAppVersion'] != '1.1.0') {
       throw const FormatException('Incompatible catalog manifest');
     }
     final version = json['catalogVersion'];
