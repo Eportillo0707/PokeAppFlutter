@@ -11,6 +11,13 @@ on:
         description: New catalog version (YYYY.MM.DD[.revision])
         required: false
         type: string
+      channel:
+        description: Signed package channel (offlinetest or production)
+        required: false
+        type: choice
+        options:
+          - offlinetest
+          - production
   schedule:
     - cron: '17 9 1,16 * *'
 
@@ -65,6 +72,7 @@ jobs:
           SIGNING_KEY: ${{ secrets.CATALOG_SIGNING_KEY_PEM }}
           BASE_VERSION: ${{ inputs.base_version }}
           VERSION: ${{ inputs.version }}
+          POKEAPP_CATALOG_CHANNEL: ${{ inputs.channel || 'offlinetest' }}
         run: |
           test -n "$SIGNING_KEY"
           umask 077
@@ -82,5 +90,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ hashFiles('build/offline-catalog/release/update-manifest.json') != '' }}
         with:
-          name: catalog-offlinetest-signed
+          name: catalog-signed
           path: build/offline-catalog/release/
