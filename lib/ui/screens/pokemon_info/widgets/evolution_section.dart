@@ -32,48 +32,50 @@ class EvolutionSection extends StatelessWidget {
               species[index + 1].evolvesFromSpeciesId == species[index].id));
 
   @override
-  Widget build(BuildContext context) => DetailPanel(
-        title: title,
-        child: LayoutBuilder(builder: (context, constraints) {
-          final routes = showArrows
-              ? evolutionRoutes(species)
-              : const <List<PokemonSpecies>>[];
-          if (routes.length > 1) {
-            return EvolutionRouteList(
-                routes: routes,
-                currentPokemonId: currentPokemonId,
-                heroExcludedIds: heroExcludedIds,
-                onSpeciesTap: onSpeciesTap);
-          }
-          final minWidth = showArrows && species.length == 3 ? 270 : 230;
-          if (_isShortLine && constraints.maxWidth >= minWidth) {
-            final arrowWidth = showArrows ? 44.0 : 0.0;
-            final cardGap = showArrows ? 0.0 : 8.0;
-            final itemWidth = (constraints.maxWidth -
-                    (arrowWidth + cardGap) * (species.length - 1)) /
-                species.length;
-            return Row(children: [
-              for (var i = 0; i < species.length; i++) ...[
-                if (i > 0 && showArrows)
-                  EvolutionConnector(target: species[i], width: arrowWidth),
-                if (i > 0 && !showArrows) SizedBox(width: cardGap),
-                EvolutionItem(
-                  species: species[i],
-                  width: itemWidth,
-                  hero: species[i].id != currentPokemonId &&
-                      !heroExcludedIds.contains(species[i].id),
-                  onTap: () => onSpeciesTap(species[i]),
-                ),
-              ],
-            ]);
-          }
-          return EvolutionBranchList(
-            species: species,
-            showArrows: showArrows,
-            currentPokemonId: currentPokemonId,
-            heroExcludedIds: heroExcludedIds,
-            onSpeciesTap: onSpeciesTap,
-          );
-        }),
-      );
+  Widget build(BuildContext context) {
+    final routes =
+        showArrows ? evolutionRoutes(species) : const <List<PokemonSpecies>>[];
+    if (routes.length > 1) {
+      return EvolutionRouteList(
+          title: title,
+          routes: routes,
+          currentPokemonId: currentPokemonId,
+          heroExcludedIds: heroExcludedIds,
+          onSpeciesTap: onSpeciesTap);
+    }
+    return DetailPanel(
+      title: title,
+      child: LayoutBuilder(builder: (context, constraints) {
+        final minWidth = showArrows && species.length == 3 ? 270 : 230;
+        if (_isShortLine && constraints.maxWidth >= minWidth) {
+          final arrowWidth = showArrows ? 44.0 : 0.0;
+          final cardGap = showArrows ? 0.0 : 8.0;
+          final itemWidth = (constraints.maxWidth -
+                  (arrowWidth + cardGap) * (species.length - 1)) /
+              species.length;
+          return Row(children: [
+            for (var i = 0; i < species.length; i++) ...[
+              if (i > 0 && showArrows)
+                EvolutionConnector(target: species[i], width: arrowWidth),
+              if (i > 0 && !showArrows) SizedBox(width: cardGap),
+              EvolutionItem(
+                species: species[i],
+                width: itemWidth,
+                hero: species[i].id != currentPokemonId &&
+                    !heroExcludedIds.contains(species[i].id),
+                onTap: () => onSpeciesTap(species[i]),
+              ),
+            ],
+          ]);
+        }
+        return EvolutionBranchList(
+          species: species,
+          showArrows: showArrows,
+          currentPokemonId: currentPokemonId,
+          heroExcludedIds: heroExcludedIds,
+          onSpeciesTap: onSpeciesTap,
+        );
+      }),
+    );
+  }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_route_card.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_connector.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_routes.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_section.dart';
 
@@ -68,6 +69,9 @@ void main() {
     ]) {
       expect(find.text(method), findsOneWidget);
     }
+    tester.view.physicalSize = const Size(400, 950);
+    await tester.pumpAndSettle();
+    expect(find.byType(EvolutionConnector), findsNWidgets(4));
     final hero = find.byWidgetPredicate(
         (widget) => widget is Hero && widget.tag == 'pokemon-image-applin');
     expect(hero, findsOneWidget);
