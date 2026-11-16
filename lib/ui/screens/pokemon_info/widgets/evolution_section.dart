@@ -5,6 +5,8 @@ import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_card.dart
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_branch_list.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_connector.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_item.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_route_list.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_routes.dart';
 
 class EvolutionSection extends StatelessWidget {
   const EvolutionSection(
@@ -33,6 +35,16 @@ class EvolutionSection extends StatelessWidget {
   Widget build(BuildContext context) => DetailPanel(
         title: title,
         child: LayoutBuilder(builder: (context, constraints) {
+          final routes = showArrows
+              ? evolutionRoutes(species)
+              : const <List<PokemonSpecies>>[];
+          if (routes.length > 1) {
+            return EvolutionRouteList(
+                routes: routes,
+                currentPokemonId: currentPokemonId,
+                heroExcludedIds: heroExcludedIds,
+                onSpeciesTap: onSpeciesTap);
+          }
           final minWidth = showArrows && species.length == 3 ? 270 : 230;
           if (_isShortLine && constraints.maxWidth >= minWidth) {
             final arrowWidth = showArrows ? 44.0 : 0.0;

@@ -4,8 +4,7 @@ import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_section.dart';
 
 void main() {
-  testWidgets('branches show parent and each method vertically',
-      (tester) async {
+  testWidgets('branches show a complete chain for each method', (tester) async {
     const branches = [
       PokemonSpecies(id: 133, name: 'eevee'),
       PokemonSpecies(
@@ -29,7 +28,7 @@ void main() {
             body: SingleChildScrollView(
                 child: _BranchFixture(species: branches)))));
     await tester.pumpAndSettle();
-    expect(find.text('Eevee'), findsOneWidget);
+    expect(find.text('Eevee'), findsNWidgets(3));
     expect(find.text('Vaporeon'), findsOneWidget);
     expect(find.text('Jolteon'), findsOneWidget);
     expect(find.text('Flareon'), findsOneWidget);
