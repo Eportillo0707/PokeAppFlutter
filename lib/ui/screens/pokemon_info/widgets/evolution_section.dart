@@ -5,6 +5,8 @@ import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_card.dart
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_branch_list.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_connector.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_item.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_fork.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_fork_section.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_route_list.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/evolution_routes.dart';
 
@@ -35,6 +37,15 @@ class EvolutionSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final routes =
         showArrows ? evolutionRoutes(species) : const <List<PokemonSpecies>>[];
+    final fork = EvolutionFork.fromRoutes(routes);
+    if (fork != null) {
+      return EvolutionForkSection(
+          title: title,
+          fork: fork,
+          currentPokemonId: currentPokemonId,
+          heroExcludedIds: heroExcludedIds,
+          onSpeciesTap: onSpeciesTap);
+    }
     if (routes.length > 1) {
       return EvolutionRouteList(
           title: title,

@@ -10,7 +10,8 @@ class EvolutionConnector extends StatelessWidget {
       this.reverse = false,
       this.showDetails = true,
       this.mega = false,
-      this.stoneAsset});
+      this.stoneAsset,
+      this.maxMethodLines = 3});
 
   final PokemonSpecies target;
   final double width;
@@ -18,6 +19,7 @@ class EvolutionConnector extends StatelessWidget {
   final bool showDetails;
   final bool mega;
   final String? stoneAsset;
+  final int maxMethodLines;
 
   @override
   Widget build(BuildContext context) => SizedBox(
@@ -49,7 +51,7 @@ class EvolutionConnector extends StatelessWidget {
           if (target.evolutionMethod case final method?)
             if (showDetails)
               Text(method,
-                  maxLines: 3,
+                  maxLines: maxMethodLines,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
