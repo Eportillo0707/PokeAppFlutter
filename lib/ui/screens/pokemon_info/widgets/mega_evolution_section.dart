@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pokeapp_flutter/domain/model/pokemon_models.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/detail_card.dart';
 import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/mega_evolution_group.dart';
+import 'package:pokeapp_flutter/ui/screens/pokemon_info/widgets/mega_evolution_groups_list.dart';
 
 class MegaEvolutionSection extends StatelessWidget {
   const MegaEvolutionSection(
@@ -26,17 +27,18 @@ class MegaEvolutionSection extends StatelessWidget {
     for (final form in mega) {
       groups.putIfAbsent(form.evolvesFromSpeciesId ?? -1, () => []).add(form);
     }
-    return DetailPanel(
-      title: title,
-      child: Column(children: [
-        for (final entry in groups.entries)
-          MegaEvolutionGroup(
-            parent: parents[entry.key],
-            forms: entry.value,
-            currentPokemonId: currentPokemonId,
-            onSpeciesTap: onSpeciesTap,
-          ),
-      ]),
-    );
+    final widgets = [
+      for (final entry in groups.entries)
+        MegaEvolutionGroup(
+          parent: parents[entry.key],
+          forms: entry.value,
+          currentPokemonId: currentPokemonId,
+          onSpeciesTap: onSpeciesTap,
+        ),
+    ];
+    if (widgets.length > 1) {
+      return MegaEvolutionGroupsList(title: title, groups: widgets);
+    }
+    return DetailPanel(title: title, child: widgets.first);
   }
 }
