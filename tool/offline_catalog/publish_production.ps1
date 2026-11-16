@@ -33,6 +33,14 @@ if (-not $release.isDraft -or
     @(Compare-Object $localNames $remoteNames).Count -ne 0) {
   throw 'Los archivos remotos no coinciden con el paquete verificado.'
 }
+foreach ($asset in $release.assets) {
+  $path = Join-Path $dir $asset.name
+  $digest = 'sha256:' + (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLower()
+  if ($asset.size -ne (Get-Item -LiteralPath $path).Length -or
+      $asset.digest -ne $digest) {
+    throw "El archivo remoto no coincide: $($asset.name)"
+  }
+}
 gh release edit $tag --repo $repo --draft=false --latest
 if ($LASTEXITCODE -ne 0) { throw 'No se publicó el Release.' }
 Write-Output "Publicado $tag con $($files.Count) archivos."
